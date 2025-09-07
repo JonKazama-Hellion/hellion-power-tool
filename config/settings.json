@@ -6,7 +6,7 @@
   "log_level": "INFO",
   "max_backups": 10,
   "startup_check": true,
-  "repository_url": "https://github.com/hellion-online-media/hellion-power-tool.git",
+  "repository_url": "https://github.com/JonKazama-Hellion/hellion-power-tool.git",
   "script_name": "hellion_tool_v70_moon.ps1",
   "last_update_check": "",
   "launcher": {
