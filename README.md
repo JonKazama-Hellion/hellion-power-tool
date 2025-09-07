@@ -1,6 +1,6 @@
 # 🔧 Hellion Power Tool v7.0 "Moon"
 
-**Professionelles Windows-Systemoptimierungstool mit automatischer Installation**
+## Professionelles Windows-Systemoptimierungstool mit automatischer Installation
 
 [![Version](https://img.shields.io/badge/Version-7.0%20Moon-blue.svg)](https://github.com/JonKazama-Hellion/hellion-power-tool)
 [![PowerShell](https://img.shields.io/badge/PowerShell-7.0%2B-blue.svg)](https://github.com/PowerShell/PowerShell)
@@ -12,7 +12,8 @@
 
 Das **Hellion Power Tool** ist eine vollständige Windows-Systemoptimierungslösung, die automatisch alle benötigten Abhängigkeiten installiert und Ihr System mit einem Klick optimiert.
 
-### ✨ **Hauptfeatures:**
+### ✨ Hauptfeatures
+
 - 🔄 **Auto-Installation:** Winget + PowerShell 7 automatisch
 - 🛠 **System-Reparatur:** SFC, DISM, Checkdisk
 - 🧹 **Intelligente Bereinigung:** Temp-Dateien, Caches, Registry
@@ -24,14 +25,16 @@ Das **Hellion Power Tool** ist eine vollständige Windows-Systemoptimierungslös
 
 ## 📥 Installation & Start
 
-### **Git Clone:**
+### Git Clone
+
 ```bash
 git clone https://github.com/JonKazama-Hellion/hellion-power-tool.git
 cd hellion-power-tool
 launcher.bat
 ```
 
-### **Manueller Download:**
+### Manueller Download
+
 1. Repository als ZIP herunterladen
 2. Entpacken in gewünschten Ordner  
 3. `launcher.bat` ausführen
@@ -45,6 +48,7 @@ launcher.bat
 ```
 
 Der Launcher installiert automatisch:
+
 - ✅ Winget (falls nicht vorhanden)
 - ✅ PowerShell 7 (falls nicht vorhanden)  
 - ✅ Erstellt Ordnerstruktur
@@ -54,7 +58,7 @@ Der Launcher installiert automatisch:
 
 ## 📁 Projektstruktur
 
-```
+```text
 hellion-power-tool/
 ├── launcher.bat              # 🚀 Hauptlauncher
 ├── hellion_tool_v70_moon.ps1 # 🔧 Hauptscript
@@ -70,16 +74,19 @@ hellion-power-tool/
 
 ## 🔧 Features
 
-### **System-Reparatur:**
+### System-Reparatur
+
 - **SFC:** Systemdatei-Reparatur
 - **DISM:** Windows Image-Reparatur  
 - **Checkdisk:** Dateisystem-Prüfung
 
-### **Software-Management:**
+### Software-Management
+
 - **Winget-Integration:** Automatische Updates
 - **Bulk-Updates:** Alle Updates auf einmal
 
-### **Debug-Modus:**
+### Debug-Modus
+
 ```json
 "debug_mode": true
 ```
@@ -89,8 +96,8 @@ hellion-power-tool/
 ## 🤝 Support
 
 **Entwickelt von:** Hellion Online Media - Florian Wathling  
-**Website:** https://hellion-online-media.de  
-**Kontakt:** florian@hellion-online-media.de
+**Website:** [https://hellion-online-media.de](https://hellion-online-media.de)  
+**Kontakt:** [florian@hellion-online-media.de](mailto:florian@hellion-online-media.de)
 
 ---
 
