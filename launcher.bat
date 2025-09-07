@@ -91,7 +91,7 @@ if not exist "config\settings.json" (
         echo   "log_level": "INFO",
         echo   "max_backups": 10,
         echo   "startup_check": true,
-        echo   "repository_url": "https://github.com/hellion-online-media/hellion-power-tool.git",
+        echo   "repository_url": "https://github.com/JonKazama-Hellion/hellion-power-tool.git",
         echo   "script_name": "hellion_tool_v70_moon.ps1",
         echo   "last_update_check": "",
         echo   "user_settings": {
@@ -109,7 +109,7 @@ if not exist "config\settings.json" (
 REM repository.txt erstellen falls nicht vorhanden  
 if not exist "config\repository.txt" (
     echo   [*] Erstelle config\repository.txt...
-    echo https://github.com/hellion-online-media/hellion-power-tool.git > "config\repository.txt"
+    echo https://github.com/JonKazama-Hellion/hellion-power-tool.git > "config\repository.txt"
     echo   [OK] repository.txt erstellt
 ) else (
     echo   [OK] repository.txt bereits vorhanden
@@ -490,7 +490,7 @@ if !errorlevel! == 0 (
         echo   [OK] Repository URL: !GITHUB_URL!
         echo Repository URL gelesen: !GITHUB_URL! >> "%LOG_FILE%"
     ) else (
-        set "GITHUB_URL=https://github.com/hellion-online-media/hellion-power-tool.git"
+        set "GITHUB_URL=https://github.com/JonKazama-Hellion/hellion-power-tool.git"
         echo !GITHUB_URL! > "config\repository.txt"
         echo   [INFO] Standard Repository URL gesetzt
         echo Standard Repository URL gesetzt >> "%LOG_FILE%"

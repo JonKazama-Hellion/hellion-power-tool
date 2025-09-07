@@ -2,7 +2,7 @@
 
 **Professionelles Windows-Systemoptimierungstool mit automatischer Installation**
 
-[![Version](https://img.shields.io/badge/Version-7.0%20Moon-blue.svg)](https://github.com/hellion-online-media/hellion-power-tool)
+[![Version](https://img.shields.io/badge/Version-7.0%20Moon-blue.svg)](https://github.com/JonKazama-Hellion/hellion-power-tool)
 [![PowerShell](https://img.shields.io/badge/PowerShell-7.0%2B-blue.svg)](https://github.com/PowerShell/PowerShell)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-green.svg)](https://www.microsoft.com/windows)
 
@@ -26,7 +26,7 @@ Das **Hellion Power Tool** ist eine vollständige Windows-Systemoptimierungslös
 
 ### **Git Clone:**
 ```bash
-git clone https://github.com/hellion-online-media/hellion-power-tool.git
+git clone https://github.com/JonKazama-Hellion/hellion-power-tool.git
 cd hellion-power-tool
 launcher.bat
 ```
