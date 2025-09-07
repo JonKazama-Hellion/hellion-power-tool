@@ -20,7 +20,7 @@ Set-StrictMode -Version Latest
 $ProgressPreference = 'SilentlyContinue'
 
 # Globale Konfiguration
-$script:ToolVersion = "7.0.1"
+$script:ToolVersion = "7.0.2"
 $script:ToolCodename = "Moon-Bugfix"
 $script:ToolBuild = "20250907"
 

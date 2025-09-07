@@ -7,6 +7,32 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 
 ---
 
+## [7.0.2 "Moon-Bugfix"] - 2025-09-07
+
+### 🔧 Auto-Update Enhancement - ZIP-Download Support
+
+#### Added
+- **ZIP-Download Auto-Update-System**: Vollständig automatische Git-Repository-Initialisierung für ZIP-Downloads
+- **Intelligente Repository-Erkennung**: Erkennt fehlende `.git` Ordner und initialisiert Auto-Update-System
+- **Benutzergeführtes Setup**: Interaktives Setup mit Sicherheitskopie und User-Auswahl für initiales Update
+- **Automatischer Tool-Neustart**: Nach erfolgreichem Update wird das Tool automatisch mit neuester Version neu gestartet
+- **ZIP-Backup-System**: Erstellt Sicherheitskopie aller ZIP-Dateien in `temp\zip-backup\` vor Git-Initialisierung
+
+#### Technical Details
+- Neue `InitializeGitRepo` Funktion für automatische Repository-Initialisierung
+- Git-Repository wird automatisch mit `git init` und `git remote add origin` konfiguriert  
+- Branch-Setup mit `git branch -M main` und Upstream-Tracking
+- Intelligente Update-Prüfung mit `git rev-list --count` für verfügbare Commits
+- Lokale Änderungen werden automatisch gestaged mit "Initial ZIP download state" commit
+
+#### User Experience
+- Klare Kommunikation: "🔧 GIT AUTO-UPDATE SETUP" Interface
+- User-Choice für initiales Update mit J/N Auswahl
+- Automatische Tool-Neustart-Funktionalität nach Update
+- Nahtloser Übergang von ZIP-Download zu Git-basiertem Auto-Update-System
+
+---
+
 ## [7.0.1 "Moon-Bugfix"] - 2025-09-07
 
 ### 🐛 Kritische Bugfixes - Hotfix Release

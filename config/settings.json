@@ -1,5 +1,5 @@
 {
-  "version": "7.0.1",
+  "version": "7.0.2",
   "codename": "Moon-Bugfix",
   "debug_mode": false,
   "auto_update": true,
@@ -10,7 +10,7 @@
   "script_name": "hellion_tool_v70_moon.ps1",
   "last_update_check": "",
   "launcher": {
-    "version": "7.0.1",
+    "version": "7.0.2",
     "codename": "Moon-Bugfix",
     "auto_folder_creation": true,
     "log_cleanup_days": 30,

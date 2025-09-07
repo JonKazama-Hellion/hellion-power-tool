@@ -15,7 +15,7 @@ title Hellion Tool v7.0 Moon - Full Auto
 cls
 
 REM Version und Build-Info
-set "LAUNCHER_VERSION=7.0.1"
+set "LAUNCHER_VERSION=7.0.2"
 set "LAUNCHER_CODENAME=Moon-Bugfix"
 set "LAUNCHER_BUILD=%date:~-4%%date:~3,2%%date:~0,2%"
 
@@ -713,9 +713,14 @@ echo   [*] Pruefe auf Updates...
 echo Pruefe auf Updates... >> "%LOG_FILE%"
 
 if not exist ".git" (
-    echo   [INFO] Kein Git-Repository - Ueberspringe Update-Check
-    echo Kein Git-Repository gefunden >> "%LOG_FILE%"
-    goto :EOF
+    echo   [INFO] Kein Git-Repository gefunden - Initialisiere Auto-Update...
+    echo Kein Git-Repository gefunden - Initialisiere >> "%LOG_FILE%"
+    call :InitializeGitRepo
+    if !errorlevel! neq 0 (
+        echo   [WARNING] Git-Initialisierung fehlgeschlagen - Ueberspringe Updates
+        echo Git-Initialisierung fehlgeschlagen >> "%LOG_FILE%"
+        goto :EOF
+    )
 )
 
 REM Git fetch
@@ -928,3 +933,111 @@ if exist "%SHORTCUT_PATH%" (
 )
 
 goto :EOF
+
+REM ================================================================
+REM                GIT-REPOSITORY INITIALISIERUNG
+REM ================================================================
+
+:InitializeGitRepo
+REM Initialisiert Git-Repository für Auto-Updates bei ZIP-Downloads
+echo.
+echo ==============================================================================
+echo                        🔧 GIT AUTO-UPDATE SETUP
+echo ==============================================================================
+echo   Ihr Tool wurde als ZIP heruntergeladen.
+echo   Für automatische Updates wird jetzt Git-Repository initialisiert...
+echo.
+
+REM Backup der aktuellen Dateien erstellen
+echo   [*] Erstelle Sicherheitskopie...
+if not exist "temp" mkdir "temp" >nul 2>&1
+xcopy /s /y "*" "temp\zip-backup\" >nul 2>&1
+
+REM Git-Repository initialisieren
+echo   [*] Initialisiere Git-Repository...
+git init >nul 2>&1
+if !errorlevel! neq 0 (
+    echo   [ERROR] Git init fehlgeschlagen
+    echo Git init fehlgeschlagen >> "%LOG_FILE%"
+    exit /b 1
+)
+
+REM Remote-Repository hinzufügen
+echo   [*] Verbinde mit GitHub-Repository...
+git remote add origin %REPOSITORY_URL% >nul 2>&1
+if !errorlevel! neq 0 (
+    echo   [ERROR] Remote-Repository konnte nicht hinzugefügt werden
+    echo Remote add fehlgeschlagen >> "%LOG_FILE%"
+    exit /b 1
+)
+
+REM Fetch Repository-Daten
+echo   [*] Lade Repository-Daten...
+git fetch origin main >nul 2>&1
+if !errorlevel! neq 0 (
+    echo   [ERROR] Git fetch fehlgeschlagen - Repository nicht erreichbar
+    echo Git fetch initial fehlgeschlagen >> "%LOG_FILE%"
+    exit /b 1
+)
+
+REM Branch auf main setzen
+echo   [*] Konfiguriere Branch...
+git branch -M main >nul 2>&1
+git branch --set-upstream-to=origin/main main >nul 2>&1
+
+REM Prüfe ob Updates verfügbar
+echo   [*] Prüfe auf verfügbare Updates...
+for /f %%i in ('git rev-list --count origin/main 2^>nul') do set REMOTE_COMMITS=%%i
+if not defined REMOTE_COMMITS set REMOTE_COMMITS=0
+
+if !REMOTE_COMMITS! GTR 0 (
+    echo.
+    echo   ⚠️  WICHTIGER HINWEIS:
+    echo   Es sind neuere Versionen verfügbar (!REMOTE_COMMITS! Commits)
+    echo.
+    echo   EMPFEHLUNG: Lassen Sie das erste Update jetzt durchlaufen.
+    echo   Dies synchronisiert Ihre Dateien mit der neuesten Version.
+    echo.
+    choice /C JN /N /M "Erstes Update jetzt durchfuehren? [J/N]: "
+    
+    if !errorlevel!==1 (
+        echo.
+        echo   [*] Führe initiales Update durch...
+        
+        REM Lokale Änderungen stagen (falls vorhanden)
+        git add . >nul 2>&1
+        git commit -m "Initial ZIP download state" >nul 2>&1
+        
+        REM Update durchführen
+        git pull origin main >nul 2>&1
+        if !errorlevel! == 0 (
+            echo   [OK] Initiales Update erfolgreich!
+            echo   [INFO] Tool wird mit aktueller Version neu gestartet...
+            echo Git-Repository initialisiert und Update durchgeführt >> "%LOG_FILE%"
+            echo.
+            echo   🔄 NEUSTART ERFORDERLICH
+            echo   Das Tool wird nun neu gestartet um die Updates zu laden.
+            echo.
+            timeout /t 3 /nobreak >nul
+            
+            REM Tool neu starten
+            start "" "%~f0"
+            exit /b 0
+        ) else (
+            echo   [WARNING] Update teilweise fehlgeschlagen
+            echo Initiales Update fehlgeschlagen >> "%LOG_FILE%"
+        )
+    ) else (
+        echo   [INFO] Update übersprungen - wird beim nächsten Start verfügbar sein
+        echo Update übersprungen bei Git-Init >> "%LOG_FILE%"
+    )
+)
+
+echo.
+echo   [OK] Git-Repository erfolgreich initialisiert!
+echo   [INFO] Auto-Updates sind jetzt aktiviert für zukünftige Starts.
+echo Git-Repository erfolgreich initialisiert >> "%LOG_FILE%"
+echo.
+echo ==============================================================================
+
+exit /b 0
