@@ -80,30 +80,29 @@ REM ================================================================
 echo [*] Initialisiere Konfiguration...
 
 REM settings.json erstellen falls nicht vorhanden
+REM settings.json wird jetzt über Git-Updates verwaltet
 if not exist "config\settings.json" (
-    echo   [*] Erstelle config\settings.json...
+    echo   [*] WARNUNG: settings.json fehlt - führen Sie 'git pull' aus!
+    echo   [*] Erstelle Notfall-Konfiguration...
     (
         echo {
         echo   "version": "%LAUNCHER_VERSION%",
         echo   "codename": "%LAUNCHER_CODENAME%",
         echo   "debug_mode": false,
         echo   "auto_update": true,
-        echo   "log_level": "INFO",
-        echo   "max_backups": 10,
-        echo   "startup_check": true,
-        echo   "repository_url": "https://github.com/JonKazama-Hellion/hellion-power-tool.git",
-        echo   "script_name": "hellion_tool_v70_moon.ps1",
-        echo   "last_update_check": "",
-        echo   "user_settings": {
-        echo     "explain_mode": false,
-        echo     "visual_mode": false,
-        echo     "detailed_logging": false
-        echo   }
+        echo   "repository_url": "https://github.com/JonKazama-Hellion/hellion-power-tool.git"
         echo }
     ) > "config\settings.json"
-    echo   [OK] settings.json erstellt
+    echo   [OK] Notfall-settings.json erstellt
 ) else (
-    echo   [OK] settings.json bereits vorhanden
+    echo   [OK] settings.json vorhanden (Version wird über Git aktualisiert)
+)
+
+REM User-Override-System prüfen
+if not exist "config\user_overrides.json" (
+    if exist "config\user_overrides.json.example" (
+        echo   [INFO] Für eigene Einstellungen: Kopieren Sie user_overrides.json.example zu user_overrides.json
+    )
 )
 
 REM repository.txt erstellen falls nicht vorhanden  
@@ -116,11 +115,15 @@ if not exist "config\repository.txt" (
 )
 
 REM version.txt erstellen/aktualisieren
-echo   [*] Aktualisiere config\version.txt...
-echo %LAUNCHER_VERSION% > "config\version.txt"
-echo %LAUNCHER_CODENAME% >> "config\version.txt"
-echo %LAUNCHER_BUILD% >> "config\version.txt"
-echo   [OK] version.txt aktualisiert
+REM version.txt wird über Git-Updates verwaltet
+if not exist "config\version.txt" (
+    echo   [*] WARNUNG: version.txt fehlt - führen Sie 'git pull' aus!
+    echo   [*] Erstelle Notfall-Version...
+    echo %LAUNCHER_VERSION% > "config\version.txt"
+    echo   [OK] Notfall-version.txt erstellt
+) else (
+    echo   [OK] version.txt vorhanden (wird über Git aktualisiert)
+)
 
 echo.
 

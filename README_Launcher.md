@@ -6,7 +6,7 @@ Der neue Launcher.bat v7.0 "Moon" bietet ein vollständig überarbeitetes Starts
 
 ## 📁 Ordnerstruktur
 
-```
+```text
 hellion-power-tool/
 ├── launcher.bat              # Hauptlauncher (NEU)
 ├── hellion_tool_v70_moon.ps1 # Hauptscript
@@ -28,26 +28,31 @@ hellion-power-tool/
 
 ## ⚙️ Neue Features
 
-### 🔧 **Automatische Ordnerstruktur**
+### 🔧 Automatische Ordnerstruktur
+
 - Erstellt automatisch alle benötigten Ordner
 - Intelligente Strukturprüfung beim Start
 
-### 📊 **Erweiterte Konfiguration**
+### 📊 Erweiterte Konfiguration
+
 - **settings.json**: Vollständige Konfiguration
 - **Debug-Modus**: Detaillierte Ausgaben
 - **Auto-Update**: Automatische GitHub-Integration
 
-### 📝 **Verbessertes Logging**
+### 📝 Verbessertes Logging
+
 - Tägliche Log-Dateien mit Zeitstempel
 - Separate Startup- und Error-Logs
 - Automatische Log-Bereinigung (30 Tage)
 
-### 🔄 **Auto-Update-System**
+### 🔄 Automatische Updates
+
 - Git-Integration für automatische Updates
 - Intelligente Backup-Erstellung vor Updates
 - Versionierung alter Dateien
 
-### 🛠 **PowerShell-Erkennung**
+### 🛠 PowerShell-Erkennung
+
 - Automatische Erkennung von PowerShell 7 vs Windows PowerShell
 - Intelligente Auswahl der besten verfügbaren Version
 
@@ -63,7 +68,7 @@ hellion-power-tool/
   "auto_update": true,     # Auto-Updates aktivieren
   "log_level": "INFO",     # Logging-Level
   "max_backups": 10,       # Max. Anzahl Backups
-  "repository_url": "https://github.com/hellion-online-media/hellion-power-tool.git",
+  "repository_url": "https://github.com/JonKazama-Hellion/hellion-power-tool.git",
   "script_name": "hellion_tool_v70_moon.ps1"
 }
 ```
@@ -75,6 +80,7 @@ hellion-power-tool/
 ```
 
 **Zeigt an:**
+
 - Detaillierte Startup-Informationen
 - PowerShell-Versionsdetails
 - Git-Status und Update-Informationen
@@ -83,11 +89,13 @@ hellion-power-tool/
 ## 🚀 Verwendung
 
 ### Standard-Start
+
 ```batch
 launcher.bat
 ```
 
 ### Features
+
 1. **Automatische Ordnererstellung**
 2. **PowerShell-Erkennung und -Auswahl**
 3. **Config-System-Initialisierung**
@@ -98,12 +106,14 @@ launcher.bat
 ## 🔄 Auto-Update-System
 
 ### Funktionsweise
+
 1. **Git-Check**: Prüft auf verfügbare Updates
 2. **Backup**: Erstellt automatisch Backups vor Updates
 3. **Update**: Lädt neue Version herunter
 4. **Cleanup**: Bereinigt alte Backups (max. 10)
 
 ### Manuell deaktivieren
+
 ```json
 "auto_update": false
 ```
@@ -111,12 +121,14 @@ launcher.bat
 ## 📋 Logs
 
 ### Log-Dateien
+
 - **startup.log**: Launcher-Aktivitäten
 - **error.log**: Fehler und Warnungen  
 - **actions.log**: PowerShell-Script-Logs
 
 ### Log-Format
-```
+
+```text
 ================================================================
 HELLION LAUNCHER v7.0 Moon - START
 Zeitstempel: 07.09.2025 14:30:15
@@ -129,41 +141,48 @@ Build: 20250907
 ### Häufige Probleme
 
 **PowerShell nicht gefunden:**
-```
+
+```text
 [ERROR] Keine PowerShell-Version gefunden!
 LÖSUNG: Installieren Sie PowerShell 7 oder Windows PowerShell
 ```
 
 **Script nicht gefunden:**
-```
+
+```text
 [ERROR] Kein PowerShell-Script gefunden!  
 LÖSUNG: Laden Sie das Hellion Tool herunter
 ```
 
 **Git-Fehler:**
-```
+
+```text
 [WARNING] Git nicht verfügbar - Keine Updates möglich
 ```
 
 ## 🔧 Erweiterte Features
 
 ### Backup-System
+
 - Automatische Backups vor Updates
 - Zeitstempel-basierte Benennung
 - Automatische Bereinigung alter Backups
 
 ### Intelligente Script-Erkennung
+
 1. Sucht nach `hellion_tool_v70_moon.ps1`
 2. Fallback auf `hellion_tool_v*.ps1`
 3. Fehlerbehandlung bei fehlenden Scripts
 
 ### Log-Bereinigung
+
 - Automatisches Löschen von Logs älter als 30 Tage
 - Konfigurierbar über `settings.json`
 
 ## 📈 Version History
 
 ### v7.0 "Moon" (Aktuell)
+
 - ✅ Vollständiges Config-System
 - ✅ Auto-Update mit Git
 - ✅ Erweiterte Fehlerbehandlung  
@@ -171,10 +190,11 @@ LÖSUNG: Laden Sie das Hellion Tool herunter
 - ✅ Automatische Ordnerstruktur
 
 ### v6.5 "Monkey" (Alt)
+
 - Basic PowerShell-Erkennung
 - Einfacher Launcher
 
-## 🎯 Nächste Updates
+## 🎯 Geplante Features
 
 - [ ] GUI-Konfiguration
 - [ ] Update-Benachrichtigungen
@@ -184,5 +204,5 @@ LÖSUNG: Laden Sie das Hellion Tool herunter
 ---
 
 **Entwickelt von:** Hellion Online Media - Florian Wathling  
-**Website:** https://hellion-online-media.de  
-**Support:** support@hellion-online-media.de
+**Website:** [https://hellion-online-media.de](https://hellion-online-media.de)  
+**Support:** [support@hellion-online-media.de](mailto:support@hellion-online-media.de)

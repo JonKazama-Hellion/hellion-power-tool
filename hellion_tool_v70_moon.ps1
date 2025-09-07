@@ -1,23 +1,14 @@
 # ============================================================================
-#                   HELLION ONLINE MEDIA POWER TOOL v6.5 "MONKEY"
-#                          TEIL 1/2 - CORE SYSTEM
+#                   HELLION ONLINE MEDIA POWER TOOL v7 "Moon"
 # ============================================================================
 # 
 # Entwickelt von: Hellion Online Media - Florian Wathling
 # Erstellungsdatum: 07.09.2025
-# Version: 6.5 "Monkey" (Enhanced Edition)
+# Version: 7.0 "Moon" (Enhanced Edition)
 # Website: https://hellion-online-media.de
 # Support: support@hellion-online-media.de
-# 
-# CHANGELOG v6.5 "MONKEY":
-# - Winget vollständig in Auto-Modus integriert
-# - Verbesserte Treiber-Erkennung mit detaillierten Infos
-# - Enhanced Debug-Modus mit präzisen Fehlermeldungen
-# - Antiviren-Optimierungen für Bitdefender & Windows Defender
-# - Multi-Windows-Version Kompatibilität (Win 10/11/Server)
-# - Erweiterte Logging-Funktionalität
-# - Performance-Optimierungen
-# - Verbesserte Benutzerführung
+#
+# CHANGELOG v7.0 "MOON":
 # ============================================================================
 
 # Antiviren-freundlicher Startup mit Delay
@@ -29,8 +20,8 @@ Set-StrictMode -Version Latest
 $ProgressPreference = 'SilentlyContinue'
 
 # Globale Konfiguration
-$script:ToolVersion = "6.5"
-$script:ToolCodename = "Monkey"
+$script:ToolVersion = "7.0"
+$script:ToolCodename = "Moon"
 $script:ToolBuild = "20250907"
 
 # ============================================================================
@@ -116,8 +107,9 @@ function Test-SystemCompatibility {
 #                         GLOBALE VARIABLEN & KONFIGURATION
 # ============================================================================
 
-# Logging-System
-$script:LogPath = "$env:TEMP\Hellion_Tool_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
+# Verbessertes Logging-System
+$script:LogPath = "$PSScriptRoot\logs"
+$script:LogFile = "$script:LogPath\$(Get-Date -Format 'yyyy-MM-dd').log"
 $script:DetailedLogging = $false
 $script:LogBuffer = @()
 
@@ -142,46 +134,130 @@ $script:AVSafeMode = $true
 $script:AVDelayMs = 50
 
 # ============================================================================
-#                         ERWEITERTE LOGGING-FUNKTIONEN
+#                         VERBESSERTES LOGGING-SYSTEM
 # ============================================================================
+
+function Initialize-Logging {
+    # Log-Verzeichnis erstellen falls nicht vorhanden
+    if (-not (Test-Path $script:LogPath)) {
+        try {
+            New-Item -ItemType Directory -Path $script:LogPath -Force | Out-Null
+            Write-Host "[OK] Log-Verzeichnis erstellt: $script:LogPath" -ForegroundColor Green
+        } catch {
+            Write-Host "[WARNING] Log-Verzeichnis konnte nicht erstellt werden: $($_.Exception.Message)" -ForegroundColor Yellow
+            # Fallback zu TEMP-Verzeichnis
+            $script:LogPath = $env:TEMP
+            $script:LogFile = "$script:LogPath\Hellion_Tool_$(Get-Date -Format 'yyyy-MM-dd').log"
+        }
+    }
+    
+    # Startup-Log-Eintrag
+    Write-Log "=== Hellion Tool v$script:ToolVersion $script:ToolCodename gestartet ===" -Level "INFO"
+    Write-Log "System: $script:WindowsVersion Build $script:WindowsBuild" -Level "INFO"
+    Write-Log "Benutzer: $env:USERNAME@$env:COMPUTERNAME" -Level "INFO"
+    Write-Log "PowerShell: $($PSVersionTable.PSVersion.ToString())" -Level "INFO"
+    
+    # Alte Logs aufräumen
+    Clear-OldLogs
+}
 
 function Write-Log {
     param(
         [string]$Message,
         [string]$Level = "INFO",
         [ConsoleColor]$Color = "White",
-        [switch]$NoConsole
+        [switch]$NoConsole,
+        [switch]$NoFile
     )
     
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
     $logEntry = "[$timestamp] [$Level] $Message"
     
-    # In Log-Buffer schreiben
+    # In Log-Buffer schreiben (für späteren Abruf)
     $script:LogBuffer += $logEntry
     
-    # In Datei schreiben wenn DetailedLogging aktiv
-    if ($script:DetailedLogging) {
+    # Begrenzung des Log-Buffers auf 1000 Einträge
+    if ($script:LogBuffer.Count -gt 1000) {
+        $script:LogBuffer = $script:LogBuffer[-500..-1]
+    }
+    
+    # In Datei schreiben (immer aktiv im neuen System)
+    if (-not $NoFile) {
         try {
-            $logEntry | Out-File -FilePath $script:LogPath -Append -Encoding UTF8
+            $logEntry | Out-File -FilePath $script:LogFile -Append -Encoding UTF8 -ErrorAction SilentlyContinue
         } catch {
-            # Fehler beim Logging ignorieren
+            # Fehler beim Logging stillschweigend ignorieren
         }
     }
     
     # Konsolen-Ausgabe
     if (-not $NoConsole) {
         switch ($Level) {
-            "ERROR" { Write-Host $Message -ForegroundColor Red }
-            "WARNING" { Write-Host $Message -ForegroundColor Yellow }
-            "SUCCESS" { Write-Host $Message -ForegroundColor Green }
+            "ERROR" { 
+                Write-Host $Message -ForegroundColor Red 
+            }
+            "WARNING" { 
+                Write-Host $Message -ForegroundColor Yellow 
+            }
+            "SUCCESS" { 
+                Write-Host $Message -ForegroundColor Green 
+            }
             "DEBUG" { 
                 if ($script:ExplainMode) {
                     Write-Host "[DEBUG] $Message" -ForegroundColor DarkGray
                 }
             }
-            default { Write-Host $Message -ForegroundColor $Color }
+            "TRACE" {
+                if ($script:ExplainMode -and $script:DetailedLogging) {
+                    Write-Host "[TRACE] $Message" -ForegroundColor DarkMagenta
+                }
+            }
+            default { 
+                Write-Host $Message -ForegroundColor $Color 
+            }
         }
     }
+}
+
+function Clear-OldLogs {
+    try {
+        $logFiles = Get-ChildItem "$script:LogPath\*.log" -ErrorAction SilentlyContinue
+        $oldLogs = $logFiles | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30) }
+        
+        if ($oldLogs) {
+            $oldLogs | Remove-Item -Force -ErrorAction SilentlyContinue
+            Write-Log "Alte Logs bereinigt: $($oldLogs.Count) Dateien" -Level "DEBUG"
+        }
+        
+        # Zusätzlich: Sehr große Log-Dateien komprimieren (>10MB)
+        $largeLogs = $logFiles | Where-Object { $_.Length -gt 10MB }
+        foreach ($largeLog in $largeLogs) {
+            try {
+                $compressedName = $largeLog.FullName -replace '\.log$', '_compressed.zip'
+                Compress-Archive -Path $largeLog.FullName -DestinationPath $compressedName -Force
+                Remove-Item $largeLog.FullName -Force
+                Write-Log "Große Log-Datei komprimiert: $($largeLog.Name)" -Level "DEBUG"
+            } catch {
+                # Komprimierung fehlgeschlagen - ignorieren
+            }
+        }
+    } catch {
+        # Log-Bereinigung fehlgeschlagen - stillschweigend ignorieren
+    }
+}
+
+function Get-LogSummary {
+    $summary = @{
+        "LogFile" = $script:LogFile
+        "LogSize" = if (Test-Path $script:LogFile) { 
+            [math]::Round((Get-Item $script:LogFile).Length / 1KB, 2) 
+        } else { 0 }
+        "BufferEntries" = $script:LogBuffer.Count
+        "ErrorCount" = $script:Errors.Count
+        "WarningCount" = $script:Warnings.Count
+        "SuccessCount" = $script:SuccessActions.Count
+    }
+    return $summary
 }
 
 function Add-Error {
@@ -274,25 +350,56 @@ function Test-AntivirusStatus {
 function Show-DebugInfo {
     param(
         [string]$Context,
-        [hashtable]$Data = @{}
+        [hashtable]$Data = @{},
+        [string]$Level = "DEBUG"
     )
     
     if (-not $script:ExplainMode) { return }
     
-    Write-Host "`n[DEBUG] === $Context ===" -ForegroundColor DarkYellow
-    Write-Host "[DEBUG] Zeit: $(Get-Date -Format 'HH:mm:ss.fff')" -ForegroundColor DarkGray
+    Write-Log "`n=== $Context ===" -Level $Level
+    Write-Log "Zeit: $(Get-Date -Format 'HH:mm:ss.fff')" -Level $Level
     
     if ($Data.Count -gt 0) {
         foreach ($key in $Data.Keys) {
-            Write-Host "[DEBUG] $key : $($Data[$key])" -ForegroundColor DarkGray
+            Write-Log "$key : $($Data[$key])" -Level $Level
         }
     }
     
     # Stack-Trace bei Fehlern
     if ($Error.Count -gt 0 -and $script:DetailedLogging) {
-        Write-Host "[DEBUG] Letzter Fehler: $($Error[0].Exception.Message)" -ForegroundColor DarkRed
-        Write-Host "[DEBUG] Position: $($Error[0].InvocationInfo.PositionMessage)" -ForegroundColor DarkRed
+        Write-Log "Letzter Fehler: $($Error[0].Exception.Message)" -Level "ERROR"
+        Write-Log "Position: $($Error[0].InvocationInfo.PositionMessage)" -Level "ERROR"
+        
+        # Vollständiger Stack-Trace nur in TRACE-Level
+        Write-Log "Stack-Trace: $($Error[0].ScriptStackTrace)" -Level "TRACE"
     }
+    
+    # Speicher-Info im Debug-Modus
+    if ($script:DetailedLogging) {
+        $memInfo = Get-Process -Id $PID | Select-Object WorkingSet, PagedMemorySize
+        Write-Log "Speicherverbrauch: $([math]::Round($memInfo.WorkingSet / 1MB, 1)) MB" -Level "TRACE"
+    }
+}
+
+function Write-DebugVar {
+    param(
+        [string]$VariableName,
+        [object]$VariableValue,
+        [string]$Context = ""
+    )
+    
+    if (-not $script:ExplainMode) { return }
+    
+    $contextPrefix = if ($Context) { "[$Context] " } else { "" }
+    $valueText = if ($VariableValue -is [array]) { 
+        "$($VariableValue.Count) Elemente" 
+    } elseif ($VariableValue -is [hashtable]) {
+        "$($VariableValue.Count) Schlüssel"
+    } else { 
+        "$VariableValue" 
+    }
+    
+    Write-Log "$contextPrefix$VariableName = $valueText" -Level "DEBUG"
 }
 
 function Test-CommandAvailability {
@@ -783,6 +890,9 @@ Start-Sleep -Milliseconds 500
 Write-Log "[*] Pruefe System-Kompatibilitaet..." -Color Yellow
 Test-SystemCompatibility
 
+# Logging-System initialisieren
+Initialize-Logging
+
 # Debug-Modus Abfrage
 Write-Host "`n[CONFIG] DEBUG-MODUS EINSTELLUNGEN:" -ForegroundColor Cyan
 Write-Host "Der Debug-Modus zeigt erweiterte technische Details und Fehlermeldungen." -ForegroundColor White
@@ -805,7 +915,7 @@ switch ($debugChoice) {
         $script:VisualMode = $true
         $script:DetailedLogging = $true
         Write-Log "[OK] Vollstaendiges Logging aktiviert" -Level "SUCCESS"
-        Write-Log "[INFO] Log-Datei: $script:LogPath" -Color Cyan
+        Write-Log "[INFO] Log-Datei: $script:LogFile" -Color Cyan
     }
     default {
         $script:ExplainMode = $false
@@ -818,7 +928,7 @@ switch ($debugChoice) {
 Test-AntivirusStatus
 
 # System-Informationen sammeln
-$systemInfo = Get-DetailedSystemInfo
+Get-DetailedSystemInfo | Out-Null
 
 Write-Log "`n[OK] System-Initialisierung abgeschlossen!" -Level "SUCCESS"
 Start-Sleep -Milliseconds 500
@@ -840,31 +950,35 @@ function Invoke-SystemFileChecker {
     Write-Log "[*] Starte System File Checker..." -Color Green
     
     try {
-        # Temporäre Dateien für Ausgabe
-        $sfcLog = "$env:TEMP\sfc_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
+        Write-Log "[*] Starte SFC /scannow - Dies kann 10-15 Minuten dauern..." -Color Blue
         
-        $sfcProcess = Start-Process -FilePath "sfc.exe" -ArgumentList "/scannow" `
-            -NoNewWindow -PassThru -RedirectStandardOutput $sfcLog `
-            -Wait -ErrorAction Stop
+        # SFC direkt ausführen und Ausgabe erfassen
+        $sfcResult = & sfc.exe /scannow 2>&1 | Out-String
         
-        # Log analysieren
-        $logContent = Get-Content $sfcLog -Raw -ErrorAction SilentlyContinue
+        # Exit-Code prüfen
+        $sfcExitCode = $LASTEXITCODE
         
-        if ($logContent -match "found corrupt files and successfully repaired") {
+        # Ausgabe analysieren
+        if ($sfcResult -match "found corrupt files and successfully repaired" -or $sfcResult -match "repariert") {
             Add-Success "SFC: Beschaedigte Dateien wurden repariert"
             Write-Log "[*] Ein Neustart wird empfohlen" -Level "WARNING"
             $script:UpdateRecommendations += "Neustart nach SFC-Reparatur empfohlen"
             return $true
-        } elseif ($logContent -match "did not find any integrity violations") {
+        } elseif ($sfcResult -match "did not find any integrity violations" -or $sfcResult -match "keine Integritätsverletzungen" -or $sfcExitCode -eq 0) {
             Add-Success "SFC: Keine Probleme gefunden"
             return $true
-        } elseif ($logContent -match "unable to fix") {
+        } elseif ($sfcResult -match "unable to fix" -or $sfcResult -match "konnte nicht repariert werden") {
             Add-Warning "SFC konnte nicht alle Probleme beheben - DISM empfohlen"
             $script:UpdateRecommendations += "DISM-Reparatur empfohlen"
             return $false
         } else {
-            Add-Warning "SFC-Status unklar - Log pruefen: $sfcLog"
-            return $false
+            # Debug-Info bei unklarem Status
+            if ($script:ExplainMode) {
+                Write-Log "[DEBUG] SFC Ausgabe: $($sfcResult.Substring(0, [Math]::Min(200, $sfcResult.Length)))" -Level "DEBUG"
+                Write-Log "[DEBUG] Exit Code: $sfcExitCode" -Level "DEBUG"
+            }
+            Add-Warning "SFC abgeschlossen - Status pruefen Sie das Windows-System-Log"
+            return $true
         }
         
     } catch {
@@ -889,9 +1003,16 @@ function Invoke-DISMRepair {
     try {
         # Phase 1: CheckHealth
         Write-Log "[1/3] DISM CheckHealth..." -Color Blue
-        $checkResult = & DISM /Online /Cleanup-Image /CheckHealth 2>&1 | Out-String
         
-        if ($checkResult -match "No component store corruption") {
+        $checkLogFile = "$env:TEMP\dism_check_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
+        $checkProcess = Start-Process "DISM.exe" -ArgumentList "/Online", "/Cleanup-Image", "/CheckHealth" `
+            -Verb RunAs -Wait -PassThru -RedirectStandardOutput $checkLogFile `
+            -WindowStyle Hidden -ErrorAction Stop
+        
+        $checkResult = Get-Content $checkLogFile -Raw -ErrorAction SilentlyContinue
+        Remove-Item $checkLogFile -Force -ErrorAction SilentlyContinue
+        
+        if ($checkResult -match "No component store corruption" -or $checkProcess.ExitCode -eq 0) {
             Write-Log "[OK] Keine Korruption erkannt" -Level "SUCCESS"
         } else {
             Write-Log "[WARNING] Moegliche Korruption erkannt" -Level "WARNING"
@@ -899,9 +1020,16 @@ function Invoke-DISMRepair {
         
         # Phase 2: ScanHealth
         Write-Log "[2/3] DISM ScanHealth (5-10 Min)..." -Color Blue
-        $scanResult = & DISM /Online /Cleanup-Image /ScanHealth 2>&1 | Out-String
         
-        $needsRepair = $scanResult -match "repairable"
+        $scanLogFile = "$env:TEMP\dism_scan_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
+        $scanProcess = Start-Process "DISM.exe" -ArgumentList "/Online", "/Cleanup-Image", "/ScanHealth" `
+            -Verb RunAs -Wait -PassThru -RedirectStandardOutput $scanLogFile `
+            -WindowStyle Hidden -ErrorAction Stop
+        
+        $scanResult = Get-Content $scanLogFile -Raw -ErrorAction SilentlyContinue
+        Remove-Item $scanLogFile -Force -ErrorAction SilentlyContinue
+        
+        $needsRepair = ($scanResult -match "repairable" -or $scanProcess.ExitCode -ne 0)
         
         if ($needsRepair) {
             Write-Log "[WARNING] Reparatur erforderlich" -Level "WARNING"
@@ -911,13 +1039,30 @@ function Invoke-DISMRepair {
             
             $repairChoice = Read-Host "Reparatur durchfuehren? [j/n]"
             if ($repairChoice -eq 'j' -or $repairChoice -eq 'J') {
-                $restoreResult = & DISM /Online /Cleanup-Image /RestoreHealth 2>&1 | Out-String
+                $restoreLogFile = "$env:TEMP\dism_restore_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
                 
-                if ($restoreResult -match "successfully") {
+                Write-Log "[*] DISM RestoreHealth wird ausgefuehrt..." -Color Yellow
+                $restoreProcess = Start-Process "DISM.exe" -ArgumentList "/Online", "/Cleanup-Image", "/RestoreHealth" `
+                    -Verb RunAs -Wait -PassThru -RedirectStandardOutput $restoreLogFile `
+                    -WindowStyle Hidden -ErrorAction Stop
+                
+                $restoreResult = Get-Content $restoreLogFile -Raw -ErrorAction SilentlyContinue
+                
+                # Debug-Info im Debug-Modus
+                if ($script:ExplainMode -and $restoreResult) {
+                    Write-Log "[DEBUG] DISM RestoreHealth Exit Code: $($restoreProcess.ExitCode)" -Level "DEBUG"
+                    Write-Log "[DEBUG] DISM Output (erste 300 Zeichen): $($restoreResult.Substring(0, [Math]::Min(300, $restoreResult.Length)))" -Level "DEBUG"
+                }
+                
+                Remove-Item $restoreLogFile -Force -ErrorAction SilentlyContinue
+                
+                if ($restoreResult -match "successfully" -or $restoreProcess.ExitCode -eq 0) {
                     Add-Success "DISM: System erfolgreich repariert"
+                    Write-Log "[*] Ein Neustart wird empfohlen" -Level "WARNING"
+                    $script:UpdateRecommendations += "Neustart nach DISM-Reparatur empfohlen"
                     return $true
                 } else {
-                    Add-Warning "DISM: Reparatur moeglicherweise unvollstaendig"
+                    Add-Warning "DISM: Reparatur moeglicherweise unvollstaendig (Exit Code: $($restoreProcess.ExitCode))"
                     return $false
                 }
             }
@@ -932,13 +1077,144 @@ function Invoke-DISMRepair {
     }
 }
 
+function Invoke-CheckDisk {
+    Write-Log "`n[*] --- CHECKDISK (CHKDSK) LAUFWERKS-PRÜFUNG ---" -Color Cyan
+    Write-Log "Prueft und repariert Dateisystem-Fehler auf Laufwerken" -Color Yellow
+    
+    # Verfügbare Laufwerke anzeigen
+    Write-Log "`n[*] Verfuegbare Laufwerke:" -Color Blue
+    $drives = Get-WmiObject -Class Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
+    $driveIndex = 1
+    
+    foreach ($drive in $drives) {
+        $driveLetter = $drive.DeviceID
+        $freeSpace = [math]::Round($drive.FreeSpace / 1GB, 2)
+        $totalSpace = [math]::Round($drive.Size / 1GB, 2)
+        $usedPercent = [math]::Round((($totalSpace - $freeSpace) / $totalSpace) * 100, 1)
+        
+        Write-Host "  [$driveIndex] $driveLetter ($totalSpace GB, $usedPercent% belegt)" -ForegroundColor White
+        $driveIndex++
+    }
+    
+    Write-Host "`n[WARNUNG] Checkdisk kann bei Systemplatte einen Neustart erfordern!" -ForegroundColor Yellow
+    Write-Host "[INFO] Nur-Lesen-Modus wird zuerst versucht" -ForegroundColor Gray
+    
+    $driveChoice = Read-Host "`nLaufwerk waehlen [1-$($drives.Count)] oder [x] zum Abbrechen"
+    
+    if ($driveChoice -eq 'x' -or $driveChoice -eq 'X') {
+        Write-Log "[SKIP] Checkdisk abgebrochen" -Color Gray
+        return $false
+    }
+    
+    try {
+        $selectedIndex = [int]$driveChoice - 1
+        if ($selectedIndex -lt 0 -or $selectedIndex -ge $drives.Count) {
+            throw "Ungueltige Auswahl"
+        }
+        
+        $selectedDrive = $drives[$selectedIndex]
+        $driveLetter = $selectedDrive.DeviceID.TrimEnd(':')
+        
+        Write-Log "[*] Gewaehlt: Laufwerk $driveLetter" -Color Cyan
+        
+        # Checkdisk-Optionen
+        Write-Host "`n[*] CHECKDISK OPTIONEN:" -ForegroundColor Cyan
+        Write-Host "  [1] Nur pruefen (Nur-Lesen, empfohlen)" -ForegroundColor Green
+        Write-Host "  [2] Pruefen und reparieren (/f)" -ForegroundColor Yellow
+        Write-Host "  [3] Vollstaendige Pruefung (/f /r)" -ForegroundColor Red
+        
+        $modeChoice = Read-Host "`nModus waehlen [1-3]"
+        
+        $chkdskArgs = ""
+        $description = ""
+        
+        switch ($modeChoice) {
+            '1' {
+                $chkdskArgs = "${driveLetter}:"
+                $description = "Nur-Lesen Pruefung"
+            }
+            '2' {
+                $chkdskArgs = "${driveLetter}: /f"
+                $description = "Pruefung und Reparatur"
+                Write-Host "[WARNUNG] Reparatur-Modus kann Datenverlust verursachen!" -ForegroundColor Red
+                $confirm = Read-Host "Fortfahren? [j/n]"
+                if ($confirm -ne 'j' -and $confirm -ne 'J') {
+                    Write-Log "[SKIP] Checkdisk abgebrochen" -Color Gray
+                    return $false
+                }
+            }
+            '3' {
+                $chkdskArgs = "${driveLetter}: /f /r"
+                $description = "Vollstaendige Pruefung und Reparatur"
+                Write-Host "[WARNUNG] Vollstaendige Pruefung kann STUNDEN dauern!" -ForegroundColor Red
+                Write-Host "[WARNUNG] Reparatur-Modus kann Datenverlust verursachen!" -ForegroundColor Red
+                $confirm = Read-Host "Wirklich fortfahren? [j/n]"
+                if ($confirm -ne 'j' -and $confirm -ne 'J') {
+                    Write-Log "[SKIP] Checkdisk abgebrochen" -Color Gray
+                    return $false
+                }
+            }
+            default {
+                Write-Log "[ERROR] Ungueltige Auswahl" -Level "ERROR"
+                return $false
+            }
+        }
+        
+        Write-Log "[*] Starte Checkdisk: $description" -Color Blue
+        Write-Log "[*] Parameter: chkdsk $chkdskArgs" -Color Gray
+        
+        # Checkdisk ausführen
+        $chkdskResult = & chkdsk $chkdskArgs.Split(' ') 2>&1 | Out-String
+        $chkdskExitCode = $LASTEXITCODE
+        
+        # Ergebnis auswerten
+        if ($chkdskResult -match "errors found" -or $chkdskResult -match "Fehler gefunden") {
+            if ($chkdskResult -match "fixed" -or $chkdskResult -match "repariert") {
+                Add-Success "Checkdisk: Fehler gefunden und repariert"
+                Write-Log "[*] Ein Neustart kann erforderlich sein" -Level "WARNING"
+                $script:UpdateRecommendations += "Neustart nach Checkdisk-Reparatur empfohlen"
+            } else {
+                Add-Warning "Checkdisk: Fehler gefunden - Reparatur-Modus empfohlen"
+                $script:UpdateRecommendations += "Checkdisk mit Reparatur-Option ausfuehren"
+            }
+        } elseif ($chkdskResult -match "no problems found" -or $chkdskResult -match "keine Probleme" -or $chkdskExitCode -eq 0) {
+            Add-Success "Checkdisk: Keine Probleme gefunden"
+        } elseif ($chkdskResult -match "scheduled" -or $chkdskResult -match "geplant") {
+            Add-Success "Checkdisk: Für nächsten Neustart geplant"
+            Write-Log "[*] Checkdisk wird beim nächsten Neustart ausgeführt" -Level "WARNING"
+            $script:UpdateRecommendations += "Neustart für geplante Checkdisk-Prüfung erforderlich"
+        } else {
+            # Debug-Info bei unklarem Status
+            if ($script:ExplainMode) {
+                Write-Log "[DEBUG] Checkdisk Ausgabe: $($chkdskResult.Substring(0, [Math]::Min(300, $chkdskResult.Length)))" -Level "DEBUG"
+                Write-Log "[DEBUG] Exit Code: $chkdskExitCode" -Level "DEBUG"
+            }
+            Add-Warning "Checkdisk abgeschlossen - Details im Event-Log prüfen"
+        }
+        
+        # Vollständige Ausgabe im Debug-Modus anzeigen
+        if ($script:ExplainMode) {
+            Write-Log "`n[DEBUG] Vollstaendige Checkdisk-Ausgabe:" -Level "DEBUG"
+            $chkdskResult.Split("`n") | Select-Object -First 20 | ForEach-Object {
+                Write-Log "  $_" -Level "DEBUG"
+            }
+        }
+        
+        return $true
+        
+    } catch {
+        Add-Error "Checkdisk fehlgeschlagen" $_.Exception.Message
+        return $false
+    }
+}
+
 # ============================================================================
 #                         ERWEITERTE WINGET-INTEGRATION
 # ============================================================================
 
 function Test-WingetAvailability {
     try {
-        $wingetPath = Get-Command winget -ErrorAction Stop
+        Get-Command winget -ErrorAction Stop | Out-Null
         $wingetVersion = & winget --version 2>$null
         
         if ($LASTEXITCODE -eq 0) {
@@ -1107,7 +1383,7 @@ function Install-WingetUpdates {
                     Write-Log "[*] Update: $($update.Name)..." -Color Blue
                     
                     $updateCmd = "winget upgrade --id `"$($update.Id)`" --silent --accept-source-agreements --accept-package-agreements"
-                    $result = & cmd /c $updateCmd 2>&1
+                    & cmd /c $updateCmd 2>&1 | Out-Null
                     
                     if ($LASTEXITCODE -eq 0) {
                         Write-Log "  [OK] $($update.Name) aktualisiert" -Color Green
@@ -1402,7 +1678,7 @@ function Optimize-SystemPerformance {
 #                         WIEDERHERSTELLUNGSPUNKT
 # ============================================================================
 
-function Create-SystemRestorePoint {
+function New-SystemRestorePoint {
     param([string]$Description = "Hellion Tool v$script:ToolVersion")
     
     Write-Log "`n[*] --- WIEDERHERSTELLUNGSPUNKT ---" -Color Cyan
@@ -1473,7 +1749,7 @@ function Invoke-EnhancedAutoMode {
     $currentStep++
     Write-Log "`n[$currentStep/$totalSteps] Wiederherstellungspunkt..." -Color Blue
     Show-ProgressBar -Activity "Auto-Modus" -PercentComplete ([int](($currentStep/$totalSteps)*100))
-    Create-SystemRestorePoint -Description "Auto-Modus Start"
+    New-SystemRestorePoint -Description "Auto-Modus Start"
     $script:ActionsPerformed += "Wiederherstellungspunkt"
     
     # Schritt 2: System File Checker
@@ -1484,7 +1760,7 @@ function Invoke-EnhancedAutoMode {
     try {
         Write-Log "[*] Starte SFC im Hintergrund..." -Color Green
         $sfcProcess = Start-Process -FilePath "sfc.exe" -ArgumentList "/scannow" `
-            -NoNewWindow -PassThru -WindowStyle Hidden
+            -NoNewWindow -PassThru
         
         # Warte maximal 10 Minuten
         $sfcTimeout = 600
@@ -1599,12 +1875,13 @@ function Show-MainMenu {
     Write-Host "`n  [*] SYSTEM-REPARATUR:" -ForegroundColor Yellow
     Write-Host "     [1] System File Checker (SFC)" -ForegroundColor White
     Write-Host "     [2] DISM Reparatur" -ForegroundColor White
-    Write-Host "     [3] Treiber-Analyse" -ForegroundColor White
+    Write-Host "     [3] Checkdisk (CHKDSK)" -ForegroundColor White
+    Write-Host "     [4] Treiber-Analyse" -ForegroundColor White
     
     Write-Host "`n  [*] BEREINIGUNG & OPTIMIERUNG:" -ForegroundColor Yellow
-    Write-Host "     [4] Erweiterte Bereinigung" -ForegroundColor White
-    Write-Host "     [5] Performance-Optimierung" -ForegroundColor White
-    Write-Host "     [6] Laufwerks-Optimierung" -ForegroundColor White
+    Write-Host "     [5] Erweiterte Bereinigung" -ForegroundColor White
+    Write-Host "     [6] Performance-Optimierung" -ForegroundColor White
+    Write-Host "     [7] Laufwerks-Optimierung" -ForegroundColor White
     
     Write-Host "`n  [*] TOOLS:" -ForegroundColor Blue
     Write-Host "     [R] System-Report generieren" -ForegroundColor Cyan
@@ -1614,7 +1891,7 @@ function Show-MainMenu {
     Write-Host "`n================================================================" -ForegroundColor Cyan
 }
 
-function Process-MenuChoice {
+function Invoke-MenuChoice {
     param([string]$Choice)
     
     switch ($Choice.ToUpper()) {
@@ -1648,32 +1925,51 @@ function Process-MenuChoice {
             Read-Host "`nEnter druecken"
         }
         '3' {
+            Invoke-CheckDisk
+            $script:ActionsPerformed += "Checkdisk"
+            Read-Host "`nEnter druecken"
+        }
+        '4' {
             Get-DetailedDriverStatus
             $script:ActionsPerformed += "Treiber-Analyse"
             Read-Host "`nEnter druecken"
         }
-        '4' {
+        '5' {
             Invoke-ComprehensiveCleanup
             $script:ActionsPerformed += "Erweiterte Bereinigung"
             Read-Host "`nEnter druecken"
         }
-        '5' {
+        '6' {
             Optimize-SystemPerformance
             $script:ActionsPerformed += "Performance-Optimierung"
             Read-Host "`nEnter druecken"
         }
-        '6' {
+        '7' {
             # Laufwerks-Optimierung würde hier implementiert
             Write-Log "[INFO] Funktion in Entwicklung" -Color Yellow
             Read-Host "`nEnter druecken"
         }
         'R' {
-            Generate-DetailedSystemReport
+            New-DetailedSystemReport
             Read-Host "`nEnter druecken"
         }
         'L' {
-            if (Test-Path $script:LogPath) {
-                Start-Process notepad.exe $script:LogPath
+            # Log-Zusammenfassung anzeigen
+            $logSummary = Get-LogSummary
+            Write-Host "`n[LOG-SUMMARY]" -ForegroundColor Cyan
+            Write-Host "Log-Datei: $($logSummary.LogFile)" -ForegroundColor White
+            Write-Host "Größe: $($logSummary.LogSize) KB" -ForegroundColor White
+            Write-Host "Buffer-Einträge: $($logSummary.BufferEntries)" -ForegroundColor White
+            Write-Host "Fehler: $($logSummary.ErrorCount)" -ForegroundColor Red
+            Write-Host "Warnungen: $($logSummary.WarningCount)" -ForegroundColor Yellow
+            Write-Host "Erfolge: $($logSummary.SuccessCount)" -ForegroundColor Green
+            
+            # Log-Datei öffnen
+            if (Test-Path $script:LogFile) {
+                $openChoice = Read-Host "`nLog-Datei öffnen? [j/n]"
+                if ($openChoice -eq 'j' -or $openChoice -eq 'J') {
+                    Start-Process notepad.exe $script:LogFile
+                }
             } else {
                 Write-Log "[INFO] Keine Log-Datei vorhanden" -Color Yellow
             }
@@ -1694,7 +1990,7 @@ function Process-MenuChoice {
 #                         REPORT-GENERATOR
 # ============================================================================
 
-function Generate-DetailedSystemReport {
+function New-DetailedSystemReport {
     Write-Log "`n[*] --- SYSTEM-REPORT GENERATOR ---" -Color Cyan
     
     $reportPath = "$env:USERPROFILE\Desktop\Hellion_Report_$(Get-Date -Format 'yyyyMMdd_HHmmss').txt"
@@ -1851,7 +2147,7 @@ if ($autoChoice -eq 'j' -or $autoChoice -eq 'J') {
 while ($continueRunning) {
     Show-MainMenu
     $userChoice = Read-Host "`n[*] Ihre Wahl"
-    $continueRunning = Process-MenuChoice -Choice $userChoice
+    $continueRunning = Invoke-MenuChoice -Choice $userChoice
 }
 
 # ============================================================================
@@ -1918,12 +2214,18 @@ Write-Host ("=" * 60) -ForegroundColor Green
 # Report-Option
 $saveReport = Read-Host "`n[*] Abschluss-Report speichern? [j/n]"
 if ($saveReport -eq 'j' -or $saveReport -eq 'J') {
-    Generate-DetailedSystemReport
+    New-DetailedSystemReport
 }
 
-# Cleanup
-if ($script:DetailedLogging) {
-    Write-Log "`n[*] Log gespeichert: $script:LogPath" -Color Cyan
+# Log-Zusammenfassung
+$finalLogSummary = Get-LogSummary
+Write-Log "`n[*] Log gespeichert: $($finalLogSummary.LogFile)" -Color Cyan
+Write-Log "[*] Log-Größe: $($finalLogSummary.LogSize) KB" -Color Gray
+if ($finalLogSummary.ErrorCount -gt 0) {
+    Write-Log "[*] Fehler protokolliert: $($finalLogSummary.ErrorCount)" -Color Red
+}
+if ($finalLogSummary.WarningCount -gt 0) {
+    Write-Log "[*] Warnungen protokolliert: $($finalLogSummary.WarningCount)" -Color Yellow
 }
 
 Write-Host "`n[*] Enter zum Beenden..." -ForegroundColor Yellow

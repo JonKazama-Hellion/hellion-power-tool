@@ -11,6 +11,7 @@ logs/
 temp/
 *.tmp
 *.temp
+*.claude
 
 # ================================================================
 # BACKUPS (Optional - können auch eingecheckt werden)
@@ -18,13 +19,15 @@ temp/
 backups/
 
 # ================================================================
-# BENUTZER-SPEZIFISCHE KONFIGURATION
+# BENUTZER-SPEZIFISCHE KONFIGURATION - User bekommen Updates!
 # ================================================================
-config/settings.json
-config/version.txt
+# Nur User-spezifische Logs und temporäre Änderungen ignorieren
+config/user_overrides.json
 
-# Aber repository.txt BEHALTEN für Auto-Updates
-!config/repository.txt
+# WICHTIGE CONFIG-DATEIEN WERDEN COMMITTET für Updates:
+# - config/settings.json (Standard-Einstellungen + neue Features)
+# - config/version.txt (Versionsinformationen)
+# - config/repository.txt (Git-Repository URL)
 
 # ================================================================
 # WINDOWS/SYSTEM DATEIEN

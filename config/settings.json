@@ -1,0 +1,53 @@
+{
+  "version": "7.0",
+  "codename": "Moon",
+  "debug_mode": false,
+  "auto_update": true,
+  "log_level": "INFO",
+  "max_backups": 10,
+  "startup_check": true,
+  "repository_url": "https://github.com/hellion-online-media/hellion-power-tool.git",
+  "script_name": "hellion_tool_v70_moon.ps1",
+  "last_update_check": "",
+  "launcher": {
+    "version": "7.0",
+    "codename": "Moon",
+    "auto_folder_creation": true,
+    "log_cleanup_days": 30,
+    "backup_cleanup_count": 10
+  },
+  "powershell": {
+    "prefer_pwsh": true,
+    "execution_policy": "Bypass",
+    "no_profile": true
+  },
+  "user_settings": {
+    "explain_mode": false,
+    "visual_mode": false,
+    "detailed_logging": false,
+    "auto_approve_cleanup": false
+  },
+  "features": {
+    "sfc_enabled": true,
+    "dism_enabled": true,
+    "checkdisk_enabled": true,
+    "winget_enabled": true,
+    "system_restore": true,
+    "driver_analysis": true
+  },
+  "paths": {
+    "logs_dir": "logs",
+    "backups_dir": "backups",
+    "temp_dir": "temp",
+    "old_versions_dir": "old-versions",
+    "config_dir": "config"
+  },
+  "logging": {
+    "startup_log": true,
+    "error_log": true,
+    "debug_log": false,
+    "trace_log": false,
+    "max_log_size_mb": 50,
+    "log_rotation": true
+  }
+}
