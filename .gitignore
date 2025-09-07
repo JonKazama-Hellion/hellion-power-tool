@@ -23,6 +23,8 @@ backups/
 # ================================================================
 # Nur User-spezifische Logs und temporäre Änderungen ignorieren
 config/user_overrides.json
+config/last_run.txt
+config/last_reminder.txt
 
 # WICHTIGE CONFIG-DATEIEN WERDEN COMMITTET für Updates:
 # - config/settings.json (Standard-Einstellungen + neue Features)

@@ -4,7 +4,7 @@
 # 
 # Entwickelt von: Hellion Online Media - Florian Wathling
 # Erstellungsdatum: 07.09.2025
-# Version: 7.0 "Moon" (Enhanced Edition)
+# Version: 7.0.1 "Moon-Bugfix" (Enhanced Edition)
 # Website: https://hellion-online-media.de
 # Support: support@hellion-online-media.de
 #
@@ -20,8 +20,8 @@ Set-StrictMode -Version Latest
 $ProgressPreference = 'SilentlyContinue'
 
 # Globale Konfiguration
-$script:ToolVersion = "7.0"
-$script:ToolCodename = "Moon"
+$script:ToolVersion = "7.0.1"
+$script:ToolCodename = "Moon-Bugfix"
 $script:ToolBuild = "20250907"
 
 # ============================================================================
@@ -57,6 +57,18 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
         
         $arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`""
         Start-Process -FilePath "powershell.exe" -ArgumentList $arguments -Verb RunAs -ErrorAction Stop
+        
+        # Signal-Datei für Launcher erstellen
+        $signalFile = Join-Path $PSScriptRoot "temp\uac_restart.signal"
+        if (-not (Test-Path (Split-Path $signalFile))) {
+            New-Item -ItemType Directory -Path (Split-Path $signalFile) -Force | Out-Null
+        }
+        "UAC_RESTART" | Out-File -FilePath $signalFile -Encoding UTF8
+        
+        # Original-Fenster schließen nach erfolgreichem Start
+        Write-Host "Neues Admin-Fenster wird geoeffnet..." -ForegroundColor Green
+        Start-Sleep -Milliseconds 500
+        [Environment]::Exit(0)
     }
     catch {
         Write-Host "FEHLER: Admin-Rechte konnten nicht angefordert werden." -ForegroundColor Red
@@ -64,8 +76,14 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
         Write-Host ""
         Write-Host "LOESUNG: Rechtsklick auf die Datei -> 'Als Administrator ausfuehren'" -ForegroundColor Cyan
         Read-Host "Enter zum Beenden"
+        [Environment]::Exit(1)
     }
-    exit
+}
+
+# UAC-Restart Signal-Datei löschen falls vorhanden
+$signalFile = Join-Path $PSScriptRoot "temp\uac_restart.signal"
+if (Test-Path $signalFile) {
+    Remove-Item $signalFile -Force -ErrorAction SilentlyContinue
 }
 
 Write-Host "[OK] Administrator-Rechte bestaetigt!" -ForegroundColor Green
@@ -1310,6 +1328,22 @@ function Install-WingetUpdates {
     
     if ($All) {
         Write-Log "[*] Installiere ALLE Updates (inkl. Unbekannte)..." -Color Green
+        Write-Host ""
+        Write-Host "================================================================" -ForegroundColor Yellow
+        Write-Host "                    WINGET MASS-UPDATE WARNUNG" -ForegroundColor Yellow
+        Write-Host "================================================================" -ForegroundColor Yellow
+        Write-Host "WICHTIG: Winget wird jetzt alle verfuegbaren Updates installieren." -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "BEACHTEN SIE:" -ForegroundColor Red
+        Write-Host "• Dieser Prozess kann 30-90 Minuten dauern (je nach Anzahl Updates)" -ForegroundColor Yellow
+        Write-Host "• Einige Programme oeffnen Fenster die Benutzer-Eingaben benoetigen" -ForegroundColor Yellow
+        Write-Host "• Waehrend des Updates koennen Hintergrund-Fenster erscheinen" -ForegroundColor Yellow
+        Write-Host "• Lassen Sie das Tool laufen und pruefen Sie gelegentlich Fenster" -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "Das Tool zeigt jetzt kontinuierlich den Fortschritt an..." -ForegroundColor Green
+        Write-Host "================================================================" -ForegroundColor Yellow
+        Write-Host ""
+        Start-Sleep -Seconds 5
         
         try {
             # Verwende --all mit allen notwendigen Flags
@@ -1320,29 +1354,100 @@ function Install-WingetUpdates {
             
             Write-Log "[*] Fuehre aus: $updateCmd" -Level "DEBUG"
             
+            # Finale Info vor dem Start
+            Write-Host "================================================================" -ForegroundColor Cyan
+            Write-Host "                    📦 WINGET-UPDATES STARTEN" -ForegroundColor Cyan  
+            Write-Host "================================================================" -ForegroundColor Cyan
+            Write-Host "Bereit für den automatischen Update-Prozess!" -ForegroundColor Green
+            Write-Host ""
+            Write-Host "Wichtiger Hinweis:" -ForegroundColor Yellow
+            Write-Host "• Einige Programme oeffnen waehrend der Installation Fenster" -ForegroundColor White
+            Write-Host "• Diese koennen hinter dem PowerShell-Fenster erscheinen" -ForegroundColor White
+            Write-Host "• Falls Updates langsam werden: Alt+Tab pruefen" -ForegroundColor White
+            Write-Host "• Taskleiste nach blinkenden Icons absuchen" -ForegroundColor White
+            Write-Host ""
+            Write-Host "Tipp: Bleiben Sie in der Nähe für optimale Ergebnisse! 👍" -ForegroundColor Green
+            Write-Host ""
+            Write-Host "Start in 5 Sekunden..." -ForegroundColor Cyan
+            Write-Host "================================================================" -ForegroundColor Cyan
+            
+            # 5 Sekunden Countdown  
+            for ($i = 5; $i -gt 0; $i--) {
+                Write-Host "`r⏳ Winget startet in $i... (Strg+C = Abbrechen)" -NoNewline -ForegroundColor Cyan
+                Start-Sleep -Seconds 1
+            }
+            Write-Host "`n🚀 Winget wird gestartet!" -ForegroundColor Green
+            Write-Host ""
+            
             $updateProcess = Start-Process -FilePath "cmd.exe" -ArgumentList "/c $updateCmd" `
                 -NoNewWindow -PassThru -RedirectStandardOutput "$env:TEMP\winget_all.log" `
                 -RedirectStandardError "$env:TEMP\winget_all_error.log"
             
-            # Fortschrittsanzeige
+            # Erweiterte Fortschrittsanzeige
             $startTime = Get-Date
+            $lastLogCheck = Get-Date
+            $progressCounter = 0
+            
             while (-not $updateProcess.HasExited) {
                 $elapsed = [math]::Round(((Get-Date) - $startTime).TotalSeconds)
-                Write-Host "`r[*] Updates laufen... ($elapsed Sek)" -NoNewline -ForegroundColor Yellow
+                $minutes = [math]::Floor($elapsed / 60)
+                $seconds = $elapsed % 60
+                
+                # Fortschritts-Animation
+                $progressChars = @('|', '/', '-', '\')
+                $progressChar = $progressChars[$progressCounter % 4]
+                $progressCounter++
+                
+                # Zeige erweiterte Info
+                Write-Host ("`r[{0}] Winget-Updates laufen... Zeit: {1:D2}:{2:D2} | Pruefe Logs..." -f $progressChar, $minutes, $seconds) -NoNewline -ForegroundColor Yellow
+                
+                # Log-Parsing alle 10 Sekunden für bessere Info
+                if (((Get-Date) - $lastLogCheck).TotalSeconds -gt 10) {
+                    $lastLogCheck = Get-Date
+                    if (Test-Path "$env:TEMP\winget_all.log") {
+                        $logContent = Get-Content "$env:TEMP\winget_all.log" -Tail 3 -ErrorAction SilentlyContinue
+                        if ($logContent) {
+                            $lastLine = $logContent[-1]
+                            if ($lastLine -match "Installing|Downloading|Upgrading") {
+                                Write-Host "`n[INFO] $lastLine" -ForegroundColor Green
+                            }
+                        }
+                    }
+                }
+                
                 Start-Sleep -Seconds 2
                 
-                # Timeout nach 30 Minuten
-                if ($elapsed -gt 1800) {
+                # Erhoehtes Timeout: 60 Minuten
+                if ($elapsed -gt 3600) {
+                    Write-Host "`n[WARNING] Timeout erreicht (60 Min) - Breche ab..." -ForegroundColor Red
                     $updateProcess.Kill()
-                    Add-Warning "Winget-Update Timeout (30 Min)"
+                    Add-Warning "Winget-Update Timeout (60 Min)"
                     break
                 }
             }
             
+            Write-Host "" # Neue Zeile nach Fortschrittsanzeige
+            
             if ($updateProcess.ExitCode -eq 0) {
+                Write-Host ""
+                Write-Host "================================================================" -ForegroundColor Green
+                Write-Host "                   WINGET-UPDATES ABGESCHLOSSEN" -ForegroundColor Green
+                Write-Host "================================================================" -ForegroundColor Green
+                Write-Host "Alle Updates wurden erfolgreich installiert!" -ForegroundColor Green
+                Write-Host "WICHTIG: Pruefen Sie, ob noch offene Programm-Fenster" -ForegroundColor Yellow
+                Write-Host "         auf Eingaben warten oder Neustarts benoetigen." -ForegroundColor Yellow
+                Write-Host ""
                 Add-Success "Winget: Alle Updates installiert"
                 $updatedCount = $updates.Count
             } else {
+                Write-Host ""
+                Write-Host "================================================================" -ForegroundColor Yellow
+                Write-Host "                 WINGET-UPDATES TEILWEISE FEHLGESCHLAGEN" -ForegroundColor Yellow
+                Write-Host "================================================================" -ForegroundColor Yellow
+                Write-Host "Einige Updates konnten nicht installiert werden." -ForegroundColor Yellow
+                Write-Host "TIPP: Pruefen Sie offene Programm-Fenster auf Fehlermeldungen" -ForegroundColor Cyan
+                Write-Host "      oder starten Sie einzelne Updates manuell." -ForegroundColor Cyan
+                Write-Host ""
                 Add-Warning "Winget: Einige Updates fehlgeschlagen (Exit: $($updateProcess.ExitCode))"
                 
                 # Versuche Log zu analysieren

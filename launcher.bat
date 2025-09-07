@@ -15,8 +15,8 @@ title Hellion Tool v7.0 Moon - Full Auto
 cls
 
 REM Version und Build-Info
-set "LAUNCHER_VERSION=7.0"
-set "LAUNCHER_CODENAME=Moon"
+set "LAUNCHER_VERSION=7.0.1"
+set "LAUNCHER_CODENAME=Moon-Bugfix"
 set "LAUNCHER_BUILD=%date:~-4%%date:~3,2%%date:~0,2%"
 
 echo ==============================================================================
@@ -208,6 +208,8 @@ if !errorlevel! == 0 (
     echo     [OK] PowerShell 7 vorhanden!
     echo PowerShell 7 gefunden >> "%LOG_FILE%"
     set "PWSH_AVAILABLE=1"
+    set "USE_POWERSHELL=pwsh"
+    set "DIRECT_PWSH=pwsh"
     if "%DEBUG_MODE%"=="true" (
         echo [DEBUG] pwsh Version:
         pwsh -NoProfile -Command "Write-Host 'PowerShell Version:' $PSVersionTable.PSVersion.ToString()" 2>>"%ERROR_LOG%"
@@ -222,6 +224,7 @@ if !errorlevel! == 0 (
     echo Windows PowerShell gefunden >> "%LOG_FILE%"
     set "POWERSHELL_AVAILABLE=1"
     set "HAS_PS5=1"
+    set "USE_POWERSHELL=powershell"
     if "%DEBUG_MODE%"=="true" (
         echo [DEBUG] Windows PowerShell Version:
         powershell -NoProfile -Command "Write-Host 'PowerShell Version:' $PSVersionTable.PSVersion.ToString()" 2>>"%ERROR_LOG%"
@@ -446,22 +449,17 @@ echo.
 echo [*] Installation-Check abgeschlossen
 echo Installation-Check abgeschlossen >> "%LOG_FILE%"
 
-REM PowerShell-Auswahl final
-if !PWSH_AVAILABLE! == 1 (
-    if defined DIRECT_PWSH (
-        set "USE_POWERSHELL=%DIRECT_PWSH%"
-        echo   [OK] Verwende PowerShell 7 (Direkter Pfad)
-        echo PowerShell 7 - Direkter Pfad verwendet >> "%LOG_FILE%"
-    ) else (
-        set "USE_POWERSHELL=pwsh"
-        echo   [OK] Verwende PowerShell 7 (pwsh)
-        echo PowerShell 7 verwendet >> "%LOG_FILE%"
-    )
-) else if !POWERSHELL_AVAILABLE! == 1 (
-    set "USE_POWERSHELL=powershell"
-    echo   [OK] Verwende Windows PowerShell (Fallback)
-    echo Windows PowerShell Fallback verwendet >> "%LOG_FILE%"
-) else (
+REM PowerShell-Auswahl bereits erfolgt - nur Debug-Info
+if "%DEBUG_MODE%"=="true" (
+    echo [DEBUG] PowerShell-Status:
+    echo [DEBUG]   PWSH_AVAILABLE: !PWSH_AVAILABLE!
+    echo [DEBUG]   POWERSHELL_AVAILABLE: !POWERSHELL_AVAILABLE!
+    echo [DEBUG]   USE_POWERSHELL: !USE_POWERSHELL!
+    echo [DEBUG]   DIRECT_PWSH: !DIRECT_PWSH!
+)
+
+REM Prüfe ob PowerShell-Variable gesetzt ist
+if not defined USE_POWERSHELL (
     echo   [ERROR] Keine PowerShell-Version verfügbar!
     echo ERROR: Keine PowerShell verfügbar >> "%LOG_FILE%"
     echo ERROR: Keine PowerShell verfügbar >> "%ERROR_LOG%"
@@ -469,6 +467,9 @@ if !PWSH_AVAILABLE! == 1 (
     echo LÖSUNG: Führen Sie das Installationssystem erneut aus
     pause
     exit /b 1
+) else (
+    echo   [OK] PowerShell bereit: !USE_POWERSHELL!
+    echo PowerShell bereit: !USE_POWERSHELL! >> "%LOG_FILE%"
 )
 
 echo.
@@ -627,9 +628,9 @@ if "%DEBUG_MODE%"=="true" (
 )
 
 if defined DIRECT_PWSH (
-    "%USE_POWERSHELL%" -NoProfile -ExecutionPolicy Bypass -NoExit -File "%SCRIPT_PATH%" 2>>"%ERROR_LOG%"
+    "%USE_POWERSHELL%" -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_PATH%" 2>>"%ERROR_LOG%"
 ) else (
-    %USE_POWERSHELL% -NoProfile -ExecutionPolicy Bypass -NoExit -File "%SCRIPT_PATH%" 2>>"%ERROR_LOG%"
+    %USE_POWERSHELL% -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_PATH%" 2>>"%ERROR_LOG%"
 )
 
 REM Exit-Code erfassen
@@ -639,9 +640,28 @@ REM Log Script-Ende
 echo Script-Ende: Exit-Code !SCRIPT_EXIT_CODE! >> "%LOG_FILE%"
 echo Endzeit: %date% %time% >> "%LOG_FILE%"
 
+REM Debug: Exit-Code anzeigen
+if "%DEBUG_MODE%"=="true" (
+    echo [DEBUG] Empfangener Exit-Code: !SCRIPT_EXIT_CODE!
+)
+
+REM Prüfe auf UAC-Restart Signal-Datei
+if exist "temp\uac_restart.signal" (
+    echo UAC-Restart erkannt - Launcher beendet sich stillschweigend >> "%LOG_FILE%"
+    del "temp\uac_restart.signal" >nul 2>&1
+    exit /b 0
+)
+
 if !SCRIPT_EXIT_CODE! == 0 (
     echo   [OK] Tool erfolgreich beendet
     echo Tool erfolgreich beendet >> "%LOG_FILE%"
+    
+    REM 30-Tage-Erinnerung pruefen
+    call :Check30DayReminder
+    
+    REM Desktop-Verknuepfung anbieten
+    call :OfferDesktopShortcut
+    
 ) else (
     echo   [WARNING] Tool mit Exit-Code !SCRIPT_EXIT_CODE! beendet
     echo Tool mit Exit-Code !SCRIPT_EXIT_CODE! beendet >> "%LOG_FILE%"
@@ -768,4 +788,143 @@ if !BACKUP_COUNT! GTR 10 (
         if "%DEBUG_MODE%"=="true" echo [DEBUG] Backup geloescht: %%f
     )
 )
+goto :EOF
+
+REM ================================================================
+REM                    30-TAGE-ERINNERUNG
+REM ================================================================
+
+:Check30DayReminder
+REM Prüfe wann das Tool zuletzt verwendet wurde
+set "REMINDER_FILE=config\last_run.txt"
+set "TODAY_DATE=%date:~-4%%date:~3,2%%date:~0,2%"
+
+REM Erstelle/aktualisiere last_run.txt mit heutigem Datum
+echo %TODAY_DATE% > "%REMINDER_FILE%"
+
+REM Prüfe ob es eine ältere last_run Datei gibt
+if exist "config\last_reminder.txt" (
+    set /p LAST_REMINDER=<"config\last_reminder.txt"
+) else (
+    set "LAST_REMINDER=00000000"
+)
+
+REM Berechne Datums-Differenz (vereinfacht)
+set /a "DATE_TODAY=%TODAY_DATE%"
+set /a "DATE_LAST=%LAST_REMINDER%"
+set /a "DATE_DIFF=%DATE_TODAY%-%DATE_LAST%"
+
+REM Zeige Erinnerung wenn mehr als 30 Tage vergangen (vereinfachte Logik)
+if %DATE_DIFF% GTR 30 (
+    echo.
+    echo ==============================================================================
+    echo                           📅 WARTUNGS-ERINNERUNG
+    echo ==============================================================================
+    echo   Das Hellion Power Tool wurde längere Zeit nicht verwendet.
+    echo.
+    echo   💡 EMPFEHLUNG: Führen Sie das Tool alle 30 Tage aus für:
+    echo      • System-Bereinigung ^(Temp-Dateien, Cache^)
+    echo      • Software-Updates ^(Winget Updates^)
+    echo      • System-Reparaturen ^(SFC, DISM falls nötig^)
+    echo      • Optimale System-Performance
+    echo.
+    echo   ⏰ Nächste empfohlene Ausführung: In ca. 30 Tagen
+    echo   📁 Tipp: Erstellen Sie eine Verknüpfung auf dem Desktop!
+    echo ==============================================================================
+    echo.
+    
+    REM Aktualisiere Erinnerungs-Datum
+    echo %TODAY_DATE% > "config\last_reminder.txt"
+    echo Wartungs-Erinnerung angezeigt >> "%LOG_FILE%"
+    
+    REM Kurze Pause damit User die Meldung liest
+    timeout /t 5 /nobreak >nul
+)
+
+goto :EOF
+
+REM ================================================================
+REM                    DESKTOP-VERKNUEPFUNG
+REM ================================================================
+
+:OfferDesktopShortcut
+REM Prüfe ob bereits eine Desktop-Verknüpfung existiert
+set "DESKTOP_PATH=%USERPROFILE%\Desktop"
+set "SHORTCUT_NAME=Hellion Power Tool.lnk"
+set "SHORTCUT_PATH=%DESKTOP_PATH%\%SHORTCUT_NAME%"
+
+REM Prüfe auch Public Desktop für alle User
+set "PUBLIC_DESKTOP=%PUBLIC%\Desktop"
+set "PUBLIC_SHORTCUT=%PUBLIC_DESKTOP%\%SHORTCUT_NAME%"
+
+REM Prüfe ob Verknüpfung bereits existiert
+if exist "%SHORTCUT_PATH%" goto :EOF
+if exist "%PUBLIC_SHORTCUT%" goto :EOF
+
+REM Prüfe ob ein Marker existiert, dass User bereits gefragt wurde
+if exist "config\shortcut_declined.txt" goto :EOF
+
+echo.
+echo ==============================================================================
+echo                         🔗 DESKTOP-VERKNUEPFUNG
+echo ==============================================================================
+echo   Moechten Sie eine Desktop-Verknuepfung erstellen?
+echo.
+echo   Vorteile:
+echo   • Schneller Zugriff auf das Hellion Power Tool
+echo   • Professionelles Icon auf dem Desktop  
+echo   • Einfacher Start ohne Ordner-Navigation
+echo.
+
+choice /C JN /N /M "Desktop-Verknuepfung erstellen? [J/N]: "
+
+if %errorlevel%==1 (
+    echo.
+    echo   [*] Erstelle Desktop-Verknuepfung...
+    call :CreateDesktopShortcut
+) else (
+    echo   [INFO] Verknuepfung uebersprungen
+    echo Desktop-Verknuepfung uebersprungen >> "%LOG_FILE%"
+    
+    REM Marker erstellen damit nicht wieder gefragt wird
+    echo DECLINED > "config\shortcut_declined.txt"
+)
+
+goto :EOF
+
+:CreateDesktopShortcut
+REM PowerShell-Script erstellen für Verknüpfung mit Icon
+set "PS_SCRIPT=%TEMP%\create_hellion_shortcut.ps1"
+
+REM Erstelle PowerShell-Script für Verknüpfungs-Erstellung
+(
+    echo $WshShell = New-Object -comObject WScript.Shell
+    echo $LauncherPath = "%~dp0launcher.bat"
+    echo $ShortcutPath = "%SHORTCUT_PATH%"
+    echo $Shortcut = $WshShell.CreateShortcut($ShortcutPath^)
+    echo $Shortcut.TargetPath = $LauncherPath
+    echo $Shortcut.WorkingDirectory = "%~dp0"
+    echo $Shortcut.Description = "Hellion Power Tool v%LAUNCHER_VERSION% - System-Optimierung"
+    echo $Shortcut.IconLocation = "%SystemRoot%\System32\shell32.dll,21"
+    echo $Shortcut.Save(^)
+    echo Write-Host "Desktop-Verknuepfung erfolgreich erstellt!" -ForegroundColor Green
+) > "%PS_SCRIPT%"
+
+REM PowerShell-Script ausführen
+powershell -NoProfile -ExecutionPolicy Bypass -File "%PS_SCRIPT%" 2>nul
+
+REM Temporäres Script löschen
+del "%PS_SCRIPT%" >nul 2>&1
+
+REM Prüfe ob Verknüpfung erstellt wurde
+if exist "%SHORTCUT_PATH%" (
+    echo   [OK] Desktop-Verknuepfung erstellt: %SHORTCUT_NAME%
+    echo Desktop-Verknuepfung erstellt >> "%LOG_FILE%"
+    echo.
+    echo   Tipp: Sie finden die Verknuepfung jetzt auf Ihrem Desktop! 🖥️
+) else (
+    echo   [WARNING] Verknuepfung konnte nicht erstellt werden
+    echo Desktop-Verknuepfung fehlgeschlagen >> "%LOG_FILE%"
+)
+
 goto :EOF

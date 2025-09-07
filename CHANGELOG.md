@@ -7,6 +7,34 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 
 ---
 
+## [7.0.1 "Moon-Bugfix"] - 2025-09-07
+
+### 🐛 Kritische Bugfixes - Hotfix Release
+
+#### Fixed
+- **PowerShell-Erkennungslogik**: Behoben - launcher.bat erkannte PowerShell 7 nicht korrekt
+- **UAC-Doppelfenster-Problem**: UAC-Restart schließt jetzt das ursprüngliche Fenster automatisch
+- **Signal-Datei-System**: Intelligentes Signal-System für nahtlose UAC-Behandlung ohne Benutzerinteraktion
+- **Launcher-Warteaufforderung**: "Drücken Sie eine beliebige Taste" nach UAC-Restart entfernt
+
+#### Added
+- **30-Tage-Wartungsempfehlung**: Intelligente Erinnerung für regelmäßige Tool-Ausführung
+- **Desktop-Verknüpfung**: Automatisches Angebot zur Erstellung einer Desktop-Verknüpfung mit professionellem Icon
+- **Erweiterte Winget-Integration**: Verlängerte Timeout (60 Min), benutzerfreundliche Warnungen und animierte Fortschrittsanzeige
+- **Intelligente Shortcut-Verwaltung**: Speichert Benutzer-Präferenz und verhindert wiederholte Nachfragen
+
+#### Technical Details
+- PowerShell-Variable `USE_POWERSHELL` wird jetzt direkt bei Erkennung gesetzt
+- UAC-Restart verwendet Signal-Datei `temp/uac_restart.signal` für saubere Kommunikation
+- `[Environment]::Exit(0)` mit Signal-Datei statt Exit-Code für bessere Batch-Kompatibilität
+- Automatische Signal-Datei-Bereinigung beim normalen Admin-Start
+- Desktop-Verknüpfung verwendet PowerShell COM-Objekt `WScript.Shell` mit Windows system icon (shell32.dll,21)
+- 30-Tage-Reminder mit `config/last_run.txt` Tracking-System
+- Winget-Timeout von 30 auf 60 Minuten erhöht für umfangreiche Updates
+- Benutzerfreundliche Winget-Warnungen in Cyan statt aggressiven roten Meldungen
+
+---
+
 ## [7.0 "Moon"] - 2025-09-07
 
 ### 🚀 Initialer Release - Komplett überarbeitete Version
