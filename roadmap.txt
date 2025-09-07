@@ -1,0 +1,215 @@
+Roadmap: Version 6.5 "Monkey" → Version 7.0 "Moon"
+Phase 1: Bugfixes (1-2 Tage)
+1. SFC Parameter-Fix:
+
+Fehler in Parametern, mind einer zu viel
+
+2.
+DISM überprüfen warscheinlich gleiches problem
+
+Phase 2: Ordnerstruktur (1 Tag)
+
+hellion-power-tool/
+├── launcher.bat              # Hauptlauncher
+├── hellion_tool_v70_moon.ps1 # Hauptscript
+├── config/
+│   ├── settings.json         # User-Einstellungen
+│   └── repository.txt        # GitHub URL (OHNE Credentials)
+├── logs/
+│   ├── 2025-09-07_startup.log
+│   └── 2025-09-07_actions.log
+├── backups/
+│   └── hellion_tool_backup_20250907_1430.ps1
+├── old-versions/
+│   ├── v6.5_monkey.ps1
+│   └── v6.1_original.ps1
+└── temp/
+
+Phase 3: GitHub ohne Credentials
+
+Lösung 1: Öffentliches Read-Only Repo
+REM launcher.bat - KEINE Credentials nötig für public repos
+set "GITHUB_URL=https://github.com/hellion-online-media/hellion-power-tool.git"
+git clone %GITHUB_URL% 2>nul || git pull origin main
+
+Lösung 2: Config-Datei
+REM Lese URL aus config/repository.txt
+if exist "config\repository.txt" (
+    set /p GITHUB_URL=<config\repository.txt
+) else (
+    echo https://github.com/USERNAME/REPO.git > config\repository.txt
+    echo [INFO] Bitte GitHub-URL in config\repository.txt eintragen!
+)
+
+Phase 4: Logging-System Implementation
+
+# PowerShell Logging-Funktionen
+$script:LogPath = "$PSScriptRoot\logs"
+$script:LogFile = "$script:LogPath\$(Get-Date -Format 'yyyy-MM-dd').log"
+
+function Initialize-Logging {
+    if (-not (Test-Path $script:LogPath)) {
+        New-Item -ItemType Directory -Path $script:LogPath -Force | Out-Null
+    }
+    Write-Log "=== Hellion Tool v7.0 Moon gestartet ===" -Level "INFO"
+}
+
+function Write-Log {
+    param(
+        [string]$Message,
+        [string]$Level = "INFO"
+    )
+    
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logEntry = "[$timestamp] [$Level] $Message"
+    
+    # In Datei schreiben
+    $logEntry | Out-File -FilePath $script:LogFile -Append -Encoding UTF8
+    
+    # Konsole mit Farbe
+    switch ($Level) {
+        "ERROR" { Write-Host $Message -ForegroundColor Red }
+        "WARNING" { Write-Host $Message -ForegroundColor Yellow }
+        "SUCCESS" { Write-Host $Message -ForegroundColor Green }
+        default { Write-Host $Message -ForegroundColor White }
+    }
+}
+
+# Alte Logs aufräumen (>30 Tage)
+function Clean-OldLogs {
+    Get-ChildItem "$script:LogPath\*.log" | 
+        Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30) } |
+        Remove-Item -Force
+}
+
+Phase 5: Auto-Update mit Versionsverwaltung
+@echo off
+REM launcher.bat - Version 7.0 Moon
+
+REM Erstelle Ordnerstruktur
+if not exist "logs" mkdir logs
+if not exist "backups" mkdir backups
+if not exist "old-versions" mkdir old-versions
+if not exist "config" mkdir config
+
+REM GitHub URL aus Config
+if exist "config\repository.txt" (
+    set /p GITHUB_URL=<config\repository.txt
+) else (
+    REM Default public repo
+    set "GITHUB_URL=https://github.com/hellion-online-media/hellion-power-tool.git"
+    echo %GITHUB_URL% > config\repository.txt
+)
+
+REM Update-Check
+where git >nul 2>&1
+if %errorlevel%==0 (
+    if exist ".git" (
+        echo [*] Pruefe Updates...
+        
+        REM Backup aktuelle Version
+        if exist "hellion_tool_v*.ps1" (
+            for %%f in (hellion_tool_v*.ps1) do (
+                set "CURRENT_FILE=%%f"
+                set "BACKUP_FILE=backups\%%~nf_backup_%date:~-4%%date:~3,2%%date:~0,2%.ps1"
+                copy "%%f" "!BACKUP_FILE!" >nul
+            )
+        )
+        
+        REM Pull Updates
+        git fetch origin main >nul 2>&1
+        for /f %%i in ('git rev-list HEAD...origin/main --count 2^>nul') do set BEHIND=%%i
+        
+        if !BEHIND! GTR 0 (
+            echo [!] Updates verfuegbar!
+            
+            REM Verschiebe alte Version
+            if exist "!CURRENT_FILE!" (
+                move "!CURRENT_FILE!" "old-versions\" >nul
+            )
+            
+            git pull origin main --force
+            echo [OK] Update abgeschlossen!
+        )
+    )
+)
+
+REM Starte Tool mit Logging
+echo [*] Starte Hellion Tool v7.0 Moon...
+echo %date% %time% - Start >> logs\launcher.log
+
+pwsh -NoProfile -ExecutionPolicy Bypass -File "hellion_tool_v70_moon.ps1" 2>>logs\error.log
+
+echo %date% %time% - Ende >> logs\launcher.log
+
+Phase 6: Migrations-Script (v6.5 → v7.0)
+
+# migration_to_v7.ps1
+Write-Host "=== Migration zu v7.0 Moon ===" -ForegroundColor Cyan
+
+# 1. Backup alte Version
+if (Test-Path "hellion_tool_v65_monkey.ps1") {
+    Copy-Item "hellion_tool_v65_monkey.ps1" "old-versions\v65_monkey_final.ps1"
+}
+
+# 2. Erstelle neue Ordnerstruktur
+@("logs", "backups", "old-versions", "config", "temp") | ForEach-Object {
+    New-Item -ItemType Directory -Path $_ -Force | Out-Null
+}
+
+# 3. Erstelle Standard-Config
+@{
+    "version" = "7.0"
+    "codename" = "Moon"
+    "auto_update" = $true
+    "log_retention_days" = 30
+    "github_repo" = "https://github.com/hellion-online-media/hellion-power-tool.git"
+} | ConvertTo-Json | Out-File "config\settings.json"
+
+Write-Host "[OK] Migration abgeschlossen!" -ForegroundColor Green
+
+GitHub Release-Struktur:
+
+Release v7.0 "Moon"
+├── hellion_tool_v70_moon.ps1
+├── launcher_v70.bat
+├── migration_to_v7.ps1
+├── README.md
+├── CHANGELOG.md
+└── config/
+    └── repository.txt.example
+
+Release Notes v7.0 "Moon":
+
+## Version 7.0 "Moon" - Release
+
+### 🐛 Bugfixes
+- SFC/DISM Parameter korrigiert
+- Admin-Rechte-Handling verbessert
+
+### ✨ Neue Features
+- Vollständiges Logging-System
+- Auto-Update ohne Credentials
+- Versionsverwaltung mit Backups
+- Strukturierte Ordner
+
+### 📁 Neue Struktur
+- `/logs` - Alle Logs
+- `/backups` - Automatische Backups
+- `/old-versions` - Versionsverlauf
+- `/config` - Einstellungen
+
+### 🔧 Migration
+Führen Sie `migration_to_v7.ps1` aus für automatische Migration von v6.5
+
+
+Nächste Schritte:
+
+Bugfixes implementieren (Priorität 1)
+Ordnerstruktur im Hauptscript etablieren
+Logging in alle Funktionen einbauen
+GitHub Repo erstellen (public, ohne sensitive Daten)
+Testing auf verschiedenen Windows-Versionen
+Release auf GitHub mit Tags
+
+Diese Roadmap macht aus Version 6.5 ein produktionsreifes Tool mit Enterprise-Features, ohne sensitive Daten im Code zu haben.
