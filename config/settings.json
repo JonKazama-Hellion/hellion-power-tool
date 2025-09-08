@@ -1,0 +1,64 @@
+{
+  "version": "7.1.2",
+  "codename": "Fenrir",
+  "debug_mode": false,
+  "auto_update": true,
+  "log_level": "INFO",
+  "max_backups": 10,
+  "startup_check": true,
+  "repository_url": "https://github.com/JonKazama-Hellion/hellion-power-tool.git",
+  "script_name": "hellion_tool_main.ps1",
+  "last_update_check": "",
+  "launcher": {
+    "version": "7.1.2",
+    "codename": "Fenrir",
+    "auto_folder_creation": true,
+    "log_cleanup_days": 30,
+    "backup_cleanup_count": 10
+  },
+  "powershell": {
+    "prefer_pwsh": true,
+    "execution_policy": "Bypass",
+    "no_profile": true
+  },
+  "user_settings": {
+    "explain_mode": true,
+    "visual_mode": false,
+    "detailed_logging": false,
+    "auto_approve_cleanup": false
+  },
+  "features": {
+    "sfc_enabled": false,
+    "dism_enabled": true,
+    "checkdisk_enabled": true,
+    "winget_enabled": true,
+    "system_restore": true,
+    "driver_analysis": true,
+    "dll_integrity_check": true,
+    "bloatware_detection": true,
+    "unused_programs_analysis": true,
+    "network_tools": true,
+    "auto_mode": true
+  },
+  "modules": {
+    "enabled": true,
+    "debug_loading": false,
+    "load_all": true,
+    "excluded_modules": []
+  },
+  "paths": {
+    "logs_dir": "logs",
+    "backups_dir": "backups",
+    "temp_dir": "temp",
+    "old_versions_dir": "old-versions",
+    "config_dir": "config"
+  },
+  "logging": {
+    "startup_log": true,
+    "error_log": true,
+    "debug_log": false,
+    "trace_log": false,
+    "max_log_size_mb": 50,
+    "log_rotation": true
+  }
+}

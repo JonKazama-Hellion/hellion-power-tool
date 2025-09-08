@@ -1,0 +1,93 @@
+# ================================================================
+# HELLION POWER TOOL - GIT IGNORE
+# Erstellt für v7.0 "Moon"
+# ================================================================
+
+# ================================================================
+# LOGS UND TEMPORÄRE DATEIEN
+# ================================================================
+logs/
+*.log
+temp/
+*.tmp
+*.temp
+*.claude
+
+# ================================================================
+# BACKUPS UND GIT-BACKUP ORDNER
+# ================================================================
+backups/
+.git-backup/
+
+# ================================================================
+# BENUTZER-SPEZIFISCHE KONFIGURATION - User bekommen Updates!
+# ================================================================
+# Nur User-spezifische Logs und temporäre Änderungen ignorieren
+config/user_overrides.json
+config/last_run.txt
+config/last_reminder.txt
+
+# WICHTIGE CONFIG-DATEIEN WERDEN COMMITTET für Updates:
+# - config/settings.json (Standard-Einstellungen + neue Features)
+# - config/version.txt (Versionsinformationen)
+# - config/repository.txt (Git-Repository URL)
+
+# ================================================================
+# WINDOWS/SYSTEM DATEIEN
+# ================================================================
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ================================================================
+# ENTWICKLUNG UND INTERNE DOKUMENTATION
+# ================================================================
+.vscode/
+.vs/
+*.suo
+*.user
+CLAUDE.md
+
+# ================================================================
+# INTERNE GUIDES (NICHT FÜR END-USER)
+# ================================================================
+GITHUB-RELEASE-GUIDE.md
+PRE-COMMIT-CHECKLIST.md
+*-GUIDE.md
+*-CHECKLIST.md
+ROADMAP.md
+
+# ================================================================
+# ALTE VERSIONEN (Optional)
+# ================================================================
+old-versions/
+# Wenn Sie alte Versionen im Repo behalten wollen, kommentieren Sie die Zeile oben aus
+
+# ================================================================
+# SENSITIVE DATEN
+# ================================================================
+*.key
+*.pem
+*.p12
+*.pfx
+passwords.txt
+credentials.txt
+secrets.txt
+
+# ================================================================
+# GIT TEMPORÄRE DATEIEN
+# ================================================================
+*.orig
+*.rej
+.git/hooks/
+.git/info/
+.git/logs/
+.git/refs/remotes/
+
+# ================================================================
+# POWERSHELL SPEZIFISCH
+# ================================================================
+*.ps1xml
+profile.ps1
+Microsoft.PowerShell_profile.ps1

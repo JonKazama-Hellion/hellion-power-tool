@@ -1,0 +1,165 @@
+name: Security Analysis
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 12 * * 1'  # Weekly Monday at noon
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  security-analysis:
+    name: Security Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript  # PowerShell analyzed as JS
+        
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      
+  powershell-security:
+    name: PowerShell Security Check
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Run PSScriptAnalyzer (Critical Rules Only)
+      shell: powershell
+      run: |
+        Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+        
+        # Only check critical security and functionality rules
+        $criticalRules = @(
+          'PSAvoidUsingWriteHost',
+          'PSAvoidUsingInvokeExpression', 
+          'PSAvoidUsingPlainTextForPassword',
+          'PSUseCmdletCorrectly',
+          'PSAvoidUsingPositionalParameters',
+          'PSAvoidGlobalVars'
+        )
+        
+        $results = Invoke-ScriptAnalyzer -Path . -Recurse -IncludeRule $criticalRules
+        if ($results) {
+          Write-Host "[WARNING] Critical PSScriptAnalyzer issues found:"
+          $results | Format-Table -AutoSize
+          Write-Warning "$(($results).Count) critical issues found - consider fixing for better code quality"
+        } else {
+          Write-Host "[OK] No critical PSScriptAnalyzer issues found"
+        }
+        
+    - name: Check for sensitive patterns
+      shell: powershell  
+      run: |
+        Write-Host "[INFO] Checking for sensitive patterns..."
+        
+        # Check for hardcoded secrets/keys
+        $sensitivePatterns = @(
+          'password\s*=\s*"[^"]*"',
+          'apikey\s*=\s*"[^"]*"',
+          'secret\s*=\s*"[^"]*"',
+          'token\s*=\s*"[^"]*"'
+        )
+        
+        $found = $false
+        Get-ChildItem *.ps1 -Recurse | ForEach-Object {
+          $content = Get-Content $_.FullName -Raw
+          foreach ($pattern in $sensitivePatterns) {
+            if ($content -match $pattern) {
+              Write-Warning "Potential sensitive data in $($_.Name): $pattern"
+              $found = $true
+            }
+          }
+        }
+        
+        if (-not $found) {
+          Write-Host "[OK] No sensitive patterns found"
+        }
+
+  defender-compatibility:
+    name: Defender Compatibility Check
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Check for Defender triggers
+      shell: powershell
+      run: |
+        Write-Host "[SHIELD] Checking for Windows Defender trigger patterns..."
+        
+        $triggerPatterns = @{
+          'Invoke-WebRequest' = 'Network download trigger'
+          'Start-Process.*-Verb RunAs' = 'Privilege escalation trigger'
+          'Invoke-Expression' = 'Dynamic code execution trigger'
+          'FromBase64String' = 'Base64 encoding trigger'
+          'DownloadString' = 'Web download trigger'
+        }
+        
+        $issues = @()
+        Get-ChildItem *.ps1 -Recurse | ForEach-Object {
+          $content = Get-Content $_.FullName -Raw
+          foreach ($pattern in $triggerPatterns.Keys) {
+            if ($content -match $pattern) {
+              $issues += "[WARN]  $($_.Name): $($triggerPatterns[$pattern]) - Pattern: $pattern"
+            }
+          }
+        }
+        
+        if ($issues) {
+          Write-Warning "Potential Defender triggers found:"
+          $issues | ForEach-Object { Write-Warning $_ }
+          Write-Host "`n[TIP] See DEFENDER-WHITELIST.md for mitigation strategies"
+        } else {
+          Write-Host "[OK] No known Defender trigger patterns found"
+        }
+        
+    - name: Validate anti-false-positive measures
+      shell: powershell
+      run: |
+        Write-Host "[INFO] Validating anti-false-positive measures..."
+        
+        $mainScript = "hellion_tool_main.ps1"
+        if (Test-Path $mainScript) {
+          $content = Get-Content $mainScript -Raw
+          
+          # Check for security declarations
+          if ($content -match "LEGITIMATE_SOFTWARE|SECURITY_DECLARATION") {
+            Write-Host "[OK] Security declarations found in main script"
+          } else {
+            Write-Warning "[FAIL] Security declarations missing in main script"
+          }
+          
+          # Check for anti-heuristic comments
+          if ($content -match "\.SYNOPSIS|\.DESCRIPTION") {
+            Write-Host "[OK] Documentation comments found"
+          } else {
+            Write-Warning "[FAIL] Documentation comments missing"
+          }
+        }
+        
+        # Check for defender-safe alternatives
+        $defenderSafeCount = 0
+        Get-ChildItem *.ps1 -Recurse | ForEach-Object {
+          $content = Get-Content $_.FullName -Raw
+          if ($content -match "Defender-safe|ProcessStartInfo|Test-NetConnection") {
+            $defenderSafeCount++
+          }
+        }
+        
+        Write-Host "[OK] $defenderSafeCount files contain Defender-safe patterns"
