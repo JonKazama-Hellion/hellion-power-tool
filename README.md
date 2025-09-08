@@ -14,7 +14,7 @@
 Ein powervolles Windows-Wartungstool mit smartem Launcher, das sich selbst updated und dein System repariert. 
 **Kein Corporate-Bloat, nur Tools die funktionieren.** 🎯
 
-### **Hauptsachen:**
+### **Hauptfunktionen:**
 - 🛠️ **System reparieren**: SFC, DISM, CheckDisk - alles automatisch
 - 🧹 **PC aufräumen**: Intelligente Cleanup + Bloatware-Erkennung  
 - 📦 **Software managen**: Winget-Integration für Updates
