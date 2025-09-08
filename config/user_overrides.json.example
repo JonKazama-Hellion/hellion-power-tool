@@ -1,0 +1,17 @@
+{
+  "_comment": "Diese Datei überschreibt Einstellungen in settings.json",
+  "_info": "Kopieren Sie diese Datei zu user_overrides.json und passen Sie Ihre Werte an",
+  "debug_mode": false,
+  "user_settings": {
+    "explain_mode": false,
+    "visual_mode": false,
+    "detailed_logging": false,
+    "auto_approve_cleanup": false
+  },
+  "features": {
+    "sfc_enabled": true,
+    "dism_enabled": true,
+    "checkdisk_enabled": true,
+    "winget_enabled": true
+  }
+}
