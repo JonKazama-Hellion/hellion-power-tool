@@ -1,6 +1,6 @@
 # 🔧 Hellion Power Tool v7.1.2 "Fenrir"
 
-**Ein Windows System-Tool, das tatsächlich funktioniert** ⚡
+**Ein Windows System-Tool, zur Optimirung und Reinigung** ⚡
 
 [![Version](https://img.shields.io/badge/Version-7.1.2%20Fenrir-blue.svg)](https://github.com/JonKazama-Hellion/hellion-power-tool)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B%20%7C%207.0%2B-blue.svg)](https://github.com/PowerShell/PowerShell)
@@ -14,7 +14,7 @@
 Ein powervolles Windows-Wartungstool mit smartem Launcher, das sich selbst updated und dein System repariert. 
 **Kein Corporate-Bloat, nur Tools die funktionieren.** 🎯
 
-### **Hauptsachen:**
+### **Hauptfunktionen:**
 - 🛠️ **System reparieren**: SFC, DISM, CheckDisk - alles automatisch
 - 🧹 **PC aufräumen**: Intelligente Cleanup + Bloatware-Erkennung  
 - 📦 **Software managen**: Winget-Integration für Updates
