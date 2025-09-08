@@ -130,26 +130,62 @@ if %GITHUB_KNOWN%==0 (
     goto :NO_UPDATE
 )
 
-REM Intelligenter Version/Datum Check
-if %LOCAL_DATE% LSS %GITHUB_DATE% (
-    echo [UPDATE] Lokales Datum aelter: %LOCAL_DATE% vs %GITHUB_DATE%
-    set "UPDATE_NEEDED=1"
-    set "UPDATE_REASON=Datum aelter"
+REM Intelligenter Version/Datum Check mit Fallback
+echo [DEBUG] LOCAL_DATE=%LOCAL_DATE% GITHUB_DATE=%GITHUB_DATE%
+
+REM Handle empty dates gracefully  
+if "%LOCAL_DATE%"=="" set "LOCAL_DATE=20250901"
+if "%GITHUB_DATE%"=="" set "GITHUB_DATE=20250908"
+
+REM Validate dates are numeric (fix for v7.1.0/7.1.1 compatibility)
+set "DATE_COMPARISON_ERROR=0"
+echo %LOCAL_DATE%| findstr /R "^[0-9][0-9]*$" >nul 2>&1
+if errorlevel 1 (
+    echo [WARNING] Lokales Datum ungueltig: '%LOCAL_DATE%' - verwende Fallback
+    set "LOCAL_DATE=20250901"
+    set "DATE_COMPARISON_ERROR=1"
+)
+
+echo %GITHUB_DATE%| findstr /R "^[0-9][0-9]*$" >nul 2>&1
+if errorlevel 1 (
+    echo [WARNING] GitHub Datum ungueltig: '%GITHUB_DATE%' - verwende Fallback
+    set "GITHUB_DATE=20250908"
+    set "DATE_COMPARISON_ERROR=1"
+)
+
+REM Safe numeric comparison with robust error handling
+if %DATE_COMPARISON_ERROR%==0 (
+    if %LOCAL_DATE% LSS %GITHUB_DATE% (
+        echo [UPDATE] Lokales Datum aelter: %LOCAL_DATE% vs %GITHUB_DATE%
+        set "UPDATE_NEEDED=1"
+        set "UPDATE_REASON=Datum aelter"
+    )
+) else (
+    echo [INFO] Datum-Vergleich uebersprungen - verwende Version-basierte Entscheidung
 )
 
 REM Zusätzlicher Plausibilitäts-Check: Version unterschiedlich UND GitHub neuer
 if not "%LOCAL_VERSION%"=="%GITHUB_VERSION%" (
-    if %LOCAL_DATE% LSS %GITHUB_DATE% (
-        echo [UPDATE] Verschiedene Versionen mit neuerem GitHub Datum
-        if "%UPDATE_REASON%"=="" (
-            set "UPDATE_REASON=Version unterschiedlich, GitHub neuer"
+    REM Sichere Datum-Vergleich nur wenn beide Daten gültig sind
+    if %DATE_COMPARISON_ERROR%==0 (
+        if %LOCAL_DATE% LSS %GITHUB_DATE% (
+            echo [UPDATE] Verschiedene Versionen mit neuerem GitHub Datum
+            if "%UPDATE_REASON%"=="" (
+                set "UPDATE_REASON=Version unterschiedlich, GitHub neuer"
+                set "UPDATE_NEEDED=1"
+            ) else (
+                set "UPDATE_REASON=%UPDATE_REASON%, Version unterschiedlich"
+            )
         ) else (
-            set "UPDATE_REASON=%UPDATE_REASON%, Version unterschiedlich"
+            echo [INFO] Verschiedene Versionen aber lokales Datum neuer oder gleich
+            echo [INFO] Vermutlich Entwicklungsversion - kein Update noetig
+            goto :NO_UPDATE
         )
     ) else (
-        echo [INFO] Verschiedene Versionen aber lokales Datum neuer oder gleich
-        echo [INFO] Vermutlich Entwicklungsversion - kein Update noetig
-        goto :NO_UPDATE
+        REM Fallback: Bei unterschiedlichen Versionen und ungültigen Daten -> Update empfehlen
+        echo [UPDATE] Version unterschiedlich und Datum-Vergleich nicht moeglich
+        set "UPDATE_NEEDED=1"
+        set "UPDATE_REASON=Version unterschiedlich (Datum unbekannt)"
     )
 )
 
