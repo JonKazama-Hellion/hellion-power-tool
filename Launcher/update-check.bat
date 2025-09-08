@@ -11,16 +11,17 @@ echo.
 
 echo [*] Pruefe Update-Status...
 
-REM Lade aktuelle Version
-if not exist "config\version.txt" (
+REM Lade aktuelle Version (relativ zum Script-Pfad)
+if not exist "%~dp0..\config\version.txt" (
     echo [ERROR] version.txt nicht gefunden!
     echo [LÖSUNG] Stelle sicher dass du im richtigen Verzeichnis bist
+    echo [DEBUG] Suchpfad: %~dp0..\config\version.txt
     goto :END
 )
 
 REM Lese lokale Version
 set "LINE_NUM=0"
-for /f "delims=" %%a in (config\version.txt) do (
+for /f "delims=" %%a in (%~dp0..\config\version.txt) do (
     set /a LINE_NUM+=1
     if !LINE_NUM!==1 set "LOCAL_VERSION=%%a"
     if !LINE_NUM!==2 set "LOCAL_CODENAME=%%a"
@@ -275,6 +276,8 @@ for /f "tokens=1-4 delims=/ " %%i in ("%date%") do (
         set "BACKUP_TIMESTAMP=%%k%%j%%l_%%a-%%b"
     )
 )
+REM Wechsle zum Root-Verzeichnis für Backup-Operationen
+cd /d "%~dp0\.."
 set "BACKUP_DIR=backups\%LOCAL_VERSION%_%LOCAL_CODENAME%_backup_%BACKUP_TIMESTAMP%"
 
 echo [BACKUP] Erstelle Backup in: %BACKUP_DIR%
