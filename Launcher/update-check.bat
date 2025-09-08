@@ -118,7 +118,7 @@ set "UPDATE_NEEDED=0"
 set "UPDATE_REASON="
 
 REM Bekannte Codenamen (chronologisch, älteste zuerst)
-set "KNOWN_CODENAMES=Alpha Beta Gamma Delta Epsilon Kazama Beleandis Monkey Moon Moon-Bugfix Fenrir"
+set "KNOWN_CODENAMES=Alpha Beta Gamma Delta Epsilon Kazama Beleandis Monkey Moon Moon-Bugfix Fenrir Fenrir-Update Odin"
 
 REM Prüfe ob GitHub Codename in der bekannten Liste ist
 set "GITHUB_KNOWN=0"
