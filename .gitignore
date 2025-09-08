@@ -50,8 +50,9 @@ $RECYCLE.BIN/
 CLAUDE.md
 
 # ================================================================
-# INTERNE GUIDES (NICHT FÜR END-USER)
+# INTERNE GUIDES UND ENTWICKLUNG (NICHT FÜR END-USER)
 # ================================================================
+docs/development/
 GITHUB-RELEASE-GUIDE.md
 PRE-COMMIT-CHECKLIST.md
 *-GUIDE.md

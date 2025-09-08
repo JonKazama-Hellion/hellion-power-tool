@@ -47,7 +47,7 @@ Ein powervolles Windows-Wartungstool mit smartem Launcher, das sich selbst updat
 ### Option 1: Schnellstart (empfohlen)
 ```batch
 1. ZIP runterladen und entpacken
-2. Als Admin: START.bat doppelklicken  
+2. START.bat doppelklicken (automatische Admin-Rechte)
 3. Fertig!
 ```
 
@@ -55,7 +55,7 @@ Ein powervolles Windows-Wartungstool mit smartem Launcher, das sich selbst updat
 ```bash
 git clone https://github.com/JonKazama-Hellion/hellion-power-tool.git
 cd hellion-power-tool
-# Als Admin ausführen:
+# Starten (automatische Admin-Elevation):
 START.bat
 ```
 
@@ -100,26 +100,35 @@ START.bat
 hellion-power-tool/
 ├── START.bat                    # 🚀 Hauptstarter - hier doppelklicken!
 ├── hellion_tool_main.ps1        # 💻 Haupt-PowerShell-Script  
-├── launcher/
+├── README.md                    # 📖 Diese Dokumentation
+├── SECURITY.md                  # 🔐 Sicherheits-Informationen
+├── LICENSE                      # 📄 Open Source Lizenz
+├── Launcher/
 │   ├── simple-launcher.bat      # 🎯 Intelligenter Launcher mit PS7 Support
 │   └── update-check.bat         # 🔄 GitHub Update-Checker
-├── modules/                     # 🧩 Modulare Tool-Sammlung
+├── modules/                     # 🧩 Modulare Tool-Sammlung (11 Module)
 │   ├── system-cleanup.ps1       # 🧹 Bereinigung & Performance
 │   ├── disk-maintenance.ps1     # 🛠️ SFC, DISM, CheckDisk Tools
 │   ├── system-info.ps1          # 📊 System-Analyse & Reports
 │   ├── network-tools.ps1        # 🌐 Netzwerk-Tests & Reset  
 │   ├── winget-tools.ps1         # 📦 Software-Management
 │   ├── security-tools.ps1       # 🛡️ Sicherheits-Features
-│   ├── logging-utils.ps1        # 📝 Logging & Debug-System
-│   └── ...weitere Module        # ⚡ Verschiedene Spezial-Tools
+│   ├── crash-analyzer.ps1       # 🔍 Bluescreen-Analyse
+│   ├── system-restore.ps1       # ⏪ Wiederherstellungspunkte
+│   ├── bloatware-detection.ps1  # 🗑️ Bloatware-Erkennung
+│   ├── memory-diagnostic.ps1    # 🧠 RAM-Test & Diagnose
+│   └── logging-utils.ps1        # 📝 Logging & Debug-System
 ├── config/
+│   ├── version.txt              # 📌 Aktuelle Version (7.1.2 Fenrir)
 │   └── settings.json            # ⚙️ Konfiguration & Feature-Flags
+├── scripts/                     # 🔧 Entwickler-Scripts
+│   ├── sign-local.ps1           # ✍️ Code-Signierung (lokal)
+│   └── test-signing.ps1         # ✅ Signatur-Verifikation
 ├── Debug/
 │   └── launch-dev.ps1           # 🔧 Entwickler-Launcher mit Debug-Modi
-└── docs/                        # 📚 Dokumentation & Guides
-    ├── DEFENDER-WHITELIST.md    # 🛡️ Defender False-Positive Hilfe
-    ├── SECURITY.md              # 🔐 Sicherheits-Informationen  
-    └── ...weitere Docs
+└── docs/                        # 📚 Öffentliche Dokumentation
+    ├── CHANGELOG.md             # 📝 Versions-Historie
+    └── DEFENDER-WHITELIST.md    # 🛡️ Defender False-Positive Hilfe
 ```
 
 ---
@@ -127,7 +136,7 @@ hellion-power-tool/
 ## 🎮 **Debug-Modi für Nerds**
 
 ```batch
-# Normal starten
+# Normal starten (automatische Admin-Rechte)
 START.bat
 
 # Mit Debug-Infos  
