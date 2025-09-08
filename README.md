@@ -1,6 +1,6 @@
 # 🔧 Hellion Power Tool v7.1.2 "Fenrir"
 
-**Ein Windows System-Tool, das tatsächlich funktioniert** ⚡
+**Ein Windows System-Tool, zur Optimirung und Reinigung** ⚡
 
 [![Version](https://img.shields.io/badge/Version-7.1.2%20Fenrir-blue.svg)](https://github.com/JonKazama-Hellion/hellion-power-tool)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B%20%7C%207.0%2B-blue.svg)](https://github.com/PowerShell/PowerShell)
