@@ -41,13 +41,22 @@ $RECYCLE.BIN/
 *.lnk
 
 # ================================================================
-# ENTWICKLUNG
+# ENTWICKLUNG UND INTERNE DOKUMENTATION
 # ================================================================
 .vscode/
 .vs/
 *.suo
 *.user
 CLAUDE.md
+
+# ================================================================
+# INTERNE GUIDES (NICHT FÜR END-USER)
+# ================================================================
+GITHUB-RELEASE-GUIDE.md
+PRE-COMMIT-CHECKLIST.md
+*-GUIDE.md
+*-CHECKLIST.md
+ROADMAP.md
 
 # ================================================================
 # ALTE VERSIONEN (Optional)

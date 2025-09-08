@@ -1,22 +1,40 @@
-# 🔧 Hellion Power Tool v7.1.0 "Fenrir"
+# 🔧 Hellion Power Tool v7.1.1 "Fenrir"
 
 ## Revolutionäres Windows-Tool mit intelligentem Launcher-System und Auto-Update
 
-[![Version](https://img.shields.io/badge/Version-7.1.0%20Fenrir-blue.svg)](https://github.com/JonKazama-Hellion/hellion-power-tool)
+[![Version](https://img.shields.io/badge/Version-7.1.1%20Fenrir-blue.svg)](https://github.com/JonKazama-Hellion/hellion-power-tool)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B%20%7C%207.0%2B-blue.svg)](https://github.com/PowerShell/PowerShell)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-green.svg)](https://www.microsoft.com/windows)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-orange.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Auto-Update](https://img.shields.io/badge/Auto--Update-GitHub-brightgreen.svg)](https://github.com/JonKazama-Hellion/hellion-power-tool)
 
+## ⚠️ **WICHTIGER DEFENDER-HINWEIS**
+
+[![Security Status](https://img.shields.io/badge/Security-Verified%20Safe-green)](SECURITY.md)
+[![False Positive](https://img.shields.io/badge/Defender-False%20Positive%20Warning-yellow)](DEFENDER-WHITELIST.md)
+[![Open Source](https://img.shields.io/badge/Source-Fully%20Available-blue)](https://github.com/JonKazama-Hellion/hellion-power-tool)
+[![Signed Releases](https://img.shields.io/badge/Releases-Digitally%20Signed-green)](https://github.com/JonKazama-Hellion/hellion-power-tool/releases)
+
+**Windows Defender kann dieses Tool fälschlicherweise als "Trojan:Script/Wacatac.B!ml" markieren.**
+
+🛡️ **Das ist ein FALSE POSITIVE!** Dieses Tool ist ein legitimes Open-Source System-Wartungs-Utility.
+
+**📋 Sofort-Lösung:**
+1. **Vor Download**: [DEFENDER-WHITELIST.md](DEFENDER-WHITELIST.md) lesen
+2. **Defender-Ausnahme hinzufügen**: Tool-Ordner zur Whitelist hinzufügen  
+3. **Signierte Version verwenden**: Releases mit digitaler Signatur bevorzugen
+
+**🔍 Sicherheit:** Vollständiger Quellcode verfügbar • Keine Malware • Legitimes Admin-Tool
+
 ---
 
 ## 🚀 Was ist das Hellion Power Tool?
 
-Das **Hellion Power Tool v7.1.0 "Fenrir"** revolutioniert Windows-Systemoptimierung mit einem komplett neuen Launcher-System, automatischen Updates und crashsicherer Architektur.
+Das **Hellion Power Tool v7.1.1 "Fenrir"** revolutioniert Windows-Systemoptimierung mit einem komplett neuen Launcher-System, automatischen Updates und crashsicherer Architektur.
 
 > **🎉 NEW in Fenrir:** Revolutionäres START.bat → simple-launcher.bat System, PowerShell 7 Auto-Installation, intelligenter GitHub Update-Check mit Entwicklerschutz, und crashsichere Implementierung.
 
-### ✨ Hauptfeatures v7.1.0 "Fenrir"
+### ✨ Hauptfeatures v7.1.1 "Fenrir"
 
 #### 🚀 Launcher Revolution
 - 🎯 **Einfaches START.bat → simple-launcher.bat System:** Ein Starter, ein Launcher - keine Komplexität
@@ -57,7 +75,7 @@ cd hellion-power-tool
 START.bat
 ```
 
-## 🚀 Neues Launcher-System v7.1.0
+## 🚀 Neues Launcher-System v7.1.1
 
 ### 📋 Launcher-Flow
 1. **START.bat** - Benutzerfreundlicher Starter mit Debug-Level Auswahl
@@ -78,6 +96,36 @@ Wenn Lokales_Datum < GitHub_Datum → UPDATE verfügbar
 Wenn Lokales_Datum >= GitHub_Datum → Kein Update nötig  
 Wenn Unbekannter_Codename → Update überspringen (Dev-Version)
 ```
+
+## 📥 **SICHERER DOWNLOAD & INSTALLATION**
+
+### 🛡️ **Empfohlene Download-Methode (Defender-sicher)**
+
+**📦 [➤ Zur GitHub Releases Seite](https://github.com/JonKazama-Hellion/hellion-power-tool/releases/latest)**
+
+1. **🔐 Signierte Version downloaden**: `hellion-power-tool-vX.X.X-signed.zip`
+2. **🛡️ Defender-Whitelist**: Tool-Ordner **VOR** dem Entpacken zur Ausnahme hinzufügen
+3. **🚀 Starten**: `launcher\simple-launcher.bat` als Administrator ausführen
+
+### ⚡ **Schnellstart für Profis**
+```batch
+REM 1. Download & Unpack
+curl -L https://github.com/JonKazama-Hellion/hellion-power-tool/releases/latest/download/hellion-power-tool-latest-signed.zip -o hellion.zip
+
+REM 2. Add to Defender exclusions (PowerShell as Admin)
+powershell -Command "Add-MpPreference -ExclusionPath 'C:\Tools\hellion-power-tool'"
+
+REM 3. Extract and run
+mkdir C:\Tools\hellion-power-tool
+tar -xf hellion.zip -C C:\Tools\hellion-power-tool
+cd C:\Tools\hellion-power-tool\launcher
+simple-launcher.bat
+```
+
+### 📋 **Download-Optionen**
+- **`*-signed.zip`** → 🔐 Digitally signed (empfohlen)
+- **`*-portable.zip`** → 📦 Kompakte Version (nur essentials)  
+- **`*-source.zip`** → 👨‍💻 Quellcode nur (für Entwickler)
 
 ## 🛡️ Kompatibilität & Problemlösung
 

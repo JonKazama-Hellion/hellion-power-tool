@@ -1,0 +1,41 @@
+# Git Attributes for Hellion Power Tool
+
+# PowerShell files
+*.ps1 text eol=crlf linguist-language=PowerShell
+*.psm1 text eol=crlf linguist-language=PowerShell
+*.psd1 text eol=crlf linguist-language=PowerShell
+
+# Batch files  
+*.bat text eol=crlf linguist-language=Batchfile
+*.cmd text eol=crlf linguist-language=Batchfile
+
+# Documentation
+*.md text eol=lf linguist-documentation
+*.txt text eol=lf
+README* linguist-documentation
+
+# Configuration files
+*.json text eol=lf
+*.xml text eol=crlf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Security: Ensure PowerShell files are properly detected
+*.ps1 text
+*.psm1 text
+*.psd1 text
+
+# Exclude from language statistics
+launcher/* linguist-vendored
+Debug/* linguist-vendored
+scripts/* linguist-documentation
+
+# Line ending normalization
+* text=auto
+
+# Binary files
+*.exe binary
+*.dll binary
+*.msi binary
+*.zip binary
+*.7z binary

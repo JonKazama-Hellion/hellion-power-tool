@@ -1,6 +1,6 @@
 # ===================================================================
 # CONFIG UTILITIES MODULE
-# Hellion Power Tool v7.1.0.a "Fenrir" - Modular Version
+# Hellion Power Tool v7.1.1 "Fenrir" - Modular Version
 # ===================================================================
 
 function Load-Configuration {
@@ -54,7 +54,7 @@ function Get-DefaultConfiguration {
     #>
     
     return @{
-        version = "7.1.0.a"
+        version = "7.1.1.a"
         codename = "Fenrir"
         debug_mode = $false
         auto_update = $true

@@ -20,10 +20,11 @@ REM Finde PowerShell (Priorität: PS7 → PS5)
 set "USE_PS=powershell"
 set "PS_VERSION=5"
 
+REM Multi-Level PS7 Detection (Phase 1)
 where pwsh >nul 2>&1
 
 if %errorlevel%==0 (
-    echo [OK] PowerShell 7 gefunden (empfohlen)
+    echo [OK] PowerShell 7 gefunden über PATH (empfohlen)
     set "USE_PS=pwsh"
     set "PS_VERSION=7"
     goto :PS_DETECTION_DONE
@@ -34,50 +35,63 @@ if %errorlevel%==0 (
         set "PS_VERSION=7"
         goto :PS_DETECTION_DONE
     ) else (
-        echo [INFO] PowerShell 7 nicht gefunden
-        echo [EMPFEHLUNG] PowerShell 7 bietet bessere Performance
-        echo.
-        echo [ANGEBOT] PowerShell 7 jetzt installieren?
-        echo   [J] Ja, installiere PowerShell 7 (empfohlen)
-        echo   [N] Nein, verwende Windows PowerShell (v5.x)
-        echo.
-        choice /c JN /n /m "PowerShell 7 installieren? [J/N]: "
-        if errorlevel 2 (
-            echo [INFO] Verwende Windows PowerShell (v5.x)
-            set "USE_PS=powershell"
-            set "PS_VERSION=5"
+        if exist "%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe" (
+            echo [OK] PowerShell 7 über Store-Installation gefunden
+            set "USE_PS=%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe"
+            set "PS_VERSION=7"
+            goto :PS_DETECTION_DONE
         ) else (
+            echo [INFO] PowerShell 7 nicht gefunden
+            echo [EMPFEHLUNG] PowerShell 7 bietet bessere Performance
             echo.
-            echo [INSTALL] Starte PowerShell 7 Installation...
-            call "%~dp0install-ps7.bat"
-            
+            echo [ANGEBOT] PowerShell 7 jetzt installieren?
+            echo   [J] Ja, installiere PowerShell 7 (empfohlen)
+            echo   [N] Nein, verwende Windows PowerShell (v5.x)
             echo.
-            echo [RECHECK] Pruefe PowerShell 7 Verfuegbarkeit nach Installation...
-            
-            REM Refreshe PATH und teste PS7 erneut
-            where pwsh >nul 2>&1
-            if %errorlevel%==0 (
-                echo [SUCCESS] PowerShell 7 ist jetzt verfuegbar!
-                echo [RESTART] Starte Launcher neu mit PowerShell 7...
-                timeout /t 2 /nobreak >nul
-                
-                REM Restart launcher with same parameters
-                call "%~nx0" %1
-                exit /b %errorlevel%
+            choice /c JN /n /m "PowerShell 7 installieren? [J/N]: "
+            if errorlevel 2 (
+                echo [INFO] Verwende Windows PowerShell (v5.x)
+                set "USE_PS=powershell"
+                set "PS_VERSION=5"
             ) else (
-                if exist "C:\Program Files\PowerShell\7\pwsh.exe" (
-                    echo [SUCCESS] PowerShell 7 installiert (direkter Pfad)
-                    echo [RESTART] Starte Launcher neu...
-                    timeout /t 2 /nobreak >nul
-                    
-                    call "%~nx0" %1
-                    exit /b %errorlevel%
+                echo.
+                echo [INSTALL] Starte PowerShell 7 Installation...
+                call "%~dp0install-ps7.bat"
+                
+                echo.
+                echo [RECHECK] Pruefe PowerShell 7 Verfuegbarkeit nach Installation...
+                
+                REM Erweiterte PS7-Erkennung nach Installation
+                echo [RECHECK] Warte 3 Sekunden auf PATH-Refresh...
+                timeout /t 3 /nobreak >nul
+                
+                REM Multi-Level PS7 Detection (robust)
+                where pwsh >nul 2>&1
+                if %errorlevel%==0 (
+                    echo [SUCCESS] PowerShell 7 gefunden über PATH
+                    set "USE_PS=pwsh"
+                    set "PS_VERSION=7"
+                    goto :PS_DETECTION_DONE
                 ) else (
-                    echo [INFO] Installation moeglicherweise fehlgeschlagen
-                    echo [FALLBACK] Verwende Windows PowerShell fuer diesen Start
-                    set "USE_PS=powershell"
-                    set "PS_VERSION=5"
-                    pause
+                    if exist "C:\Program Files\PowerShell\7\pwsh.exe" (
+                        echo [SUCCESS] PowerShell 7 über direkten Pfad gefunden
+                        set "USE_PS=C:\Program Files\PowerShell\7\pwsh.exe"
+                        set "PS_VERSION=7"
+                        goto :PS_DETECTION_DONE
+                    ) else (
+                        if exist "%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe" (
+                            echo [SUCCESS] PowerShell 7 über Store-App gefunden
+                            set "USE_PS=%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe"
+                            set "PS_VERSION=7"
+                            goto :PS_DETECTION_DONE
+                        ) else (
+                            echo [WARNING] PowerShell 7 nach Installation nicht gefunden
+                            echo [FALLBACK] Verwende Windows PowerShell für diesen Start
+                            set "USE_PS=powershell"
+                            set "PS_VERSION=5"
+                            pause
+                        )
+                    )
                 )
             )
         )

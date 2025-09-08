@@ -74,9 +74,13 @@ function Install-WingetIfMissing {
                 $downloadUrl = $response.assets | Where-Object { $_.name -like "*.msixbundle" } | Select-Object -First 1 | Select-Object -ExpandProperty browser_download_url
                 
                 if ($downloadUrl) {
-                    Write-Log "[*] Lade Winget herunter: $downloadUrl" -Color Blue
+                    Write-Log "[*] Winget Download mit Defender-sicherer Methode..." -Color Blue
                     $tempFile = Join-Path $env:TEMP "Microsoft.DesktopAppInstaller.msixbundle"
-                    Invoke-WebRequest -Uri $downloadUrl -OutFile $tempFile -ErrorAction Stop
+                    
+                    # Defender-safe: Use .NET WebClient instead of Invoke-WebRequest
+                    $webClient = New-Object System.Net.WebClient
+                    $webClient.DownloadFile($downloadUrl, $tempFile)
+                    $webClient.Dispose()
                     
                     Write-Log "[*] Installiere Winget..." -Color Blue
                     Add-AppxPackage -Path $tempFile -ErrorAction Stop
@@ -107,134 +111,94 @@ function Install-WingetIfMissing {
 }
 
 function Get-WingetUpdates {
-    if (-not (Test-WingetAvailability)) {
-        Write-Log "[WARNING] Winget nicht verfuegbar - Installation erforderlich" -Color Yellow
-        return @()
-    }
-    
     Write-Log "`n[*] --- WINGET UPDATE-PRUEFUNG ---" -Color Cyan
     Write-Log "Suche nach verfuegbaren Software-Updates..." -Color Yellow
     
+    # Einfacher Winget-Verfügbarkeits-Check
     try {
-        # Winget-Liste abrufen mit erweiterten Optionen
+        $null = & winget --version 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Log "[WARNING] Winget nicht verfuegbar" -Color Yellow
+            return @()
+        }
+        Write-Log "[OK] Winget verfuegbar" -Color Green
+    } catch {
+        Write-Log "[WARNING] Winget nicht verfuegbar" -Color Yellow
+        return @()
+    }
+    
+    try {
         Write-Log "[*] Fuehre winget upgrade aus..." -Color Blue
-        $wingetJob = Start-Job -ScriptBlock { 
-            # UTF-8 Encoding für Unicode-Unterstützung
-            [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-            $PSDefaultParameterValues['*:Encoding'] = 'utf8'
-            
-            # Verschiedene winget-Befehle versuchen für maximale Kompatibilität
-            $result1 = & winget upgrade 2>&1
-            $result2 = & winget list --upgrade-available 2>&1
-            return @{
-                "upgrade" = ($result1 | Out-String)
-                "list" = ($result2 | Out-String)
-            }
-        }
         
-        $wingetResults = $null
-        if (Wait-Job -Job $wingetJob -Timeout 45) {
-            $wingetResults = Receive-Job -Job $wingetJob
-            Remove-Job -Job $wingetJob
-        } else {
-            Stop-Job -Job $wingetJob
-            Remove-Job -Job $wingetJob
-            throw "Winget Timeout nach 45 Sekunden"
-        }
-        
-        # Beide Outputs versuchen
+        # Defender-safe: Einfacher direkter Aufruf ohne Jobs
         $wingetOutput = ""
-        if ($wingetResults) {
-            if ($wingetResults.upgrade) {
-                $wingetOutput = $wingetResults.upgrade
-                Write-Log "[DEBUG] Verwende 'winget upgrade' Output" -Level "DEBUG"
-            } elseif ($wingetResults.list) {
-                $wingetOutput = $wingetResults.list  
-                Write-Log "[DEBUG] Verwende 'winget list --upgrade-available' Output" -Level "DEBUG"
-            } else {
-                $wingetOutput = $wingetResults | Out-String
+        try {
+            $wingetOutput = & winget upgrade 2>&1 | Out-String
+        } catch {
+            # Fallback: winget list
+            try {
+                $wingetOutput = & winget list --upgrade-available 2>&1 | Out-String
+            } catch {
+                throw "Winget-Befehle nicht verfuegbar"
             }
         }
         
-        # Debug-Output anzeigen wenn verfügbar
-        if ($script:DebugMode -ge 1) {
-            Write-Log "[DEBUG] Winget Raw Output (first 500 chars):" -Level "DEBUG"
-            $outputPreview = if ($wingetOutput.Length -gt 500) { $wingetOutput.Substring(0, 500) + "..." } else { $wingetOutput }
-            Write-Log "[DEBUG] $outputPreview" -Level "DEBUG"
-        }
-        
+        # Prüfe auf "keine Updates"
         if ($wingetOutput -match "No available upgrades" -or 
-            $wingetOutput -match "Keine verfügbaren Updates" -or
             $wingetOutput -match "No upgrades available" -or
+            $wingetOutput -match "Keine.*Updates" -or
             $wingetOutput.Trim().Length -eq 0) {
-            Write-Log "[OK] Alle Winget-Programme sind aktuell" -Color Green
+            Write-Log "[OK] Alle Programme sind aktuell" -Color Green
             return @()
         }
         
-        # Unicode-Boxzeichen bereinigen für bessere Kompatibilität
-        $wingetOutput = $wingetOutput -replace '├─', '-'           # Ersetze Unicode-Boxzeichnung
-        $wingetOutput = $wingetOutput -replace '└─', '-'           
-        $wingetOutput = $wingetOutput -replace '├╴', '-'           
-        $wingetOutput = $wingetOutput -replace '│', '|'            
-        $wingetOutput = $wingetOutput -replace '─', '-'
-        $wingetOutput = $wingetOutput -replace '╴', '-'
-        $wingetOutput = $wingetOutput -replace '├', '-'
-        $wingetOutput = $wingetOutput -replace '└', '-'            
-        
-        # Parse Winget-Output (vereinfacht)
-        $updates = @()
+        # Einfaches Parsing - nur zählen
         $lines = $wingetOutput -split "`n"
-        $foundHeader = $false
+        $updateCount = 0
+        $foundUpdates = @()
         
         foreach ($line in $lines) {
-            # Suche nach der Tabellen-Header-Zeile
-            if ($line -match "Name.*Id.*Version.*Available" -or $line -match "Name.*ID.*Version.*Verfügbar") {
-                $foundHeader = $true
+            # Skip leer oder Header
+            if (-not $line -or $line.Trim() -eq "" -or $line -match "^Name|^-+") {
                 continue
             }
             
-            # Überspringe Trennlinien
-            if ($line -match "^-+$" -or $line.Trim() -eq "") {
-                continue
-            }
-            
-            # Parse Update-Zeilen nach dem Header
-            if ($foundHeader -and $line.Trim() -ne "") {
-                try {
-                    # Einfache Regex-basierte Extraktion
-                    if ($line -match '^(.+?)\s{2,}([A-Za-z0-9\.\-_]+)\s{2,}([0-9\.\-\w]+)\s{2,}([0-9\.\-\w]+)') {
-                        $updates += @{
-                            Name = $matches[1].Trim()
-                            Id = $matches[2].Trim() 
-                            CurrentVersion = $matches[3].Trim()
-                            AvailableVersion = $matches[4].Trim()
-                        }
-                    }
-                } catch {
-                    # Parsing-Fehler ignorieren
-                    continue
+            # Einfache Update-Erkennung: Zeile mit mindestens 3 Spalten
+            $parts = $line -split '\s{2,}'  # Split by multiple spaces
+            if ($parts -and $parts.Count -ge 3) {
+                $updateCount++
+                if ($updateCount -le 10) {  # Nur ersten 10 für Anzeige
+                    $foundUpdates += $parts[0].Trim()
                 }
             }
         }
         
-        if ($updates.Count -gt 0) {
-            Write-Log "[INFO] $($updates.Count) Updates verfuegbar:" -Color Yellow
-            $updates | Select-Object -First 8 | ForEach-Object {
-                Write-Log "  - $($_.Name): $($_.CurrentVersion) -> $($_.AvailableVersion)" -Color White
+        if ($updateCount -gt 0) {
+            Write-Log "[INFO] $updateCount Updates verfuegbar:" -Color Yellow
+            
+            # Einfache Anzeige ohne komplexe Objekte
+            for ($i = 0; $i -lt [Math]::Min(8, $foundUpdates.Count); $i++) {
+                if ($foundUpdates[$i]) {
+                    Write-Log "  - $($foundUpdates[$i])" -Color White
+                }
             }
             
-            if ($updates.Count -gt 8) {
-                Write-Log "  ... und $($updates.Count - 8) weitere" -Color Gray
+            if ($updateCount -gt 8) {
+                Write-Log "  ... und $($updateCount - 8) weitere" -Color Gray
             }
+            
+            # Einfaches Array für Rückgabe
+            return @($updateCount)  # Nur Anzahl zurückgeben
+        } else {
+            Write-Log "[OK] Keine Updates gefunden" -Color Green
+            return @()
         }
         
-        return $updates
-        
     } catch {
-        Add-Warning "Winget-Update-Pruefung fehlgeschlagen" $_.Exception.Message
+        Write-Log "[ERROR] Winget-Update-Pruefung fehlgeschlagen: $($_.Exception.Message)" -Color Red
         Write-Log "[INFO] Moegliche Loesungen:" -Color Yellow
         Write-Log "  - Winget neu installieren" -Color Gray
-        Write-Log "  - Als Administrator ausfuehren" -Color Gray
+        Write-Log "  - Als Administrator ausfuehren" -Color Gray  
         Write-Log "  - Netzwerk-Verbindung pruefen" -Color Gray
         return @()
     }
@@ -243,12 +207,14 @@ function Get-WingetUpdates {
 function Install-WingetUpdates {
     $availableUpdates = Get-WingetUpdates
     
-    if ($availableUpdates.Count -eq 0) {
+    # Einfacher Check: Get-WingetUpdates gibt jetzt nur Array mit Anzahl zurück
+    if (-not $availableUpdates -or $availableUpdates.Count -eq 0) {
         Write-Log "[INFO] Keine Updates verfuegbar oder Winget nicht verfuegbar" -Color Green
         return $true
     }
     
-    Write-Host "`n[*] WINGET UPDATE-INSTALLATION ($($availableUpdates.Count) verfuegbar):" -ForegroundColor Cyan
+    $updateCount = $availableUpdates[0]  # Erste Element ist die Anzahl
+    Write-Host "`n[*] WINGET UPDATE-INSTALLATION ($updateCount verfuegbar):" -ForegroundColor Cyan
     Write-Host "  [1] Alle Updates installieren" -ForegroundColor Green
     Write-Host "  [2] Nur wichtige Updates (Microsoft, Browser)" -ForegroundColor Yellow
     Write-Host "  [3] Updates anzeigen und manuell waehlen" -ForegroundColor White

@@ -7,7 +7,7 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 
 ---
 
-## [7.1.0 "Fenrir"] - 2025-09-08
+## [7.1.1 "Fenrir"] - 2025-09-08
 
 ### 🚀 Major Release - Launcher Revolution & Auto-Update System
 
@@ -289,7 +289,7 @@ Blockiert 25 sichere Tracking/Werbung-Domains:
 - **v7.0.1 "Moon-Bugfix"**: UAC-Fixes und Desktop-Integration
 - **v7.0.2 "Moon-Bugfix"**: ZIP-Download Auto-Update-System
 - **v7.0.3 "Moon-Hotfix"**: Kritische Bugfixes und Safe Adblock
-- **v7.1.0 "Fenrir"**: Launcher Revolution und Auto-Update System
+- **v7.1.1 "Fenrir"**: Launcher Revolution und Auto-Update System
 
 **Entwickelt von:** Hellion Online Media - Florian Wathling  
 **Website:** [https://hellion-online-media.de](https://hellion-online-media.de)  

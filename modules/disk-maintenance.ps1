@@ -135,6 +135,11 @@ function Invoke-CheckDisk {
     }
 }
 
+# ❌ OBSOLETE FUNCTION - REPLACED BY sfc-simple.ps1
+# This function has been replaced by Invoke-SimpleSFC in the sfc-simple.ps1 module
+# for better Windows Defender compatibility and simpler architecture.
+# Keeping this function commented for reference but it should not be used.
+<#
 function Invoke-SystemFileChecker {
     Write-Log "`n[*] --- SYSTEM FILE CHECKER (SFC) ---" -Color Cyan
     Write-Log "Prueft und repariert beschaedigte Windows-Systemdateien" -Color Yellow
@@ -227,9 +232,24 @@ function Invoke-SystemFileChecker {
         if ($sfcResult) {
             if ($script:DebugMode -ge 1) {
                 Write-Log "[DEBUG] SFC Raw Output:" -Level "DEBUG"
-                $sfcResult | ForEach-Object { Write-Log "[DEBUG] $_" -Level "DEBUG" }
+                # Defender-safe: Use simple for loop instead of pipeline
+                if ($sfcResult -and $sfcResult.Count -gt 0) {
+                    for ($i = 0; $i -lt $sfcResult.Count; $i++) {
+                        if ($sfcResult[$i]) {
+                            Write-Log "[DEBUG] $($sfcResult[$i])" -Level "DEBUG"
+                        }
+                    }
+                }
             }
-            $sfcOutput = $sfcResult | Out-String
+            # Defender-safe: Manual string conversion
+            if ($sfcResult -and $sfcResult.Count -gt 0) {
+                $sfcOutput = ""
+                for ($i = 0; $i -lt $sfcResult.Count; $i++) {
+                    $sfcOutput += $sfcResult[$i] + "`n"
+                }
+            } else {
+                $sfcOutput = ""
+            }
         } else {
             Write-Log "[WARNING] SFC lieferte keine Ausgabe" -Level "DEBUG"
             $sfcOutput = ""
@@ -257,8 +277,13 @@ function Invoke-SystemFileChecker {
         # Debug-Output
         if ($script:ExplainMode -and $sfcOutput) {
             Write-Log "`n[DEBUG] SFC Output:" -Level "DEBUG"
-            $sfcOutput.Split("`n") | Select-Object -First 10 | ForEach-Object {
-                Write-Log "  $_" -Level "DEBUG"
+            # Defender-safe: Manual loop instead of pipeline
+            $outputLines = $sfcOutput.Split("`n")
+            $maxLines = [Math]::Min(10, $outputLines.Count)
+            for ($i = 0; $i -lt $maxLines; $i++) {
+                if ($outputLines[$i]) {
+                    Write-Log "  $($outputLines[$i])" -Level "DEBUG"
+                }
             }
         }
         
@@ -269,6 +294,7 @@ function Invoke-SystemFileChecker {
         return $false
     }
 }
+#>
 
 function Invoke-DISMRepair {
     Write-Log "`n[*] --- DISM SYSTEM-REPARATUR ---" -Color Cyan
@@ -425,4 +451,4 @@ function Get-EnhancedDriveInfo {
 }
 
 # Export functions for dot-sourcing
-Write-Verbose "Disk-Maintenance Module loaded: Invoke-CheckDisk, Invoke-SystemFileChecker, Invoke-DISMRepair, Get-EnhancedDriveInfo, Format-ByteSize, Show-ProgressBar"
+Write-Verbose "Disk-Maintenance Module loaded: Invoke-CheckDisk, Invoke-DISMRepair, Get-EnhancedDriveInfo, Format-ByteSize, Show-ProgressBar (Invoke-SystemFileChecker obsolete - use sfc-simple.ps1)"

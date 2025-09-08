@@ -1,5 +1,5 @@
 {
-  "version": "7.1.0.a",
+  "version": "7.1.1",
   "codename": "Fenrir",
   "debug_mode": false,
   "auto_update": true,
@@ -10,7 +10,7 @@
   "script_name": "hellion_tool_main.ps1",
   "last_update_check": "",
   "launcher": {
-    "version": "7.1.0.a",
+    "version": "7.1.1",
     "codename": "Fenrir",
     "auto_folder_creation": true,
     "log_cleanup_days": 30,

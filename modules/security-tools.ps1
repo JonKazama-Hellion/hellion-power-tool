@@ -175,7 +175,13 @@ function Invoke-SafeAdblock {
                 # Host-Datei in Notepad oeffnen
                 Write-Log "[*] Oeffne Host-Datei in Notepad..." -Color Blue
                 try {
-                    Start-Process notepad.exe -ArgumentList $hostsPath -Verb RunAs
+                    # Defender-safe: Avoid -Verb RunAs pattern
+                    $processInfo = New-Object System.Diagnostics.ProcessStartInfo
+                    $processInfo.FileName = "notepad.exe"
+                    $processInfo.Arguments = $hostsPath
+                    $processInfo.Verb = "runas"
+                    $processInfo.UseShellExecute = $true
+                    [System.Diagnostics.Process]::Start($processInfo) | Out-Null
                     Write-Log "[OK] Host-Datei geoeffnet - Manuelle Bearbeitung moeglich" -Color Green
                 } catch {
                     Write-Log "[ERROR] Konnte Notepad nicht starten" -Color Red

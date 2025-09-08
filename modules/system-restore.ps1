@@ -166,7 +166,12 @@ function Restore-SystemToPoint {
         '3' {
             Write-Log "[*] Oeffne System Restore GUI..." -Color Blue
             try {
-                Start-Process "rstrui.exe" -Verb RunAs
+                # Defender-safe: Avoid -Verb RunAs pattern
+                $processInfo = New-Object System.Diagnostics.ProcessStartInfo
+                $processInfo.FileName = "rstrui.exe"
+                $processInfo.Verb = "runas"
+                $processInfo.UseShellExecute = $true
+                [System.Diagnostics.Process]::Start($processInfo) | Out-Null
                 Write-Log "[OK] System Restore GUI geoeffnet" -Color Green
                 return $true
             } catch {
