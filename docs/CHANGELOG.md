@@ -7,6 +7,40 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 
 ---
 
+## [7.1.3 "Fenrir-Update"] - 2025-09-09
+
+### 🐛 Bugfix Release - Auto-Update Stabilität & Markdown-Konformität
+
+#### 🔧 Auto-Update Fixes
+
+- **Update-Check Bugfix**: Behoben - Launcher konnte Version-Nummern nicht korrekt einlesen
+- **Variablen-Expansion**: Korrigierte delayed expansion in update-check.bat für robuste Variable-Parsing
+- **Versions-Display**: Verbesserte Anzeige der aktuellen und GitHub-Versionen im Update-Check
+- **Backup-Path-Handling**: Robuste Pfad-Behandlung mit delayed expansion für Backup-Operationen
+
+#### 📝 Markdown-Compliance  
+
+- **Lint-Konformität**: Alle .md Dateien entsprechen nun markdownlint-Regeln
+- **MD025-Fix**: Mehrfach-H1-Überschriften in CLAUDE.md korrigiert
+- **Konsistente Formatierung**: Einheitliche Markdown-Struktur über alle Dokumentationsdateien
+- **Link-Format**: Korrigierte URL-Formatierung mit spitzen Klammern für bessere Kompatibilität
+
+#### 📋 Dokumentations-Updates
+
+- **Version-Sync**: Alle Dateien auf v7.1.3 "Fenrir-Update" aktualisiert
+- **Emergency-Fix-Guide**: Aktualisierte Notfall-Anleitung mit korrekter Versionsnummer
+- **README-Verbesserungen**: Verbesserte Strukturierung und Markdown-Konformität
+- **Launcher-Docs**: Überarbeitete Launcher/README.md mit korrekten Code-Blöcken
+
+#### 🏗️ Technische Verbesserungen
+
+- **Variable-Scoping**: Sichere Variable-Behandlung in Batch-Scripts
+- **Path-Resolution**: Verbesserte Pfad-Auflösung für relative Script-Aufrufe  
+- **Error-Handling**: Robustere Fehlerbehandlung bei Update-Check-Operationen
+- **Cleanup-Logic**: Optimierte Cleanup-Routinen für temporäre Update-Dateien
+
+---
+
 ## [7.1.2 "Fenrir"] - 2025-09-08
 
 ### 🚀 Major Release - Launcher Revolution & Auto-Update System
