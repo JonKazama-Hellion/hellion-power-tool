@@ -7,6 +7,43 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 
 ---
 
+## [7.1.5.0 "Baldur"] - 2025-09-09
+
+### 🆕 NEW FEATURE RELEASE - Erweiterte Treiber-Diagnose
+
+#### ✨ Neue Features
+
+- **🔍 Treiber-Diagnostik Modul**: Komplett neues Modul für erweiterte Driver-Analyse
+  - ENE.SYS Spezial-Behandlung für Card Reader Probleme
+  - Automatische Treiber-Reparatur mit Backup-System
+  - Driver Store Bereinigung und Zwangs-Entfernung
+  - WMI-basierte Hardware-Erkennung statt CSV-Parsing
+  - Sicherheits-Whitelist verhindert versehentliche System-Treiber Löschung
+- **🛡️ ENE-Hardware-Filterung**: Präzise Erkennung echter ENE-Hardware (Vendor ID 1524)
+- **⚡ Force-Removal-Funktion**: Für problematische Treiber die nicht normal deinstalliert werden können
+- **📋 Event-Log-Analyse**: Sucht automatisch nach treiber-bedingten Systemfehlern
+- **🔧 Driver Verifier Integration**: Ermöglicht erweiterte Treiber-Tests
+
+#### 🐛 Bugfixes
+
+- **PSScriptAnalyzer Compliance**: Alle PowerShell-Funktionen verwenden genehmigte Verben
+- **False-Positive Bluetooth**: Energiearme Bluetooth-Geräte werden nicht mehr als ENE-Hardware erkannt
+- **Variable Optimization**: Entfernt ungenutzte Variablen für sauberen Code
+
+#### 🔧 Technische Verbesserungen
+
+- **Modulare Architektur**: `modules/driver-diagnostic.ps1` als eigenständiges System
+- **WMI-Integration**: `Win32_SystemDriver` und `Win32_PnPEntity` für zuverlässige Hardware-Erkennung  
+- **Registry-Backup-System**: Fallback wenn Windows Restore Points nicht verfügbar
+- **AMD-ENE Treiber Support**: Spezielle Behandlung für AMD-signierte ENE-Treiber im Driver Store
+- **Intelligente Pfad-Erkennung**: Automatische Suche nach Treiber-Dateien aus WMI-Daten
+
+**🎯 Problem gelöst**: ENE.SYS Treiber-Crashes durch intelligente Force-Removal mit Windows Auto-Reinstall
+
+**📊 Modul-Stats**: 944 Zeilen PowerShell-Code, 11 spezialisierte Funktionen, vollständige Error-Recovery
+
+---
+
 ## [7.1.4.3 "Odin"] - 2025-09-09
 
 ### 🎉 MAJOR BUGFIX RELEASE - Update-Checker komplett neu programmiert

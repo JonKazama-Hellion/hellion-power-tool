@@ -1,10 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
-title Hellion Update Checker v7.1.4.3
+title Hellion Update Checker v7.1.5.0
 color 0C
 
 echo ==============================================================================
-echo                    HELLION UPDATE CHECKER v7.1.4.3
+echo                    HELLION UPDATE CHECKER v7.1.5.0
 echo ==============================================================================
 echo.
 

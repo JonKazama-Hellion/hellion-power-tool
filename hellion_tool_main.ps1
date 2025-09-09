@@ -285,7 +285,7 @@ function Show-MainMenu {
     Write-Information "  === DIAGNOSE & INFO ===" -InformationAction Continue
     Write-Information "     [9] System-Information" -InformationAction Continue
     Write-Information "     [10] Netzwerk-Test" -InformationAction Continue
-    Write-Information "     [11] Treiber-Status" -InformationAction Continue
+    Write-Information "     [11] Treiber-Diagnose (Erweitert)" -InformationAction Continue
     Write-Information "     [12] System-Bericht erstellen" -InformationAction Continue
     Write-Information "     [13] Bluescreen/Crash Analyzer" -InformationAction Continue
     Write-Information "     [14] RAM-Test (Memory Diagnostic)" -InformationAction Continue
@@ -475,85 +475,15 @@ do {
             Read-Host
         }
         '11' {
-            Write-Information "`n[*] TREIBER-OPTIONEN:" -InformationAction Continue
-            Write-Information "  [1] Treiber-Status analysieren" -InformationAction Continue
-            Write-Information "  [2] Problematische Treiber reparieren" -InformationAction Continue
-            Write-Information "  [3] Alle Treiber neu installieren" -InformationAction Continue
-            Write-Information "  [x] Zurueck zum Hauptmenu" -InformationAction Continue
+            # Load driver diagnostic module
+            . "$PSScriptRoot\modules\driver-diagnostic.ps1"
             
-            $driverChoice = Read-Host "`nWahl [1-3/x]"
-            switch ($driverChoice.ToLower()) {
-                '1' {
-                    if (Get-Command Get-DetailedDriverStatus -ErrorAction SilentlyContinue) {
-                        Get-DetailedDriverStatus
-                    } else {
-                        Write-Error "ERROR: Driver Status function not found." -ErrorAction Continue
-                    }
-                }
-                '2' {
-                    Write-Information "`n[*] TREIBER-REPARATUR:" -InformationAction Continue
-                    Write-Information "[WARNING] Treiber-Reparatur kann System-Neustart erfordern!" -InformationAction Continue
-                    
-                    $confirm = Read-Host "`nProblematische Treiber reparieren? [j/n]"
-                    if ($confirm -eq 'j' -or $confirm -eq 'J') {
-                        # Verwende pnputil fÃ¼r Treiber-Reparatur
-                        Write-Information "`n[*] Suche nach problematischen Treibern..." -InformationAction Continue
-                        
-                        try {
-                            # Problematische GerÃ¤te finden
-                            $problemDevices = Get-WmiObject Win32_PnPEntity | Where-Object { 
-                                $_.ConfigManagerErrorCode -ne 0 -and $_.ConfigManagerErrorCode -ne 22 
-                            }
-                            
-                            if ($problemDevices.Count -gt 0) {
-                                Write-Information "[*] Gefunden: $($problemDevices.Count) Geraete mit Problemen" -InformationAction Continue
-                                
-                                foreach ($device in $problemDevices | Select-Object -First 5) {
-                                    Write-Information "  [*] Repariere: $($device.Name)" -InformationAction Continue
-                                    
-                                    # Versuche GerÃ¤t zu deaktivieren und reaktivieren
-                                    try {
-                                        $deviceId = $device.DeviceID
-                                        & pnputil /restart-device "$deviceId" 2>$null
-                                        Write-Information "    [OK] Neustart versucht" -InformationAction Continue
-                                    } catch {
-                                        Write-Information "    [WARNING] Neustart fehlgeschlagen" -InformationAction Continue
-                                    }
-                                }
-                                
-                                Write-Information "`n[INFO] Treiber-Reparatur abgeschlossen" -InformationAction Continue
-                                Write-Information "[EMPFEHLUNG] System-Neustart wird empfohlen" -InformationAction Continue
-                            } else {
-                                Write-Information "[OK] Keine problematischen Treiber gefunden" -InformationAction Continue
-                            }
-                        } catch {
-                            Write-Error "[ERROR] Treiber-Reparatur fehlgeschlagen: $($_.Exception.Message)" -ErrorAction Continue
-                        }
-                    }
-                }
-                '3' {
-                    Write-Information "`n[DANGER] VOLLSTAENDIGE TREIBER-NEUINSTALLATION" -InformationAction Continue
-                    Write-Information "[WARNING] Dies kann das System unbrauchbar machen!" -InformationAction Continue
-                    Write-Information "[WARNING] Nur fuer Experten empfohlen!" -InformationAction Continue
-                    
-                    $confirm = Read-Host "`nWirklich alle Treiber neu installieren? [CONFIRM]"
-                    if ($confirm -eq 'CONFIRM') {
-                        Write-Information "`n[*] Starte Treiber-Neuinstallation..." -InformationAction Continue
-                        Write-Information "[INFO] Diese Funktion ist zu riskant und wurde deaktiviert" -InformationAction Continue
-                        Write-Information "[EMPFEHLUNG] Verwenden Sie Windows Update oder Hersteller-Tools" -InformationAction Continue
-                    } else {
-                        Write-Information "[SKIP] Treiber-Neuinstallation abgebrochen" -InformationAction Continue
-                    }
-                }
-                'x' {
-                    Write-Information "Zurueck zum Hauptmenu..." -InformationAction Continue
-                }
-                default {
-                    Write-Information "Ungueltige Auswahl." -InformationAction Continue
-                }
+            if (Get-Command Start-DriverDiagnostic -ErrorAction SilentlyContinue) {
+                Start-DriverDiagnostic
+            } else {
+                Write-Error "ERROR: Driver Diagnostic module not found." -ErrorAction Continue
+                Write-Information "Bitte stelle sicher dass modules/driver-diagnostic.ps1 geladen ist." -InformationAction Continue
             }
-            Write-Information "`nPress Enter to continue..." -InformationAction Continue
-            Read-Host
         }
         '12' {
             if (Get-Command New-DetailedSystemReport -ErrorAction SilentlyContinue) {
