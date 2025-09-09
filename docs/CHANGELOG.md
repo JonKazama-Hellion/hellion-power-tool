@@ -7,6 +7,41 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 
 ---
 
+## [7.1.3 "Fenrir-Update"] - 2025-09-09
+
+### 🔧 Maintenance Release - Auto-Update Bugfixes & Emergency-Update System
+
+#### 🐛 Behobene Bugs
+
+- **Auto-Update-System**: Kritische Bugfixes im Autoupdater für zuverlässige Update-Funktion
+- **Update-Mechanismus**: Verbesserte Update-Logik und Fehlerbehandlung
+
+#### 🚨 Neue Funktionen
+
+- **Emergency-Update-System**: Neues `emergency-update.bat` für zuverlässiges Tool-Patching
+- **Automatische Backups**: Emergency-Update erstellt Backups aller alten Dateien vor Update
+- **Fail-Safe-Update**: Verlässliche Update-Methode als Fallback bei Autoupdater-Problemen
+
+#### 📝 Dokumentation
+
+- **Markdown-Standards**: Alle README.md, SECURITY.md und Dokumentationsdateien auf aktuelle Markdownlint-Standards gebracht
+- **Konsistente Formatierung**: Einheitliches und wartbares Gesamtbild der Dokumentation
+- **EMERGENCY-FIX.md**: Neue Anleitung zur Verwendung des Emergency-Update-Systems
+
+#### 🛠️ Technische Verbesserungen
+
+- **Verbesserte Update-Stabilität**: Robustere Update-Mechanismen
+- **Dokumentations-Qualität**: Professionelle, einheitliche Markdown-Formatierung
+- **Wartbarkeit**: Bessere Code- und Dokumentationsstruktur
+
+#### 🚨 KNOWN BUGS
+
+- **update-check.bat**: Der normale Auto-Update-Checker stürzt beim Versionsvergleich ab
+  - **Workaround**: Nutze `emergency-update.bat` für zuverlässige Updates
+  - **Status**: Fix geplant für nächstes Release
+
+---
+
 ## [7.1.2 "Fenrir"] - 2025-09-08
 
 ### 🚀 Major Release - Launcher Revolution & Auto-Update System
@@ -34,14 +69,14 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 - **Codename-Whitelist**: Bekannte Releases (Alpha, Beta, Gamma, Delta, Epsilon, Kazama, Beleandis, Monkey, Moon, Moon-Bugfix, Fenrir)
 - **Git-Auto-Installation**: Automatische Git-Installation via winget wenn benötigt
 
-#### 🛠️ Technische Verbesserungen
+#### 🛠️ Technische Verbesserungen (v7.1.2)
 
 - **Robuste Fehlerbehandlung**: Script stürzt nicht mehr ab bei Git/Internet-Problemen
 - **Shallow Git Clone**: Effizienter Repository-Download mit `--depth 1`
 - **Temporäre Verzeichnisse**: Sichere Temp-Ordner für Update-Checks
 - **Cleanup-System**: Automatische Bereinigung nach Update-Prüfung
 
-#### 🐛 Behobene Bugs
+#### 🐛 Behobene Bugs (v7.1.2)
 
 - **DLL Integrity Checker**: Komplett auskommentiert (verursachte Syntax-Fehler)
 - **Count Property Fehler**: Null-Checks für PowerShell Strict Mode hinzugefügt
