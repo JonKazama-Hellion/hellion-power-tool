@@ -1,6 +1,6 @@
 # ===================================================================
 # CONFIG UTILITIES MODULE
-# Hellion Power Tool v7.1.4 "Odin" - Modular Version
+# Hellion Power Tool v7.1.5.0 "Baldur" - Modular Version
 # ===================================================================
 
 function Import-Configuration {
@@ -54,8 +54,8 @@ function Get-DefaultConfiguration {
     #>
     
     return @{
-        version = "7.1.4.a"
-        codename = "Odin"
+        version = "7.1.5.0"
+        codename = "Baldur"
         debug_mode = $false
         auto_update = $true
         log_level = "INFO"
