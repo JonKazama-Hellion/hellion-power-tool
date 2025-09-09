@@ -7,6 +7,105 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 
 ---
 
+## [7.1.4.3 "Odin"] - 2025-09-09
+
+### 🎉 MAJOR BUGFIX RELEASE - Update-Checker komplett neu programmiert
+
+#### 🐛 Kritische Bugfixes
+
+- **Update-Checker**: Komplett neuer `update-check.bat` (334 → 277 Zeilen sauberer Code)
+- **False-Positive Updates**: Behebt falsches Update-Angebot bei identischen Versionen
+- **LSS/GTR String-Vergleiche**: Ersetzt fehlerhafte Batch-Operatoren durch sichere String-Gleichheitsprüfung
+- **Self-Delete Problem**: Separater Update-Installer verhindert Script-Selbstlöschung
+- **Goto-Label Chaos**: Entfernt komplexe goto-Label Struktur zugunsten klarer if-else Logik
+
+#### ✨ Neue Features
+
+- **Timestamp-basierte Versionierung**: Präziser Versionsvergleich statt fehleranfällige Hybrid-Logik
+- **Robustes Auto-Update-System**: Vollständiges Backup-System mit User-Settings Erhaltung
+- **Separater Update-Installer**: Erstellt eigenständiges Update-Script zur sicheren Installation
+- **Verbesserte Fehlerbehandlung**: Umfassende Validierung und Error-Recovery
+- **User-Settings Merge**: Automatische Übernahme von config/settings.json bei Updates
+
+#### 🔧 Technische Verbesserungen
+
+- **Reine Timestamp-Methode**: Ersetzt buggy Hybrid-System (Legacy + neue Versionen)
+- **String-Gleichheitsprüfung**: `==` statt LSS/GTR für zuverlässige Vergleiche
+- **Cleanup-Optimierung**: Bessere Temp-Verzeichnis-Verwaltung
+- **Backup-Strategie**: Timestamped Backups mit vollständiger Wiederherstellbarkeit
+
+#### 🎯 Problem gelöst
+
+**ENDLICH**: Update-Checker funktioniert zuverlässig ohne False-Positive Updates bei identischen Versionen!
+**Entwicklungszeit**: 9 Stunden intensive Debugging-Session (v7.1.3 → v7.1.4.3)
+
+---
+
+## [7.1.4.2 "Odin"] - 2025-09-09
+
+### 🔧 Update-Checker Timestamp-Vergleich Bugfixes
+
+#### 🐛 Kritische Bugfixes (v7.1.4.2)
+
+- **Doppelter Vergleich behoben**: Timestamp UND Legacy-Vergleich liefen gleichzeitig
+  - **Jetzt**: Timestamp-Vergleich hat Vorrang, Legacy nur als Fallback
+- **IF-Statement Struktur korrigiert**: Verschachtelte IF-Bedingungen richtig strukturiert
+- **GOTO :VERSION_COMPARE_DONE**: Verhindert doppelte Ausführung
+- **Identische Versionen Problem gelöst**: 71422509101155 == 71422509101155 = KEIN UPDATE (korrekt)
+- **False-Positive Updates**: Behebt falsches Update-Angebot bei gleichen Versionen
+
+#### 🔧 Technische Details
+
+- **Neue Timestamp**: 71422509101155 (7142 = v7.1.4.2)  
+- **Hybrid-System**: Funktioniert jetzt präzise
+- **Abwärtskompatibilität**: Zu allen älteren Versionen erhalten
+
+---
+
+## [7.1.4.1 "Odin"] - 2025-09-09
+
+### 📝 Dokumentation und Release-Fixes
+
+#### 📋 Dokumentations-Updates
+
+- **version.txt**: Auf 4 saubere Zeilen reduziert (Update-Checker kompatibel)
+- **VERSION-FORMAT.md**: Detaillierte Versionsnummern-Dokumentation erstellt
+- **Release-Notes**: Aktualisiert - Neue Features statt alter Bugs
+- **README.md**: Auf v7.1.4.1 aktualisiert
+- **Markdownlint-Fehler**: In Dokumentation behoben
+
+#### 🔧 Version-System Korrekturen  
+
+- **Version erhöht**: Auf 7.1.4.1 für Release-System Korrekturen
+- **Timestamp-Format**: VVV → VVVV (714 → 7141)
+- **Aktuelle Zeit**: 71412509101142 (10.09.2025 11:42)
+- **GitHub Actions**: Release auf v7.1.4.1 aktualisiert
+- **Vereinfachtes Release-System**: 1 ZIP statt 3
+
+---
+
+## [7.1.4 "Odin"] - 2025-09-09
+
+### 🚀 Hybrid-Timestamp-Versionsystem Release
+
+#### ✨ Neue Features (v7.1.4)
+
+- **Timestamp-System**: Neue Versionierung (7142509101210) für minutengenaue Updates
+- **Hybrid-Autoupdater**: Mit Abwärtskompatibilität zu alten Patchern  
+- **"Odin" Codename**: Zur Codename-Whitelist hinzugefügt
+
+#### 🔧 Verbesserungen
+
+- **PowerShell Code Quality**: PSScriptAnalyzer-konforme Verbesserungen
+- **YAML-Syntaxfehler**: In GitHub Actions behoben
+- **Markdownlint-Standards**: In allen Dokumentationen umgesetzt
+
+#### 🚨 Breaking Change
+
+**BREAKING CHANGE**: Neue Timestamp-basierte Versionierung ab v7.1.4
+
+---
+
 ## [7.1.3 "Fenrir-Update"] - 2025-09-09
 
 ### 🔧 Maintenance Release - Auto-Update Bugfixes & Emergency-Update System
@@ -337,15 +436,125 @@ Blockiert 25 sichere Tracking/Werbung-Domains:
 
 ---
 
-## Entwicklungshistorie
+---
 
-- **v6.1 "Beleandis"**: Grundstein und Neubau
+## Frühe Entwicklungsversionen (Pre-GitHub Era)
+
+### [5.0 "Kazama"] - 2025-08-XX
+
+#### 🚀 Launcher-Konzept & AI-Unterstützung Überlegungen
+
+- **Launcher-System Aufbau**: Entwicklung eines Launchers um nicht immer manuell die .ps1 starten zu müssen
+- **Git & Release-Überlegungen**: Nachdenken über Git für Backup und Release falls sich jemand für das Tool interessiert  
+- **AI-Assistent Evaluation**: Bei komplizierteren und größeren Problemen AI-Assistent zum Rate ziehen? Claude?
+- **Code-Transparenz**: Dokumentiert dass der Code selbst geschrieben ist und AI nur zur Fehlersuche und bei Fixes komplizierterer Bugs zum Einsatz kommt
+
+#### Entwicklungsnotizen
+
+- Konzeptphase für Launcher-System
+- Erste Überlegungen zur Automatisierung
+- AI-Unterstützung als Debugging-Tool evaluiert
+
+---
+
+### [4.2 "Epsilon"] - 2025-08-XX
+
+#### 🔧 Codename-Überarbeitung & Network-Tool Bugfixes
+
+- **Codename-System Änderung**: Überarbeitung der Codename-Benennung (persönliche Präferenz)
+- **Network-Tools Bugfixes**: Behebung einiger Bugs beim Ausführen von Network-Tools
+- **Bitdefender-Trigger**: Bitdefender wurde durch Network-Tools getriggert - Anpassungen vorgenommen
+
+#### Verbesserungen (v4.2)
+
+- Stabilere Network-Funktionalität
+- Verbesserte Antiviren-Kompatibilität
+- Überarbeitetes Benennungsschema
+
+---
+
+### [4.0 "Delta"] - 2025-08-XX
+
+#### 🛠️ Winget-Korrektur & False-Positive Fixes
+
+- **Winget --unknown Korrektur**: Winget --unknown war nicht korrekt - Korrektur zum richtigen Befehl
+- **False-Positive Behebung**: Verbesserungen zur Minimierung von Antiviren-False-Positives
+- **Nummern-Anzeige**: Anzeige der Versionsnummern und Feedback-Verbesserungen
+
+#### Korrekturen (v4.0)
+
+- Korrekte Winget-Parameter implementiert
+- Verbesserte Antiviren-Kompatibilität
+- Enhanced User-Feedback
+
+---
+
+### [3.0 "Gamma"] - 2025-08-XX
+
+#### 📦 Winget-Integration Experimente
+
+- **Winget-Integration**: Winget hinzufügen und testen
+- **Parameter-Experimente**: Vielleicht mit --unknown? (experimentelle Phase)
+- **Testing-Phase**: Ausgiebiges Testen der neuen Software-Management-Features
+
+#### Neue Features (v3.0)
+
+- Erste Winget-Integration
+- Experimentelle Software-Update-Funktionen
+- Testing verschiedener Winget-Parameter
+
+---
+
+### [2.0 "Beta"] - 2025-07-XX
+
+#### 🔍 Verfeinerung & Erweiterte Analyse
+
+- **Ideen-Verfeinerung**: Verfeinerung der ursprünglichen Konzepte und Ansätze
+- **Weitere Checks**: Erweiterte System-Checks und Validierungen  
+- **Fehler-Analyse**: Tiefere Analyse von Systemfehlern und deren Behebung
+
+#### Verbesserungen (v2.0)
+
+- Erweiterte Diagnose-Funktionen
+- Verbesserte Systemprüfungen
+- Detailliertere Fehlerbehandlung
+
+---
+
+### [1.0 "Alpha"] - 2025-07-XX
+
+#### 💡 Initiale Konzeption & Proof-of-Concept
+
+- **Initial-Idee**: Erste Konzeption des Hellion Power Tools
+- **Tool-Forschung**: Nachforschung verschiedener System-Tools und deren Möglichkeiten
+- **Bitdefender-Testing**: Testing der Möglichkeiten ohne Bitdefender zu triggern
+- **Proof-of-Concept**: Grundlegende Funktionalität und Machbarkeitsstudie
+
+#### Grundstein (v1.0)
+
+- Erste Systemoptimierungs-Tools
+- Antiviren-kompatible Entwicklung
+- Basis-Framework Entwicklung
+
+---
+
+## Entwicklungshistorie (Komplett)
+
+- **v1.0 "Alpha"**: Initiale Idee und Proof-of-Concept
+- **v2.0 "Beta"**: Verfeinerung und erweiterte Analyse
+- **v3.0 "Gamma"**: Erste Winget-Integration Experimente  
+- **v4.0 "Delta"**: Winget-Korrekturen und False-Positive Fixes
+- **v4.2 "Epsilon"**: Codename-Überarbeitung und Network-Bugfixes
+- **v5.0 "Kazama"**: Launcher-Konzept und AI-Unterstützung Evaluation
+- **v6.1 "Beleandis"**: Grundstein und Neubau (GitHub Era beginnt)
 - **v6.5 "Monkey"**: Erweiterte Features und Kompatibilität  
 - **v7.0 "Moon"**: Komplette Überarbeitung mit Launcher-System
 - **v7.0.1 "Moon-Bugfix"**: UAC-Fixes und Desktop-Integration
 - **v7.0.2 "Moon-Bugfix"**: ZIP-Download Auto-Update-System
 - **v7.0.3 "Moon-Hotfix"**: Kritische Bugfixes und Safe Adblock
 - **v7.1.2 "Fenrir"**: Launcher Revolution und Auto-Update System
+- **v7.1.3 "Fenrir-Update"**: Emergency-Update-System und Markdown-Standards
+- **v7.1.4.3 "Odin"**: Update-Checker Neuentwicklung - False-Positive Problem endgültig gelöst
 
 **Entwickelt von:** Hellion Online Media - Florian Wathling  
 **Website:** [https://hellion-online-media.de](https://hellion-online-media.de)  
