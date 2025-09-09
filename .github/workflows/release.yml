@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., v7.1.4)'
+        description: 'Release version (e.g., v7.1.4.1)'
         required: true
-        default: 'v7.1.4'
+        default: 'v7.1.4.1'
 
 permissions:
   contents: write
@@ -78,69 +78,60 @@ jobs:
         
         Write-Host "[RESULT] Successfully signed $signedCount PowerShell files"
         
-    - name: Create release packages
+    - name: Create release package
       shell: powershell
       run: |
-        Write-Host "[INFO] Creating release packages..."
+        Write-Host "[INFO] Creating clean release package..."
         
         $version = "${{ steps.version.outputs.version }}"
-        $baseName = "hellion-power-tool-$version"
+        $packageName = "hellion-power-tool-$version.zip"
         
-        # Create different package formats
-        
-        # 1. Standard ZIP (signed)
-        Write-Host "Creating signed ZIP package..."
-        Compress-Archive -Path ".\*" -DestinationPath "$baseName-signed.zip" -Force
-        
-        # 2. Portable ZIP (essential files only)
-        Write-Host "Creating portable package..."
-        $portableFiles = @(
-          "hellion_tool_main.ps1",
-          "modules\*.ps1",
-          "launcher\*.bat",
-          "config\*.json",
-          "*.md",
-          "LICENSE"
+        # Define files/folders to exclude from release
+        $excludePatterns = @(
+          ".git*",
+          "Debug\*", 
+          "temp\*",
+          "logs\*",
+          "backups\*",
+          "*.tmp",
+          "*.log",
+          ".vs\*",
+          "node_modules\*"
         )
-        New-Item -Path "portable" -ItemType Directory -Force
-        $portableFiles | ForEach-Object {
-          if (Test-Path $_) {
-            Copy-Item $_ -Destination "portable\" -Recurse -Force
-          }
-        }
-        Compress-Archive -Path "portable\*" -DestinationPath "$baseName-portable.zip" -Force
-        Remove-Item "portable" -Recurse -Force
         
-        # 3. Source-only ZIP (no binaries)
-        Write-Host "Creating source-only package..."
-        $excludePattern = @("*.exe", "*.dll", "*.msi", ".git*", "Debug\*")
-        $sourceFiles = Get-ChildItem -Recurse | Where-Object { 
-          $exclude = $false
-          foreach ($pattern in $excludePattern) {
-            if ($_.FullName -like "*$pattern*") {
-              $exclude = $true
+        Write-Host "Collecting release files..."
+        $allFiles = Get-ChildItem -Recurse -File
+        $releaseFiles = $allFiles | Where-Object {
+          $file = $_
+          $include = $true
+          foreach ($pattern in $excludePatterns) {
+            if ($file.FullName -like "*$pattern*") {
+              $include = $false
               break
             }
           }
-          -not $exclude
+          $include
         }
-        New-Item -Path "source" -ItemType Directory -Force
-        $sourceFiles | ForEach-Object {
-          $relativePath = $_.FullName.Substring((Get-Location).Path.Length + 1)
-          $destPath = Join-Path "source" $relativePath
+        
+        Write-Host "Creating temporary release directory..."
+        New-Item -Path "hellion-release" -ItemType Directory -Force
+        
+        foreach ($file in $releaseFiles) {
+          $relativePath = $file.FullName.Substring((Get-Location).Path.Length + 1)
+          $destPath = Join-Path "hellion-release" $relativePath
           $destDir = Split-Path $destPath -Parent
           if (-not (Test-Path $destDir)) {
             New-Item -Path $destDir -ItemType Directory -Force
           }
-          Copy-Item $_.FullName -Destination $destPath -Force
+          Copy-Item $file.FullName -Destination $destPath -Force
         }
-        Compress-Archive -Path "source\*" -DestinationPath "$baseName-source.zip" -Force
-        Remove-Item "source" -Recurse -Force
         
-        Write-Host "[OK] Created packages:"
-        Get-ChildItem "*$version*.zip" | ForEach-Object {
-          Write-Host "  - $($_.Name) ($('{0:N2}' -f ($_.Length / 1MB)) MB)"
-        }
+        Write-Host "Creating signed release package..."
+        Compress-Archive -Path "hellion-release\*" -DestinationPath $packageName -Force
+        Remove-Item "hellion-release" -Recurse -Force
+        
+        $packageSize = (Get-Item $packageName).Length / 1MB
+        Write-Host "[OK] Created: $packageName ($('{0:N2}' -f $packageSize) MB)"
         
     - name: Generate checksums
       shell: powershell
@@ -150,7 +141,7 @@ jobs:
         $version = "${{ steps.version.outputs.version }}"
         $checksums = @()
         
-        Get-ChildItem "*$version*.zip", "*.cer" | ForEach-Object {
+        Get-ChildItem "hellion-power-tool-$version.zip", "*.cer" | ForEach-Object {
           $hash = Get-FileHash $_.Name -Algorithm SHA256
           $checksums += "$($hash.Hash.ToLower())  $($_.Name)"
           Write-Host "SHA256 ($($_.Name)): $($hash.Hash.ToLower())"
@@ -175,16 +166,13 @@ jobs:
         $content += "3. **Nach Download**: Hellion-Ordner zur Defender-Ausnahme hinzufuegen`n"
         $content += "4. **Installation**: ``launcher\simple-launcher.bat`` ausfuehren`n`n"
         
-        $content += "## Download-Optionen`n`n"
-        $content += "### Empfohlene Downloads`n"
-        $content += "- **``hellion-power-tool-$version-signed.zip``** - Vollversion mit digitaler Signatur`n"
-        $content += "- **``hellion-power-tool-$version-portable.zip``** - Kompakte Version (nur essentials)`n`n"
+        $content += "## Download`n`n"
+        $content += "### Release-Datei`n"
+        $content += "- **``hellion-power-tool-$version.zip``** - Vollstaendige signierte Version`n"
+        $content += "- **``hellion-certificate.cer``** - Zertifikat fuer Signatur-Verifikation`n"
+        $content += "- **``checksums.txt``** - SHA256 Hashes zur Verifikation`n`n"
         
-        $content += "### Fuer Entwickler`n"
-        $content += "- **``hellion-power-tool-$version-source.zip``** - Nur Quellcode (ohne Binaerdateien)`n"
-        $content += "- **``hellion-certificate.cer``** - Zertifikat fuer Signatur-Verifikation`n`n"
-        
-        $content += "## Neue Features in v7.1.4`n"
+        $content += "## Neue Features in v7.1.4.1`n"
         $content += "- **Emergency-Update-System** - Neues ``emergency-update.bat`` fuer zuverlaessiges Tool-Patching`n"
         $content += "- **Automatische Backups** - Emergency-Update erstellt Backups aller alten Dateien vor Update`n"
         $content += "- **Auto-Update Bugfixes** - Kritische Bugfixes im Autoupdater fuer zuverlaessige Update-Funktion`n"
@@ -225,7 +213,7 @@ jobs:
         draft: false
         prerelease: false
         files: |
-          *${{ steps.version.outputs.version }}*.zip
+          hellion-power-tool-${{ steps.version.outputs.version }}.zip
           hellion-certificate.cer
           checksums.txt
         token: ${{ secrets.GITHUB_TOKEN }}

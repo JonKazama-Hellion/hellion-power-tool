@@ -158,4 +158,4 @@ Für Entwickler und Tester:
 
 ---
 
-Letzte Aktualisierung: 2025-09-10 - Hellion Power Tool v7.1.4 "Odin"
+Letzte Aktualisierung: 2025-09-10 - Hellion Power Tool v7.1.4.1 "Odin"
