@@ -173,10 +173,11 @@ jobs:
         $content += "- **``checksums.txt``** - SHA256 Hashes zur Verifikation`n`n"
         
         $content += "## Neue Features in v7.1.4.1`n"
-        $content += "- **Emergency-Update-System** - Neues ``emergency-update.bat`` fuer zuverlaessiges Tool-Patching`n"
-        $content += "- **Automatische Backups** - Emergency-Update erstellt Backups aller alten Dateien vor Update`n"
-        $content += "- **Auto-Update Bugfixes** - Kritische Bugfixes im Autoupdater fuer zuverlaessige Update-Funktion`n"
-        $content += "- **Markdown-Standards** - Alle Dokumentationsdateien auf aktuelle Markdownlint-Standards gebracht`n`n"
+        $content += "- **4-stelliges Timestamp-Format** - Neues VVVVYYYYMMDDHHNN Format fuer praezise Versionierung`n"
+        $content += "- **Hybrid-Versionsystem** - Kombiniert alte Datum-Methode mit neuen Timestamps`n"
+        $content += "- **Vereinfachtes Release-System** - Nur noch 1 ZIP statt 3 verwirrende Varianten`n"
+        $content += "- **Saubere version.txt** - Kommentare in separate Dokumentation verschoben`n"
+        $content += "- **Auto-Update Kompatibilitaet** - Vollstaendig abwaertskompatibel zu alten Versionen`n`n"
         
         $content += "## Sicherheit & Verifikation`n"
         $content += "- **Quellcode** - Vollstaendig auf GitHub verfuegbar`n"
@@ -191,8 +192,7 @@ jobs:
         
         $content += "## Bekannte Probleme`n"
         $content += "- Defender False-Positive (**NORMAL** - siehe Whitelist-Anleitung)`n"
-        $content += "- UAC-Prompts bei System-Operationen (**ERWUENSCHT** - Sicherheitsfeature)`n"
-        $content += "- **update-check.bat** - Der normale Auto-Update-Checker stuerzt beim Versionsvergleich ab (Workaround: ``emergency-update.bat``)`n`n"
+        $content += "- UAC-Prompts bei System-Operationen (**ERWUENSCHT** - Sicherheitsfeature)`n`n"
         
         $content += "## Installation & Start`n"
         $content += "1. ZIP herunterladen und entpacken`n"

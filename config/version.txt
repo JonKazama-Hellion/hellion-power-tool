@@ -2,37 +2,3 @@
 Odin
 20250910
 71412509101142
-
-# ===================================================================
-# HELLION POWER TOOL - VERSIONSNUMMERN ERKLÄRUNG
-# ===================================================================
-#
-# ZEILE 1: VERSION (Semantic Versioning)
-#   Format: MAJOR.MINOR.PATCH.BUILD
-#   Beispiel: 7.1.4.1
-#   - MAJOR (7): Große Änderungen, Breaking Changes
-#   - MINOR (1): Neue Features, abwärtskompatibel  
-#   - PATCH (4): Bugfixes, kleine Verbesserungen
-#   - BUILD (1): Build-System, Release-Korrekturen
-#
-# ZEILE 2: CODENAME (Thematisch)
-#   Aktuelle Serie: Nordische Mythologie
-#   Chronologie: ... → Fenrir → Fenrir-Update → Odin → ...
-#
-# ZEILE 3: RELEASE-DATUM (Legacy-Format)
-#   Format: YYYYMMDD
-#   Verwendet für Abwärtskompatibilität zu alten Patchern
-#
-# ZEILE 4: TIMESTAMP (Neue Versionierung ab v7.1.4)
-#   Format: VVVVYYYYMMDDHHNN
-#   - VVVV: Version (7141 = 7.1.4.1)
-#   - YYYY: Jahr (2025)
-#   - MM: Monat (09)  
-#   - DD: Tag (10)
-#   - HH: Stunde (11)
-#   - NN: Minute (42)
-#   
-#   Beispiel: 71412509101142 = v7.1.4.1 vom 10.09.2025 um 11:42
-#   Ermöglicht minutengenaue Updates am gleichen Tag
-#
-# ===================================================================
