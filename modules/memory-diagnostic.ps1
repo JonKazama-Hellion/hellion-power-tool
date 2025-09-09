@@ -144,16 +144,16 @@ function Get-MemoryTestResults {
             Write-Information "[OK] Speicher-Test Ergebnisse gefunden:" -InformationAction Continue
             Write-Information "[INFO] " -InformationAction Continue
             
-            foreach ($event in $memoryEvents) {
-                Write-Information "[INFO] 🕐 Datum: $($event.TimeCreated.ToString('dd.MM.yyyy HH:mm:ss'))" -InformationAction Continue
+            foreach ($memoryEvent in $memoryEvents) {
+                Write-Information "[INFO] 🕐 Datum: $($memoryEvent.TimeCreated.ToString('dd.MM.yyyy HH:mm:ss'))" -InformationAction Continue
                 Write-Information "[INFO] 📝 Nachricht:" -InformationAction Continue
-                Write-Information "[INFO]    $($event.Message)" -InformationAction Continue
+                Write-Information "[INFO]    $($memoryEvent.Message)" -InformationAction Continue
                 Write-Information "[INFO] " -InformationAction Continue
                 
                 # Interpretiere Ergebnis
-                if ($event.Message -match "no memory errors" -or $event.Message -match "keine.*fehler") {
+                if ($memoryEvent.Message -match "no memory errors" -or $memoryEvent.Message -match "keine.*fehler") {
                     Write-Information "[INFO] ✅ ERGEBNIS: RAM ist in Ordnung (keine Fehler)" -InformationAction Continue
-                } elseif ($event.Message -match "error" -or $event.Message -match "fehler") {
+                } elseif ($memoryEvent.Message -match "error" -or $memoryEvent.Message -match "fehler") {
                     Write-Information "[INFO] ❌ ERGEBNIS: RAM-Fehler erkannt - Hardware-Problem!" -InformationAction Continue
                     Write-Information "[INFO]    → Empfehlung: RAM-Module einzeln testen/ersetzen" -InformationAction Continue
                 } else {

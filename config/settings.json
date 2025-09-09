@@ -1,6 +1,6 @@
 {
-  "version": "7.1.3",
-  "codename": "Fenrir-Update",
+  "version": "7.1.4",
+  "codename": "Odin",
   "debug_mode": false,
   "auto_update": true,
   "log_level": "INFO",
@@ -10,8 +10,8 @@
   "script_name": "hellion_tool_main.ps1",
   "last_update_check": "",
   "launcher": {
-    "version": "7.1.2",
-    "codename": "Fenrir",
+    "version": "7.1.4",
+    "codename": "Odin",
     "auto_folder_creation": true,
     "log_cleanup_days": 30,
     "backup_cleanup_count": 10

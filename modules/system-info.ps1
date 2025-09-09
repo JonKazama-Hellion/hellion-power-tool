@@ -235,7 +235,7 @@ function Get-DetailedDriverStatus {
     try {
         # Problemgeraete aus Device Manager
         $problemDevices = Get-WmiObject -Class Win32_PnPEntity | Where-Object { 
-            $_.ConfigManagerErrorCode -ne 0 -and $_.ConfigManagerErrorCode -ne $null 
+            $_.ConfigManagerErrorCode -ne 0 -and $null -ne $_.ConfigManagerErrorCode 
         }
         
         if ($problemDevices -and $problemDevices.Count -gt 0) {
@@ -377,8 +377,8 @@ Generiert am: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
         # Fehler und Warnungen
         if ($script:Errors -and $script:Errors.Count -gt 0) {
             $report += "`nFEHLER:`n"
-            foreach ($error in $script:Errors) {
-                $report += "- $($error.Message)`n"
+            foreach ($scriptError in $script:Errors) {
+                $report += "- $($scriptError.Message)`n"
             }
         }
         

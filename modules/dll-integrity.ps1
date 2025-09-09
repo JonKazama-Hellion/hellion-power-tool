@@ -10,7 +10,6 @@ function Test-DLLIntegrity {
     # Einfache Arrays für Ergebnisse
     $foundDLLs = @()
     $missingDLLs = @()
-    $corruptedDLLs = @()
     
     # Kritische DLL-Listen (einfache Struktur)
     $vcpp2015_2022 = @("vcruntime140.dll", "vcruntime140_1.dll", "msvcp140.dll", "msvcp140_1.dll", "msvcp140_2.dll")
@@ -33,7 +32,6 @@ function Test-DLLIntegrity {
     $totalChecked = 0
     $totalFound = 0
     $totalMissing = 0
-    $totalCorrupted = 0
     
     # Separate Zähler für kritische vs. Low-Priority DLLs
     $criticalMissing = 0

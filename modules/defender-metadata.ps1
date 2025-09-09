@@ -6,7 +6,7 @@
 # Software Identity Information (reduces heuristic triggers)
 $script:SoftwareInfo = @{
     Name = "Hellion Power Tool"
-    Version = "7.1.2 Fenrir"
+    Version = "7.1.4 Odin"
     Purpose = "Legitimate System Maintenance"
     Developer = "Open Source Community"
     License = "Non-Commercial"
@@ -53,9 +53,9 @@ function Test-DefenderCompatibility {
 
 # String Obfuscation (legitimate, minimal)
 function Get-SafeString {
-    param([string]$Input)
+    param([string]$InputString)
     # Simple character replacement to break pattern matching
-    return $Input -replace 'RunAs', 'Run' + 'As' -replace 'Invoke-', 'Inv' + 'oke-'
+    return $InputString -replace 'RunAs', 'Run' + 'As' -replace 'Invoke-', 'Inv' + 'oke-'
 }
 
 # Comment-based metadata for static analysis
@@ -74,7 +74,7 @@ function Get-SafeString {
 
 .NOTES
     Author: Open Source Community
-    Version: 7.1.2 Fenrir
+    Version: 7.1.4 Odin
     License: Non-Commercial Use
     
     False-Positive Information:

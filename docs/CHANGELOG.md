@@ -66,7 +66,7 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 - **GitHub-Integration**: Direkter Zugriff auf JonKazama-Hellion/hellion-power-tool Repository
 - **Intelligente Versionsprüfung**: Vergleicht Version, Codename und Datum
 - **Entwicklungsversions-Erkennung**: Erkennt lokale Entwicklungsversionen und überspringt Updates
-- **Codename-Whitelist**: Bekannte Releases (Alpha, Beta, Gamma, Delta, Epsilon, Kazama, Beleandis, Monkey, Moon, Moon-Bugfix, Fenrir)
+- **Codename-Whitelist**: Bekannte Releases (Alpha, Beta, Gamma, Delta, Epsilon, Kazama, Beleandis, Monkey, Moon, Moon-Bugfix, Fenrir, Fenrir-Update, Odin)
 - **Git-Auto-Installation**: Automatische Git-Installation via winget wenn benötigt
 
 #### 🛠️ Technische Verbesserungen (v7.1.2)

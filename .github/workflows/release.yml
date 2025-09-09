@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., v7.1.2)'
+        description: 'Release version (e.g., v7.1.4)'
         required: true
-        default: 'v7.1.2'
+        default: 'v7.1.4'
 
 permissions:
   contents: write
@@ -162,67 +162,65 @@ jobs:
       shell: powershell
       run: |
         $version = "${{ steps.version.outputs.version }}"
-        $releaseNotes = @"
-# Hellion Power Tool $version - "Fenrir"
-
-## WARNING: Windows Defender Warnung
-Dieses Tool kann False-Positive Warnungen auslösen (**Trojan:Script/Wacatac.B!ml**).
-**LÖSUNG**: Siehe [DEFENDER-WHITELIST.md](https://github.com/${{ github.repository }}/blob/main/DEFENDER-WHITELIST.md)
-
-## Sicherer Download
-1. **Vor Download**: Windows Defender temporär pausieren (1 Stunde)
-2. **Download**: Signierte Version bevorzugen (\`*-signed.zip\`)
-3. **Nach Download**: Hellion-Ordner zur Defender-Ausnahme hinzufügen
-4. **Installation**: \`launcher\simple-launcher.bat\` ausführen
-
-## Download-Optionen
-
-### Empfohlene Downloads:
-- **\`hellion-power-tool-$version-signed.zip\`** - Vollversion mit digitaler Signatur
-- **\`hellion-power-tool-$version-portable.zip\`** - Kompakte Version (nur essentials)
-
-### Für Entwickler:
-- **\`hellion-power-tool-$version-source.zip\`** - Nur Quellcode (ohne Binärdateien)
-- **\`hellion-certificate.cer\`** - Zertifikat für Signatur-Verifikation
-
-## Neue Features in v7.1.2
--  **RAM-Test Integration** - Windows Memory Diagnostic mit Sicherheitschecks
--  **Defender-Optimierungen** - Reduzierte False-Positive Rate um ~70%
-- **Verbesserte Sicherheit** - Alle kritischen Operationen durch sichere Alternativen ersetzt
--  **Code-Signierung** - Digitale Signaturen für erhöhtes Vertrauen
-
-## Sicherheit & Verifikation
-- **Quellcode**: Vollständig auf GitHub verfügbar
-- **Zertifikat**: Self-signed für Open Source Entwicklung  
-- **Checksums**: SHA256 Hashes in \`checksums.txt\`
-- **Scan-Ergebnisse**: Siehe Security Tab auf GitHub
-
-##  System-Anforderungen
-- Windows 10/11 (jede Edition)
-- PowerShell 5.1+ (PowerShell 7 empfohlen)
-- Administrator-Rechte für System-Wartung
-
-##  Bekannte Probleme
-- Defender False-Positive (**NORMAL** - siehe Whitelist-Anleitung)
-- UAC-Prompts bei System-Operationen (**ERWÜNSCHT** - Sicherheitsfeature)
-
-##  Installation & Start
-1. ZIP herunterladen und entpacken
-2. Hellion-Ordner zur Defender-Ausnahme hinzufügen  
-3. \`launcher\simple-launcher.bat\` als Administrator ausführen
-4. PowerShell 7 Installation empfohlen (automatisch angeboten)
-
----
-**Hinweis**: Bei Download-Problemen siehe [GITHUB-RELEASE-GUIDE.md](GITHUB-RELEASE-GUIDE.md)
-"@
         
-        $releaseNotes | Out-File "release-notes.md" -Encoding UTF8
+        # Create release notes content
+        $content = "# Hellion Power Tool $version - `"Odin`"`n`n"
+        $content += "## WARNING: Windows Defender Warnung`n"
+        $content += "Dieses Tool kann False-Positive Warnungen ausloesen (**Trojan:Script/Wacatac.B!ml**).`n"
+        $content += "**LOESUNG**: Siehe [DEFENDER-WHITELIST.md](https://github.com/${{ github.repository }}/blob/main/DEFENDER-WHITELIST.md)`n`n"
+        
+        $content += "## Sicherer Download`n"
+        $content += "1. **Vor Download**: Windows Defender temporaer pausieren (1 Stunde)`n"
+        $content += "2. **Download**: Signierte Version bevorzugen (``*-signed.zip``)`n"
+        $content += "3. **Nach Download**: Hellion-Ordner zur Defender-Ausnahme hinzufuegen`n"
+        $content += "4. **Installation**: ``launcher\simple-launcher.bat`` ausfuehren`n`n"
+        
+        $content += "## Download-Optionen`n`n"
+        $content += "### Empfohlene Downloads`n"
+        $content += "- **``hellion-power-tool-$version-signed.zip``** - Vollversion mit digitaler Signatur`n"
+        $content += "- **``hellion-power-tool-$version-portable.zip``** - Kompakte Version (nur essentials)`n`n"
+        
+        $content += "### Fuer Entwickler`n"
+        $content += "- **``hellion-power-tool-$version-source.zip``** - Nur Quellcode (ohne Binaerdateien)`n"
+        $content += "- **``hellion-certificate.cer``** - Zertifikat fuer Signatur-Verifikation`n`n"
+        
+        $content += "## Neue Features in v7.1.4`n"
+        $content += "- **Emergency-Update-System** - Neues ``emergency-update.bat`` fuer zuverlaessiges Tool-Patching`n"
+        $content += "- **Automatische Backups** - Emergency-Update erstellt Backups aller alten Dateien vor Update`n"
+        $content += "- **Auto-Update Bugfixes** - Kritische Bugfixes im Autoupdater fuer zuverlaessige Update-Funktion`n"
+        $content += "- **Markdown-Standards** - Alle Dokumentationsdateien auf aktuelle Markdownlint-Standards gebracht`n`n"
+        
+        $content += "## Sicherheit & Verifikation`n"
+        $content += "- **Quellcode** - Vollstaendig auf GitHub verfuegbar`n"
+        $content += "- **Zertifikat** - Self-signed fuer Open Source Entwicklung`n"
+        $content += "- **Checksums** - SHA256 Hashes in ``checksums.txt```n"
+        $content += "- **Scan-Ergebnisse** - Siehe Security Tab auf GitHub`n`n"
+        
+        $content += "## System-Anforderungen`n"
+        $content += "- Windows 10/11 (jede Edition)`n"
+        $content += "- PowerShell 5.1+ (PowerShell 7 empfohlen)`n"
+        $content += "- Administrator-Rechte fuer System-Wartung`n`n"
+        
+        $content += "## Bekannte Probleme`n"
+        $content += "- Defender False-Positive (**NORMAL** - siehe Whitelist-Anleitung)`n"
+        $content += "- UAC-Prompts bei System-Operationen (**ERWUENSCHT** - Sicherheitsfeature)`n"
+        $content += "- **update-check.bat** - Der normale Auto-Update-Checker stuerzt beim Versionsvergleich ab (Workaround: ``emergency-update.bat``)`n`n"
+        
+        $content += "## Installation & Start`n"
+        $content += "1. ZIP herunterladen und entpacken`n"
+        $content += "2. Hellion-Ordner zur Defender-Ausnahme hinzufuegen`n"
+        $content += "3. ``launcher\simple-launcher.bat`` als Administrator ausfuehren`n"
+        $content += "4. PowerShell 7 Installation empfohlen (automatisch angeboten)`n`n"
+        
+        $content += "**Hinweis**: Bei Download-Problemen siehe [GITHUB-RELEASE-GUIDE.md](GITHUB-RELEASE-GUIDE.md)"
+        
+        $content | Out-File "release-notes.md" -Encoding UTF8
         
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ steps.version.outputs.version }}
-        name: Hellion Power Tool ${{ steps.version.outputs.version }} "Fenrir"
+        name: Hellion Power Tool ${{ steps.version.outputs.version }} "Odin"
         body_path: release-notes.md
         draft: false
         prerelease: false

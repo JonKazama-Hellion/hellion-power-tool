@@ -177,7 +177,7 @@ function Reset-NetworkConfiguration {
     # TCP/IP Stack zurücksetzen
     Write-Log "`n[*] Setze TCP/IP Stack zurueck..." -Color Blue
     try {
-        $result = & netsh int ip reset 2>&1
+        & netsh int ip reset 2>&1 | Out-Null
         if ($LASTEXITCODE -eq 0) {
             Write-Log "[OK] TCP/IP Stack zurueckgesetzt" -Color Green
             $success++
@@ -193,7 +193,7 @@ function Reset-NetworkConfiguration {
     # DNS Cache leeren
     Write-Log "[*] Leere DNS Cache..." -Color Blue
     try {
-        $result = & ipconfig /flushdns 2>&1
+        & ipconfig /flushdns 2>&1 | Out-Null
         if ($LASTEXITCODE -eq 0) {
             Write-Log "[OK] DNS Cache geleert" -Color Green
             $success++
@@ -209,7 +209,7 @@ function Reset-NetworkConfiguration {
     # Winsock Catalog zurücksetzen
     Write-Log "[*] Setze Winsock Catalog zurueck..." -Color Blue
     try {
-        $result = & netsh winsock reset 2>&1
+        & netsh winsock reset 2>&1 | Out-Null
         if ($LASTEXITCODE -eq 0) {
             Write-Log "[OK] Winsock Catalog zurueckgesetzt" -Color Green
             $success++
@@ -225,9 +225,9 @@ function Reset-NetworkConfiguration {
     # IP-Konfiguration erneuern
     Write-Log "[*] Erneuere IP-Konfiguration..." -Color Blue
     try {
-        $releaseResult = & ipconfig /release 2>&1
+        & ipconfig /release 2>&1 | Out-Null
         Start-Sleep -Seconds 2
-        $renewResult = & ipconfig /renew 2>&1
+        & ipconfig /renew 2>&1 | Out-Null
         
         if ($LASTEXITCODE -eq 0) {
             Write-Log "[OK] IP-Konfiguration erneuert" -Color Green

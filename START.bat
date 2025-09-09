@@ -1,9 +1,9 @@
 @echo off
-title Hellion Power Tool v7.1.2 "Fenrir"
+title Hellion Power Tool v7.1.4 "Odin"
 color 0B
 
 echo ==============================================================================
-echo                HELLION POWER TOOL v7.1.2 "Fenrir"  
+echo                HELLION POWER TOOL v7.1.4 "Odin"
 echo ==============================================================================
 echo.
 

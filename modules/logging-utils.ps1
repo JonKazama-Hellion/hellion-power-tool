@@ -46,19 +46,19 @@ function Write-Log {
             }
             "DEBUG" { 
                 # Only show DEBUG in Debug-Mode (1) or Developer-Mode (2)
-                if (($script:DebugLevel -ne $null) -and ([int]$script:DebugLevel -ge 1)) {
+                if (($null -ne $script:DebugLevel) -and ([int]$script:DebugLevel -ge 1)) {
                     Write-Information "[INFO] [DEBUG] $Message" -InformationAction Continue
                 }
             }
             "VERBOSE" {
                 # Only show VERBOSE in Developer-Mode (2)
-                if (($script:DebugLevel -ne $null) -and ([int]$script:DebugLevel -ge 2)) {
+                if (($null -ne $script:DebugLevel) -and ([int]$script:DebugLevel -ge 2)) {
                     Write-Information "[INFO] [VERBOSE] $Message" -InformationAction Continue
                 }
             }
             "DEV" {
                 # Only show DEV messages in Developer-Mode (2)
-                if (($script:DebugLevel -ne $null) -and ([int]$script:DebugLevel -ge 2)) {
+                if (($null -ne $script:DebugLevel) -and ([int]$script:DebugLevel -ge 2)) {
                     Write-Information "[INFO] [DEV] $Message" -InformationAction Continue
                 }
             }

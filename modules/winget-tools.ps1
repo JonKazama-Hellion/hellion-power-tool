@@ -309,7 +309,7 @@ function Install-WingetUpdates {
                 Write-Information "[INFO] Dies kann 5-15 Minuten dauern je nach Anzahl der Updates" -InformationAction Continue
                 
                 if (Wait-Job -Job $upgradeJob -Timeout 900) {  # 15 Minuten Timeout
-                    $upgradeOutput = Receive-Job -Job $upgradeJob
+                    Receive-Job -Job $upgradeJob | Out-Null
                     $upgradeExitCode = $upgradeJob.State
                     
                     if ($upgradeExitCode -eq "Completed") {
@@ -342,7 +342,7 @@ function Install-WingetUpdates {
                     
                     foreach ($update in $importantUpdates) {
                         Write-Log "[*] Installiere: $($update.Name)..." -Color Blue
-                        $result = & winget upgrade --id $update.Id --silent --accept-source-agreements --accept-package-agreements 2>&1
+                        & winget upgrade --id $update.Id --silent --accept-source-agreements --accept-package-agreements 2>&1 | Out-Null
                         
                         if ($LASTEXITCODE -eq 0) {
                             Write-Log "  [OK] $($update.Name) erfolgreich" -Color Green
@@ -376,7 +376,7 @@ function Install-WingetUpdates {
                                 $update = $availableUpdates[$index]
                                 Write-Log "[*] Installiere: $($update.Name)..." -Color Blue
                                 
-                                $result = & winget upgrade --id $update.Id --silent --accept-source-agreements --accept-package-agreements
+                                & winget upgrade --id $update.Id --silent --accept-source-agreements --accept-package-agreements | Out-Null
                                 
                                 if ($LASTEXITCODE -eq 0) {
                                     Write-Log "  [OK] $($update.Name) erfolgreich" -Color Green
@@ -407,7 +407,7 @@ function Install-WingetUpdates {
                 
                 if ($softwareName) {
                     Write-Log "[*] Installiere: $softwareName..." -Color Blue
-                    $result = & winget install $softwareName --silent --accept-source-agreements --accept-package-agreements 2>&1
+                    & winget install $softwareName --silent --accept-source-agreements --accept-package-agreements 2>&1 | Out-Null
                     
                     if ($LASTEXITCODE -eq 0) {
                         Write-Log "[SUCCESS] $softwareName erfolgreich installiert" -Color Green

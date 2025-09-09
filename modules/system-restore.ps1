@@ -18,7 +18,7 @@ function New-SystemRestorePoint {
         
         # Pruefe ob System Restore verfuegbar ist
         $restoreEnabled = Get-ComputerRestorePoint -ErrorAction SilentlyContinue
-        if ($restoreEnabled -eq $null) {
+        if ($null -eq $restoreEnabled) {
             Write-Log "[INFO] Aktiviere System Restore auf C:\..." -Color Yellow
             Enable-ComputerRestore -Drive "C:\" -ErrorAction Stop
         }

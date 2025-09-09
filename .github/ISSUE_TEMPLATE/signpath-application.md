@@ -9,12 +9,13 @@ assignees: ''
 ## Project Information
 
 **Project Name**: Hellion Power Tool
-**Repository**: https://github.com/JonKazama-Hellion/hellion-power-tool
+**Repository**: <https://github.com/JonKazama-Hellion/hellion-power-tool>
 **License**: CC BY-NC-SA 4.0 (Non-Commercial)
 
 ## Project Description
 
 Hellion Power Tool is a comprehensive Windows system maintenance utility that helps users:
+
 - Clean and optimize their Windows systems
 - Repair system files (SFC/DISM)
 - Remove bloatware and unused programs  
@@ -46,7 +47,7 @@ Hellion Power Tool is a comprehensive Windows system maintenance utility that he
 
 **Primary Maintainer**: [Your GitHub Username]
 **Contact**: [Your Email]
-**GitHub Profile**: https://github.com/[your-username]
+**GitHub Profile**: <https://github.com/[your-username]>
 
 ---
 

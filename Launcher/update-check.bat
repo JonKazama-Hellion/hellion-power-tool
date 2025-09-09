@@ -19,14 +19,17 @@ if not exist "%~dp0..\config\version.txt" (
 
 REM Lese lokale Version
 set "LINE_NUM=0"
+set "LOCAL_TIMESTAMP="
 for /f "delims=" %%a in (%~dp0..\config\version.txt) do (
     set /a LINE_NUM+=1
     if !LINE_NUM!==1 set "LOCAL_VERSION=%%a"
     if !LINE_NUM!==2 set "LOCAL_CODENAME=%%a"
     if !LINE_NUM!==3 set "LOCAL_DATE=%%a"
+    if !LINE_NUM!==4 set "LOCAL_TIMESTAMP=%%a"
 )
 
 echo [INFO] Aktuelle Version: !LOCAL_VERSION! "!LOCAL_CODENAME!" (!LOCAL_DATE!)
+if NOT "!LOCAL_TIMESTAMP!"=="" echo [INFO] Timestamp: !LOCAL_TIMESTAMP!
 echo.
 
 REM Prüfe Git Verfügbarkeit
@@ -97,19 +100,22 @@ REM Lese GitHub Version
 set "GITHUB_VERSION="
 set "GITHUB_CODENAME="
 set "GITHUB_DATE="
+set "GITHUB_TIMESTAMP="
 
 set /p GITHUB_VERSION=<hellion-temp\config\version.txt
 for /f "skip=1 delims=" %%a in (hellion-temp\config\version.txt) do if not defined GITHUB_CODENAME set "GITHUB_CODENAME=%%a"
 for /f "skip=2 delims=" %%a in (hellion-temp\config\version.txt) do if not defined GITHUB_DATE set "GITHUB_DATE=%%a"
+for /f "skip=3 delims=" %%a in (hellion-temp\config\version.txt) do if not defined GITHUB_TIMESTAMP set "GITHUB_TIMESTAMP=%%a"
 
 echo [INFO] GitHub Version: !GITHUB_VERSION! "!GITHUB_CODENAME!" (!GITHUB_DATE!)
+if NOT "!GITHUB_TIMESTAMP!"=="" echo [INFO] GitHub Timestamp: !GITHUB_TIMESTAMP!
 echo.
 
 REM Cleanup
 cd /d "%~dp0"
 rmdir /s /q "!TEMP_DIR!" >nul 2>&1
 
-REM Version Vergleich
+REM Version Vergleich - HYBRID SYSTEM (Abwärtskompatibel)
 echo [*] Vergleiche Versionen...
 set "UPDATE_NEEDED=0"
 set "UPDATE_REASON="
@@ -118,19 +124,32 @@ REM Handle empty dates gracefully
 if "!LOCAL_DATE!"=="" set "LOCAL_DATE=20250901"
 if "!GITHUB_DATE!"=="" set "GITHUB_DATE=20250908"
 
-REM Datum-Check
-if "!LOCAL_DATE!" LSS "!GITHUB_DATE!" (
-    set "UPDATE_NEEDED=1"
-    set "UPDATE_REASON=Datum aelter"
-)
-
-REM Version-Check
-if NOT "!LOCAL_VERSION!"=="!GITHUB_VERSION!" (
-    set "UPDATE_NEEDED=1" 
-    if "!UPDATE_REASON!"=="" (
-        set "UPDATE_REASON=Version unterschiedlich"
-    ) else (
-        set "UPDATE_REASON=!UPDATE_REASON!, Version unterschiedlich"
+REM NEUE LOGIK: Prüfe ob Timestamp verfügbar (ab v7.1.4)
+if NOT "!GITHUB_TIMESTAMP!"=="" if NOT "!LOCAL_TIMESTAMP!"=="" (
+    echo [DEBUG] Verwende Timestamp-Vergleich (neue Methode)
+    REM Beide haben Timestamp - verwende präzisen numerischen Vergleich
+    if !LOCAL_TIMESTAMP! LSS !GITHUB_TIMESTAMP! (
+        set "UPDATE_NEEDED=1"
+        set "UPDATE_REASON=Neuere Timestamp-Version verfuegbar"
+    )
+) else (
+    echo [DEBUG] Verwende Legacy-Vergleich (alte Methode)
+    REM Fallback auf alte Methode für Abwärtskompatibilität
+    
+    REM Datum-Check
+    if "!LOCAL_DATE!" LSS "!GITHUB_DATE!" (
+        set "UPDATE_NEEDED=1"
+        set "UPDATE_REASON=Datum aelter"
+    )
+    
+    REM Version-Check
+    if NOT "!LOCAL_VERSION!"=="!GITHUB_VERSION!" (
+        set "UPDATE_NEEDED=1" 
+        if "!UPDATE_REASON!"=="" (
+            set "UPDATE_REASON=Version unterschiedlich"
+        ) else (
+            set "UPDATE_REASON=!UPDATE_REASON!, Version unterschiedlich"
+        )
     )
 )
 

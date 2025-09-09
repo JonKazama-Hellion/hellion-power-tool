@@ -62,7 +62,7 @@ Add-MpPreference -ExclusionPath "C:\Users\$env:USERNAME\Desktop\hellion-power-to
 
 **Hellion Tool macht genau das** - aber für **legitime Systemwartung**!
 
-## 🔄 **Bereits durchgeführte Optimierungen (v7.1.2):**
+## 🔄 **Bereits durchgeführte Optimierungen (v7.1.3):**
 
 ### ✅ **Anti-False-Positive Verbesserungen:**
 

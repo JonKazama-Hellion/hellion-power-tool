@@ -1,9 +1,9 @@
 # ===================================================================
 # CONFIG UTILITIES MODULE
-# Hellion Power Tool v7.1.2 "Fenrir" - Modular Version
+# Hellion Power Tool v7.1.4 "Odin" - Modular Version
 # ===================================================================
 
-function Load-Configuration {
+function Import-Configuration {
     <#
     .SYNOPSIS
     Lädt die Konfiguration aus der settings.json Datei
@@ -54,8 +54,8 @@ function Get-DefaultConfiguration {
     #>
     
     return @{
-        version = "7.1.2.a"
-        codename = "Fenrir"
+        version = "7.1.4.a"
+        codename = "Odin"
         debug_mode = $false
         auto_update = $true
         log_level = "INFO"
@@ -211,4 +211,4 @@ function Get-ConfigValue {
 }
 
 # Export functions for dot-sourcing
-Write-Verbose "Config-Utils Module loaded: Load-Configuration, Get-DefaultConfiguration, Set-ConfigurationVariables, Test-FeatureEnabled, Get-ConfigValue"
+Write-Verbose "Config-Utils Module loaded: Import-Configuration, Get-DefaultConfiguration, Set-ConfigurationVariables, Test-FeatureEnabled, Get-ConfigValue"

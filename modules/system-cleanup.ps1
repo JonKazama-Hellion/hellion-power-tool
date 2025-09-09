@@ -409,11 +409,6 @@ function Get-UnusedPrograms {
             $displayCount = [Math]::Min(5, $unusedPrograms.Count)
             for ($i = 0; $i -lt $displayCount; $i++) {
                 $prog = $unusedPrograms[$i]
-                $riskColor = switch ($prog.RiskLevel) {
-                    "High" { "Red" }
-                    "Medium" { "Yellow" }
-                    "Low" { "Green" }
-                }
                 
                 Write-Information "[INFO] `n  [$($i+1)] $($prog.Name)" -InformationAction Continue
                 if ($prog.Publisher) { Write-Information "[INFO]       Publisher: $($prog.Publisher)" -InformationAction Continue }

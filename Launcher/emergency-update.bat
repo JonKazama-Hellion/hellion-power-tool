@@ -4,7 +4,7 @@ title Hellion Emergency Updater
 color 0C
 
 echo ==============================================================================
-echo                    HELLION EMERGENCY UPDATER v7.1.3
+echo                    HELLION EMERGENCY UPDATER v7.1.4
 echo                      Repariert Auto-Update Probleme
 echo ==============================================================================
 echo.

@@ -36,12 +36,12 @@ simple-launcher.bat 2        # Developer-Modus
 
 - ✅ **Git Auto-Installation** - Installiert Git automatisch via winget
 - ✅ **Shallow Clone** - Effizienter `--depth 1` Download von GitHub
-- ✅ **Codename-Whitelist** - Bekannte Releases (Alpha → Fenrir)
+- ✅ **Codename-Whitelist** - Bekannte Releases (Alpha → Odin)
 - ✅ **Intelligente Update-Logik** - Datum + Version-basierte Entscheidungen
-- ✅ **Crash-Safe** - Robuste Behandlung für v7.1.0/7.1.1 → v7.1.2 Updates
+- ✅ **Crash-Safe** - Robuste Behandlung für v7.1.0/7.1.1 → v7.1.4 Updates
 
 **Unterstützte Codenamen** (chronologisch):
-`Alpha` → `Beta` → `Gamma` → `Delta` → `Epsilon` → `Kazama` → `Beleandis` → `Monkey` → `Moon` → `Moon-Bugfix` → `Fenrir`
+`Alpha` → `Beta` → `Gamma` → `Delta` → `Epsilon` → `Kazama` → `Beleandis` → `Monkey` → `Moon` → `Moon-Bugfix` → `Fenrir` → `Fenrir-Update` → `Odin`
 
 **Update-Entscheidung**:
 
@@ -158,4 +158,4 @@ Für Entwickler und Tester:
 
 ---
 
-Letzte Aktualisierung: 2025-09-08 - Hellion Power Tool v7.1.3 "Fenrir-Update"
+Letzte Aktualisierung: 2025-09-10 - Hellion Power Tool v7.1.4 "Odin"
