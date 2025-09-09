@@ -12,6 +12,7 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 ### 🚀 Major Release - Launcher Revolution & Auto-Update System
 
 #### 🎯 Neue Hauptfunktionen
+
 - **Revolutionäres Launcher-System**: Komplett neuer `START.bat` → `simple-launcher.bat` Workflow
 - **PowerShell 7 Auto-Installation**: Automatische Installation via winget mit benutzerfreundlicher Abfrage
 - **Intelligenter Update-Check**: GitHub-Integration mit automatischer Versionsprüfung
@@ -19,12 +20,14 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 - **Launcher-Restart-System**: Automatischer Neustart nach PowerShell 7 Installation
 
 #### 🔧 Launcher-Verbesserungen
+
 - **Einfache Architektur**: Ein Starter, ein Launcher - keine komplexen Multi-Launcher mehr
 - **PowerShell-Detection**: Robuste Erkennung von PowerShell 7 und Fallback auf PowerShell 5
 - **Parameter-Passing**: Saubere Parameterweiterleitung durch UAC-Restart
 - **Debug-Level-System**: Erweiterte Debug-Modi (0=Normal, 1=Debug, 2=Developer)
 
 #### 🔄 Auto-Update-System
+
 - **GitHub-Integration**: Direkter Zugriff auf JonKazama-Hellion/hellion-power-tool Repository
 - **Intelligente Versionsprüfung**: Vergleicht Version, Codename und Datum
 - **Entwicklungsversions-Erkennung**: Erkennt lokale Entwicklungsversionen und überspringt Updates
@@ -32,12 +35,14 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 - **Git-Auto-Installation**: Automatische Git-Installation via winget wenn benötigt
 
 #### 🛠️ Technische Verbesserungen
+
 - **Robuste Fehlerbehandlung**: Script stürzt nicht mehr ab bei Git/Internet-Problemen
 - **Shallow Git Clone**: Effizienter Repository-Download mit `--depth 1`
 - **Temporäre Verzeichnisse**: Sichere Temp-Ordner für Update-Checks
 - **Cleanup-System**: Automatische Bereinigung nach Update-Prüfung
 
 #### 🐛 Behobene Bugs
+
 - **DLL Integrity Checker**: Komplett auskommentiert (verursachte Syntax-Fehler)
 - **Count Property Fehler**: Null-Checks für PowerShell Strict Mode hinzugefügt
 - **DISM Parameter Konflikt**: Behoben - `-RedirectStandardOutput` Inkompatibilität mit `-Verb RunAs`
@@ -46,24 +51,28 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 - **Version-Parsing-Crashes**: Sichere Datei-Parsing ohne delayed expansion
 
 #### 📋 Update-Check-Logik
+
 - **Datum-basiert**: Primäre Entscheidung basiert auf Veröffentlichungsdatum
 - **Version-Schutz**: Verhindert Downgrades bei neueren lokalen Versionen
 - **Codename-Validation**: Nur bekannte Releases werden für Updates berücksichtigt
 - **Entwickler-Modus**: Überspringt Updates bei unbekannten Codenamen
 
 #### 🎨 Benutzererfahrung
+
 - **Optionaler Update-Check**: Benutzer kann Update-Prüfung überspringen
 - **Klare Ausgaben**: Verständliche Meldungen ohne Debug-Spam
 - **PowerShell-Version-Info**: Anzeige der verwendeten PowerShell-Version
 - **Fehler-Recovery**: Graceful Degradation bei Netzwerk-/Git-Problemen
 
 #### 🏗️ Architektur-Änderungen
+
 - **Vereinfachte Launcher-Struktur**: Weg von komplexen Multi-Launcher-Systemen
 - **Modulare Update-Checks**: Separates `update-check.bat` Modul
 - **Git-basierte Updates**: Vorbereitung für zukünftige automatische Updates
 - **Robuste Basis**: Crashsichere Implementierung mit umfassendem Error-Handling
 
 #### 📝 Entwickler-Notizen
+
 - **DLL-Check Rewrite erforderlich**: Für zukünftige Releases geplant
 - **Repository-URL**: Korrekt auf JonKazama-Hellion/hellion-power-tool aktualisiert
 - **Version-Tracking**: Automatisierte Versionsverfolgung in config/version.txt
@@ -75,6 +84,7 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 ### 🎉 Initial Release - Production Ready
 
 #### Core Features
+
 - **Universal Compatibility**: Funktioniert auf allen Windows 10/11 Systemen auch bei PATH-Problemen oder Defender-Blockaden
 - **Smart Launcher System**: Automatische Erkennung der besten Ausführungsmethode mit Fallback-Modi
 - **Advanced PowerShell Detection**: Findet PowerShell auch bei beschädigtem PATH oder alternativen Installationspfaden
@@ -83,12 +93,14 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 - **Safe Adblock**: Host-basierte Werbung/Tracking-Blockierung mit 25 sicheren Domains
 
 #### Added
+
 - **Safe Adblock-Funktion**: Vollständig implementierte Host-Datei-basierte Werbung/Tracking-Blockierung
 - **Erweiterte Adblock-Domainliste**: 25 sichere Tracking/Werbung-Domains von Google, Facebook, Microsoft, Amazon etc.
 - **Intelligente Host-Datei-Verwaltung**: Prüft bestehende Einträge und fügt nur fehlende Domains hinzu
 - **Auto-Modus Adblock-Integration**: Safe Adblock läuft automatisch in Schritt 7 des Enhanced Auto-Modus
 
 #### Technical Details
+
 - **UAC-Signal-System**: `temp/uac_restart.signal` Datei für saubere Launcher-Kommunikation
 - **PowerShell UAC-Restart**: `[Environment]::Exit(0)` mit Signal-Datei statt einfachem `exit`
 - **Intelligente Domain-Erkennung**: Regex-basierte Prüfung existierender Host-Einträge
@@ -102,6 +114,7 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 - **Debug-Tool-Suite**: Vollständige Diagnose-Tools für PowerShell-, Defender- und PATH-Probleme
 
 #### Enhanced User Experience
+
 - **Kein UAC-Doppelfenster**: Original-Fenster schließt sich automatisch nach Admin-Restart
 - **Smart Adblock-Updates**: "X neue Domains hinzugefügt" vs "Alle X Domains bereits blockiert"
 - **Desktop-Icon vor UAC**: Verknüpfung wird erstellt bevor UAC das Fenster schließt  
@@ -113,7 +126,9 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 - **Strukturierte Debug-Hilfe**: Organisierte Debug-Tools mit README-Anleitungen für Problemdiagnose
 
 #### Blocked Domains (Safe Adblock)
+
 Blockiert 25 sichere Tracking/Werbung-Domains:
+
 - **Google**: doubleclick.net, googleadservices.com, googlesyndication.com, google-analytics.com
 - **Facebook/Meta**: facebook.com/tr, connect.facebook.net, analytics.facebook.com  
 - **Microsoft**: msads.net, ads.msn.com, rad.msn.com
@@ -127,21 +142,24 @@ Blockiert 25 sichere Tracking/Werbung-Domains:
 
 ### 🔧 Auto-Update Enhancement - ZIP-Download Support
 
-#### Added
+#### Added (v7.0.2)
+
 - **ZIP-Download Auto-Update-System**: Vollständig automatische Git-Repository-Initialisierung für ZIP-Downloads
 - **Intelligente Repository-Erkennung**: Erkennt fehlende `.git` Ordner und initialisiert Auto-Update-System
 - **Benutzergeführtes Setup**: Interaktives Setup mit Sicherheitskopie und User-Auswahl für initiales Update
 - **Automatischer Tool-Neustart**: Nach erfolgreichem Update wird das Tool automatisch mit neuester Version neu gestartet
 - **ZIP-Backup-System**: Erstellt Sicherheitskopie aller ZIP-Dateien in `temp\zip-backup\` vor Git-Initialisierung
 
-#### Technical Details
+#### Technical Details (v7.0.2)
+
 - Neue `InitializeGitRepo` Funktion für automatische Repository-Initialisierung
 - Git-Repository wird automatisch mit `git init` und `git remote add origin` konfiguriert  
 - Branch-Setup mit `git branch -M main` und Upstream-Tracking
 - Intelligente Update-Prüfung mit `git rev-list --count` für verfügbare Commits
 - Lokale Änderungen werden automatisch gestaged mit "Initial ZIP download state" commit
 
-#### User Experience
+#### User Experience (v7.0.2)
+
 - Klare Kommunikation: "🔧 GIT AUTO-UPDATE SETUP" Interface
 - User-Choice für initiales Update mit J/N Auswahl
 - Automatische Tool-Neustart-Funktionalität nach Update
@@ -153,19 +171,22 @@ Blockiert 25 sichere Tracking/Werbung-Domains:
 
 ### 🐛 Kritische Bugfixes - Hotfix Release
 
-#### Fixed
+#### Fixed (v7.0.1)
+
 - **PowerShell-Erkennungslogik**: Behoben - launcher.bat erkannte PowerShell 7 nicht korrekt
 - **UAC-Doppelfenster-Problem**: UAC-Restart schließt jetzt das ursprüngliche Fenster automatisch
 - **Signal-Datei-System**: Intelligentes Signal-System für nahtlose UAC-Behandlung ohne Benutzerinteraktion
 - **Launcher-Warteaufforderung**: "Drücken Sie eine beliebige Taste" nach UAC-Restart entfernt
 
-#### Added
+#### Added (v7.0.1)
+
 - **30-Tage-Wartungsempfehlung**: Intelligente Erinnerung für regelmäßige Tool-Ausführung
 - **Desktop-Verknüpfung**: Automatisches Angebot zur Erstellung einer Desktop-Verknüpfung mit professionellem Icon
 - **Erweiterte Winget-Integration**: Verlängerte Timeout (60 Min), benutzerfreundliche Warnungen und animierte Fortschrittsanzeige
 - **Intelligente Shortcut-Verwaltung**: Speichert Benutzer-Präferenz und verhindert wiederholte Nachfragen
 
-#### Technical Details
+#### Technical Details (v7.0.1)
+
 - PowerShell-Variable `USE_POWERSHELL` wird jetzt direkt bei Erkennung gesetzt
 - UAC-Restart verwendet Signal-Datei `temp/uac_restart.signal` für saubere Kommunikation
 - `[Environment]::Exit(0)` mit Signal-Datei statt Exit-Code für bessere Batch-Kompatibilität
@@ -181,7 +202,7 @@ Blockiert 25 sichere Tracking/Werbung-Domains:
 
 ### 🚀 Initialer Release - Komplett überarbeitete Version
 
-#### Added
+#### Added (v7.0)
 
 - **Launcher-System v7.0**: Neues `launcher.bat` mit automatischer Installation
 - **Automatische Abhängigkeiten**: Winget + PowerShell 7 Auto-Installation
@@ -195,21 +216,21 @@ Blockiert 25 sichere Tracking/Werbung-Domains:
 - **PowerShell-Erkennung**: Intelligente Auswahl zwischen PS7 und PS5
 - **Auto-Update-System**: Automatische Updates via Git mit Backup-Erstellung
 
-#### Fixed
+#### Fixed (v7.0)
 
 - **SFC Parameter-Konflikt**: Behoben - `-WindowStyle Hidden` mit `-NoNewWindow` Inkompatibilität
 - **PSScriptAnalyzer Warnungen**: Alle Unapproved Verbs und ungenutzte Variablen behoben
 - **DISM Sicherheit**: Verwendung von `Start-Process -Verb RunAs` für erhöhte Sicherheit
 - **Logging-System**: Komplett überarbeitetes System mit Datei-Output
 
-#### Changed
+#### Changed (v7.0)
 
 - **Projektstruktur**: Vollständige Reorganisation mit config/, logs/, backups/ Ordnern
 - **Repository**: Umzug zu GitHub JonKazama-Hellion/hellion-power-tool
 - **Dokumentation**: Vollständige README.md und README_Launcher.md Überarbeitung
 - **Code-Qualität**: Markdownlint-konforme Dokumentation
 
-#### Technical Details
+#### Technical Details (v7.0)
 
 - Neue Ordnerstruktur: config/, logs/, backups/, old-versions/, temp/
 - JSON-basierte Konfiguration mit Debug-Modus
@@ -223,7 +244,7 @@ Blockiert 25 sichere Tracking/Werbung-Domains:
 
 ### 🐒 Enhanced Edition - Erweiterte Funktionalität
 
-#### Neue Features
+#### Neue Features (v6.5)
 
 - **Winget Integration**: Vollständig in Auto-Modus integriert
 - **Erweiterte Treiber-Erkennung**: Detaillierte Hardware-Informationen
@@ -234,14 +255,14 @@ Blockiert 25 sichere Tracking/Werbung-Domains:
 - **Performance-Optimierungen**: Geschwindigkeitsverbesserungen
 - **Verbesserte Benutzerführung**: Intuitivere Menüs und Hilfetexte
 
-#### Verbesserungen
+#### Verbesserungen (v6.5)
 
 - Komplett überarbeitete Winget-Integration
 - Verbesserte Systemkompatibilität
 - Optimierte Antiviren-Erkennung
 - Enhanced Error Handling
 
-#### Technische Details
+#### Technische Details (v6.5)
 
 - Antiviren-freundlicher Startup mit Delay
 - Sichere Defaults und StrictMode
@@ -254,7 +275,7 @@ Blockiert 25 sichere Tracking/Werbung-Domains:
 
 ### 🌟 Initialer Neubau - Grundstein-Version
 
-#### Grundfunktionen
+#### Grundfunktionen (v6.1)
 
 - **Basis-Framework**: Komplette Neuentwicklung des Power Tools
 - **Admin-Rechte-System**: Automatische UAC-Behandlung mit Self-Elevation  
@@ -264,13 +285,13 @@ Blockiert 25 sichere Tracking/Werbung-Domains:
 - **Basis-Fehlerbehandlung**: Grundlegende Error-Handling-Mechanismen
 - **Vollständige Funktionsbasis**: Alle ursprünglichen Kernfunktionen
 
-#### Korrekturen
+#### Korrekturen (v6.1)
 
 - **Encoding-Probleme**: Alle Unicode-Zeichen durch ASCII-Alternativen ersetzt
 - **Adblock-Sicherheit**: Sicherere Implementierung mit konservativer Whitelist
 - **Basis-Stabilität**: Verbesserte Grundstabilität
 
-#### Implementierung
+#### Implementierung (v6.1)
 
 - Erstellungsdatum: 06.09.2025
 - Unicode-Fix für bessere Kompatibilität  

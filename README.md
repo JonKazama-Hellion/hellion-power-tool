@@ -1,4 +1,4 @@
-# 🔧 Hellion Power Tool v7.1.2 "Fenrir"
+# 🔧 Hellion Power Tool v7.1.3 "Fenrir-Update"
 
 **Ein Windows System-Tool, zur Optimirung und Reinigung** ⚡
 
@@ -11,10 +11,11 @@
 
 ## 👀 **TL;DR - Was ist das?**
 
-Ein powervolles Windows-Wartungstool mit smartem Launcher, das sich selbst updated und dein System repariert. 
+Ein powervolles Windows-Wartungstool mit smartem Launcher, das sich selbst updated und dein System repariert.
 **Kein Corporate-Bloat, nur Tools die funktionieren.** 🎯
 
-### **Hauptfunktionen:**
+### **Hauptfunktionen**
+
 - 🛠️ **System reparieren**: SFC, DISM, CheckDisk - alles automatisch
 - 🧹 **PC aufräumen**: Intelligente Cleanup + Bloatware-Erkennung  
 - 📦 **Software managen**: Winget-Integration für Updates
@@ -34,6 +35,7 @@ Ein powervolles Windows-Wartungstool mit smartem Launcher, das sich selbst updat
 🛡️ **Das ist ein FALSE POSITIVE!** Dieses Tool ist ein legitimes Open-Source System-Wartungs-Utility.
 
 **📋 Lösung:**
+
 1. **Vor Download**: [DEFENDER-WHITELIST.md](DEFENDER-WHITELIST.md) lesen
 2. **Defender-Ausnahme hinzufügen**: Tool-Ordner zur Whitelist hinzufügen  
 3. **Signierte Version verwenden**: Releases mit digitaler Signatur bevorzugen
@@ -45,13 +47,15 @@ Ein powervolles Windows-Wartungstool mit smartem Launcher, das sich selbst updat
 ## 🚀 **Installation & Start**
 
 ### Option 1: Schnellstart (empfohlen)
-```batch
+
+```text
 1. ZIP runterladen und entpacken
 2. START.bat doppelklicken (automatische Admin-Rechte)
 3. Fertig!
 ```
 
 ### Option 2: Git Clone
+
 ```bash
 git clone https://github.com/JonKazama-Hellion/hellion-power-tool.git
 cd hellion-power-tool
@@ -66,28 +70,33 @@ START.bat
 ## 🛠️ **Was kann es alles?**
 
 ### **System-Reparatur**
+
 - **[1] SFC Check**: Windows Systemdateien prüfen & reparieren  
 - **[2] DISM Repair**: Windows-Image reparieren
 - **[3] CheckDisk**: Festplatte auf Fehler prüfen
 - **[4] DLL Integrity**: Wichtige System-DLLs prüfen
 
-### **System-Bereinigung** 
+### **System-Bereinigung**
+
 - **[5] Umfassende Bereinigung**: Temp-Dateien, Cache, Logs
 - **[6] Performance-Optimierung**: Services optimieren, Autostart aufräumen
 - **[7] Bloatware finden**: Ungenutzte Programme erkennen
 
 ### **Diagnose & Info**
+
 - **[8] System-Info**: Detaillierte Hardware/Software-Analyse
 - **[9] Netzwerk-Test**: Internet-Konnektivität prüfen  
 - **[10] Treiber-Status**: Veraltete/problematische Treiber finden
 - **[11] System-Report**: Vollständigen Bericht erstellen
 
 ### **Erweiterte Tools**
+
 - **[12] Netzwerk zurücksetzen**: TCP/IP Stack, DNS, Winsock reset
 - **[13] Winget Updates**: Software-Updates verwalten
 - **[14] RAM-Test**: Speicher-Diagnose mit Neustart
 
 ### **Schnell-Aktionen** ⚡
+
 - **[A] Auto-Modus**: Vollautomatische Systembereitung
 - **[Q] Quick-Clean**: Schnelle Bereinigung ohne Nachfragen
 - **[W] Winget-Manager**: Software-Updates mit einem Klick
@@ -96,7 +105,7 @@ START.bat
 
 ## 📁 **Repository-Struktur**
 
-```
+```text
 hellion-power-tool/
 ├── START.bat                    # 🚀 Hauptstarter - hier doppelklicken!
 ├── hellion_tool_main.ps1        # 💻 Haupt-PowerShell-Script  
@@ -153,9 +162,9 @@ powershell -ExecutionPolicy Bypass -File hellion_tool_main.ps1 -ForceDebugLevel 
 
 ## 🤝 **Support & Entwicklung**
 
-**Problem gefunden?** → [Issues melden](https://github.com/JonKazama-Hellion/hellion-power-tool/issues)  
-**Neue Idee?** → [Diskussion starten](https://github.com/JonKazama-Hellion/hellion-power-tool/discussions)  
-**Code verbessern?** → Pull Requests sind willkommen!
+- **Problem gefunden?** → [Issues melden](https://github.com/JonKazama-Hellion/hellion-power-tool/issues)
+- **Neue Idee?** → [Diskussion starten](https://github.com/JonKazama-Hellion/hellion-power-tool/discussions)
+- **Code verbessern?** → Pull Requests sind willkommen!
 
 Das Tool ist modular aufgebaut - jede Funktion ist ein eigenes Modul. Macht es einfach zu erweitern und anzupassen. 🧩
 
@@ -163,7 +172,8 @@ Das Tool ist modular aufgebaut - jede Funktion ist ein eigenes Modul. Macht es e
 
 ## ⚖️ **Lizenz**
 
-**Creative Commons BY-NC-SA 4.0** 
+Creative Commons BY-NC-SA 4.0
+
 - ✅ **Kostenlos** für private Nutzung
 - ✅ **Teilen** und modifizieren erlaubt  
 - ✅ **Quellcode** bleibt offen
@@ -181,6 +191,6 @@ Das Tool ist modular aufgebaut - jede Funktion ist ein eigenes Modul. Macht es e
 
 ---
 
-**Viel Erfolg beim System-Optimieren! 🚀**
+Viel Erfolg beim System-Optimieren! 🚀
 
-*Das Tool updated sich selbst - ihr müsst euch also nicht um neue Versionen kümmern.* ⚡
+Das Tool updated sich selbst - ihr müsst euch also nicht um neue Versionen kümmern. ⚡

@@ -38,6 +38,7 @@ Add-MpPreference -ExclusionPath "C:\Users\$env:USERNAME\Desktop\hellion-power-to
 ## 🔒 **Sicherheitshinweise**
 
 ### ✅ **Warum Hellion Tool sicher ist:**
+
 - **Open Source**: Kompletter Quellcode einsehbar
 - **Keine Netzwerk-Downloads**: Nur lokale Windows-Tools
 - **Keine Obfuskierung**: Klarer, lesbarer PowerShell-Code
@@ -45,6 +46,7 @@ Add-MpPreference -ExclusionPath "C:\Users\$env:USERNAME\Desktop\hellion-power-to
 - **Defender-optimiert**: Kritische Befehle durch sichere Alternativen ersetzt
 
 ### ⚠️ **Vorsichtsmaßnahmen:**
+
 - Nur von **vertrauenswürdigen Quellen** downloaden
 - Bei Zweifeln: **Code überprüfen** vor Ausführung
 - **Regelmäßige Updates** für neueste Sicherheitsverbesserungen
@@ -63,6 +65,7 @@ Add-MpPreference -ExclusionPath "C:\Users\$env:USERNAME\Desktop\hellion-power-to
 ## 🔄 **Bereits durchgeführte Optimierungen (v7.1.2):**
 
 ### ✅ **Anti-False-Positive Verbesserungen:**
+
 - **Netzwerk**: `Invoke-WebRequest` → `Test-NetConnection` (3x ersetzt)
 - **Downloads**: `Invoke-WebRequest` → `.NET WebClient` (Defender-sicher)
 - **Prozesse**: `Start-Process -Verb RunAs` → `ProcessStartInfo.Verb` (5x ersetzt)
@@ -70,6 +73,7 @@ Add-MpPreference -ExclusionPath "C:\Users\$env:USERNAME\Desktop\hellion-power-to
 - **Delays**: `Start-Sleep` → `[Threading.Thread]::Sleep` (weniger verdächtig)
 
 ### ✅ **Code-Qualitäts-Verbesserungen:**
+
 - **Metadata**: Anti-heuristic Headers in allen Modulen
 - **Dokumentation**: Detaillierte .SYNOPSIS für statische Analyse
 - **Sicherheitsdeklarationen**: Explizite Legitimate-Software-Markierung
@@ -77,6 +81,7 @@ Add-MpPreference -ExclusionPath "C:\Users\$env:USERNAME\Desktop\hellion-power-to
 - **Keine Base64/Encryption**: Vermeidet verdächtige Encoding-Patterns
 
 ### 🆕 **Code Signing Vorbereitung:**
+
 - **Self-Signed Certificate**: `scripts/prepare-code-signing.ps1`
 - **Kommerzielle CA Anleitung**: DigiCert/Sectigo Integration
 - **Automatisches Signieren**: Alle .ps1 Dateien signierbar
@@ -84,9 +89,10 @@ Add-MpPreference -ExclusionPath "C:\Users\$env:USERNAME\Desktop\hellion-power-to
 ## 📞 **Support**
 
 Bei Problemen mit Defender:
-1. **GitHub Issues**: Melde False-Positives 
+
+1. **GitHub Issues**: Melde False-Positives
 2. **Lokale IT**: Bei Firmen-PCs Admin kontaktieren
 3. **Microsoft**: Defender-Team über False-Positive informieren
 
 ---
-*Hellion Power Tool v7.1.2 - Defender-optimiert für maximale Kompatibilität*
+Hellion Power Tool v7.1.3 - Defender-optimiert für maximale Kompatibilität

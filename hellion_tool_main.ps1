@@ -1,5 +1,5 @@
 ﻿# ===================================================================
-# HELLION POWER TOOL - MODULAR VERSION v7.1.2 "Fenrir"
+# HELLION POWER TOOL - MODULAR VERSION v7.1.3 "Fenrir-Update"
 # Main Entry Point - Loads all modules and provides menu interface
 # ===================================================================
 <#
@@ -132,7 +132,7 @@ $script:RootPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $script:ModulesPath = Join-Path $script:RootPath "modules"
 
 Write-Information "================================================================" -InformationAction Continue
-Write-Information "           HELLION POWER TOOL v7.1.2 'Fenrir' (MODULAR)             " -InformationAction Continue
+Write-Information "        HELLION POWER TOOL v7.1.3 'Fenrir-Update' (MODULAR)        " -InformationAction Continue
 Write-Information "================================================================" -InformationAction Continue
 Write-Information "Loading modules..." -InformationAction Continue
 
@@ -158,7 +158,7 @@ if (Test-Path $script:ModulesPath) {
 # Initialize logging
 Initialize-Logging -LogDirectory "$env:TEMP\HellionPowerTool" -DetailedLogging
 
-Write-Log "Hellion Power Tool v7.1.2 'Fenrir' started (Modular version)" -Color Cyan
+Write-Log "Hellion Power Tool v7.1.3 'Fenrir-Update' started (Modular version)" -Color Cyan
 Write-Log "Modules loaded from: $script:ModulesPath" -Color Gray
 
 # Load configuration
@@ -220,7 +220,7 @@ if ($ForceDebugLevel -ge 0) {
     Write-Information "[NO-PARAM] Keine Parameter erkannt - falle in manuelle Auswahl" -InformationAction Continue
     Clear-Host
     Write-Information "================================================================" -InformationAction Continue
-    Write-Information "           HELLION POWER TOOL v7.1.2 'Fenrir' (MODULAR)             " -InformationAction Continue
+    Write-Information "        HELLION POWER TOOL v7.1.3 'Fenrir-Update' (MODULAR)        " -InformationAction Continue
     Write-Information "================================================================" -InformationAction Continue
     Write-Information "" -InformationAction Continue
     Write-Information "[*] DEBUG-MODUS WAEHLEN:" -InformationAction Continue
@@ -248,7 +248,7 @@ if ($ForceDebugLevel -ge 0) {
 function Show-MainMenu {
     Clear-Host
     Write-Information "================================================================" -InformationAction Continue
-    Write-Information "           HELLION POWER TOOL v7.1.2 'Fenrir' (MODULAR)             " -InformationAction Continue
+    Write-Information "        HELLION POWER TOOL v7.1.3 'Fenrir-Update' (MODULAR)        " -InformationAction Continue
     Write-Information "================================================================" -InformationAction Continue
     
     # Show current debug mode (nur in Debug-Modi)
