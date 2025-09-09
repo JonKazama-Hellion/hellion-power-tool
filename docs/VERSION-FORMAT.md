@@ -52,7 +52,7 @@ Odin
 - **HH**: Stunde (11)
 - **NN**: Minute (42)
 
-**Erklärung**: `71502509091630` = v7.1.5.0 vom 09.09.2025 um 16:30  
+**Erklärung**: `71502509091645` = v7.1.5.0 vom 09.09.2025 um 16:45  
 **Zweck**: Ermöglicht minutengenaue Updates am gleichen Tag
 
 ---
