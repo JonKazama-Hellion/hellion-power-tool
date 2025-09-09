@@ -155,7 +155,7 @@ jobs:
         $version = "${{ steps.version.outputs.version }}"
         
         # Create release notes content
-        $content = "# Hellion Power Tool $version - `"Odin`"`n`n"
+        $content = "# Hellion Power Tool $version - `"Baldur`"`n`n"
         $content += "## WARNING: Windows Defender Warnung`n"
         $content += "Dieses Tool kann False-Positive Warnungen ausloesen (**Trojan:Script/Wacatac.B!ml**).`n"
         $content += "**LOESUNG**: Siehe [DEFENDER-WHITELIST.md](https://github.com/${{ github.repository }}/blob/main/DEFENDER-WHITELIST.md)`n`n"
@@ -208,7 +208,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ steps.version.outputs.version }}
-        name: Hellion Power Tool ${{ steps.version.outputs.version }} "Odin"
+        name: Hellion Power Tool ${{ steps.version.outputs.version }} "Baldur"
         body_path: release-notes.md
         draft: false
         prerelease: false
