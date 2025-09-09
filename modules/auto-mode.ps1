@@ -4,8 +4,12 @@
 # ===================================================================
 
 function Invoke-EnhancedAutoMode {
-    Write-Log "`n[*] --- ERWEITERTER AUTO-MODUS ---" -Color Green
-    Write-Log "Fuehrt alle empfohlenen Optimierungen automatisch durch" -Color Yellow
+    Write-Host ""
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "                    >>> ERWEITERTER AUTO-MODUS <<<" -ForegroundColor White
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "Fuehrt alle empfohlenen Optimierungen automatisch durch" -ForegroundColor Yellow
+    Write-Host ""
     
     $script:AutoApproveCleanup = $true
     $autoStartTime = Get-Date
@@ -18,11 +22,31 @@ function Invoke-EnhancedAutoMode {
         ActionsPerformed = @()
     }
     
-    Write-Information "[INFO] `n[*] AUTO-MODUS OPTIONEN:" -InformationAction Continue
-    Write-Information "[INFO]   [1] Basis-Optimierung (Sicher)" -InformationAction Continue
-    Write-Information "[INFO]   [2] Erweiterte Optimierung (Empfohlen)" -InformationAction Continue
-    Write-Information "[INFO]   [3] Vollstaendige Optimierung (Alles)" -InformationAction Continue
-    Write-Information "[INFO]   [x] Abbrechen" -InformationAction Continue
+    Write-Host "[*] AUTO-MODUS OPTIONEN:" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   [1] " -ForegroundColor White -NoNewline
+    Write-Host "BASIS " -ForegroundColor Green -NoNewline
+    Write-Host "(5-10 Min)" -ForegroundColor DarkGray
+    Write-Host "       ▶ SFC + DISM + Temp-Bereinigung + Performance-Boost" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [2] " -ForegroundColor White -NoNewline
+    Write-Host "ERWEITERT " -ForegroundColor Yellow -NoNewline
+    Write-Host "(10-20 Min) - " -ForegroundColor DarkGray -NoNewline
+    Write-Host "Empfohlen" -ForegroundColor Green
+    Write-Host "       ▶ Basis + CheckDisk + Netzwerk-Test + Bloatware-Check" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [3] " -ForegroundColor White -NoNewline
+    Write-Host "VOLLSTAENDIG " -ForegroundColor Red -NoNewline
+    Write-Host "(20-30 Min)" -ForegroundColor DarkGray
+    Write-Host "       ▶ Erweitert + RAM-Test + Registry-Optimierung + Treiber-Check" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [x] " -ForegroundColor White -NoNewline
+    Write-Host "Abbrechen" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "[TIP] " -ForegroundColor Yellow -NoNewline
+    Write-Host "Alle Modi erstellen automatisch Wiederherstellungspunkt" -ForegroundColor Cyan
+    Write-Host "[TIP] " -ForegroundColor Yellow -NoNewline
+    Write-Host "BASIS-Modus ist für 99% der Probleme ausreichend" -ForegroundColor Cyan
     
     $autoMode = Read-Host "`nWahl [1-3/x]"
     
@@ -31,14 +55,43 @@ function Invoke-EnhancedAutoMode {
         return $false
     }
     
-    # Wiederherstellungspunkt erstellen
+    # Wiederherstellungspunkt erstellen - KRITISCH für Sicherheit!
     Write-Log "`n=== VORBEREITUNG ===" -Color Cyan
     if (Get-Command New-SystemRestorePoint -ErrorAction SilentlyContinue) {
         $restoreResult = New-SystemRestorePoint -Description "Auto-Modus (vor Optimierung)"
         if ($restoreResult) {
             $autoResults.ActionsPerformed += "Wiederherstellungspunkt erstellt"
             $autoResults.SuccessfulActions++
+        } else {
+            # KRITISCHER FEHLER: Ohne Backup ist Auto-Modus zu riskant!
+            Write-Log "\n🚨 AUTO-MODUS ABGEBROCHEN!" -Color Red
+            Write-Log "Ohne Wiederherstellungspunkt wäre eine automatische System-Optimierung" -Color Red
+            Write-Log "zu riskant. Bitte Problem beheben und erneut versuchen." -Color Red
+            
+            $autoResults.ActionsPerformed += "Auto-Modus wegen fehlendem Backup abgebrochen"
+            $autoResults.FailedActions++
+            $autoResults.TotalActions++
+            
+            # Rückgabe der Ergebnisse mit Abbruch-Info
+            $autoResults.Duration = [math]::Round((Get-Date).Subtract($startTime).TotalMinutes, 2)
+            
+            Write-Log "\n=== AUTO-MODUS SICHERHEITS-ABBRUCH ===" -Color Red
+            Write-Log "Dauer: $($autoResults.Duration) Minuten" -Color White
+            Write-Log "Status: ABGEBROCHEN (Sicherheit)" -Color Red
+            Write-Log "Grund: Wiederherstellungspunkt konnte nicht erstellt werden" -Color Yellow
+            
+            return $autoResults
         }
+    } else {
+        Write-Log "[WARNING] New-SystemRestorePoint Funktion nicht verfügbar" -Color Red
+        Write-Log "🚨 AUTO-MODUS KANN NICHT SICHER AUSGEFÜHRT WERDEN!" -Color Red
+        
+        $autoResults.ActionsPerformed += "Auto-Modus wegen fehlender Restore-Funktion abgebrochen"
+        $autoResults.FailedActions++
+        $autoResults.TotalActions++
+        $autoResults.Duration = [math]::Round((Get-Date).Subtract($startTime).TotalMinutes, 2)
+        
+        return $autoResults
     }
     
     # Basis-Aktionen (alle Modi)

@@ -1,5 +1,5 @@
 ﻿# ===================================================================
-# HELLION POWER TOOL - MODULAR VERSION v7.1.5.0 "Baldur"
+# HELLION POWER TOOL - MODULAR VERSION v7.1.5.1 "Baldur"
 # Main Entry Point - Loads all modules and provides menu interface
 # ===================================================================
 <#
@@ -132,7 +132,7 @@ $script:RootPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $script:ModulesPath = Join-Path $script:RootPath "modules"
 
 Write-Information "================================================================" -InformationAction Continue
-Write-Information "        HELLION POWER TOOL v7.1.5.0 'Baldur' (MODULAR)        " -InformationAction Continue
+Write-Information "        HELLION POWER TOOL v7.1.5.1 'Baldur' (MODULAR)        " -InformationAction Continue
 Write-Information "================================================================" -InformationAction Continue
 Write-Information "Loading modules..." -InformationAction Continue
 
@@ -158,7 +158,7 @@ if (Test-Path $script:ModulesPath) {
 # Initialize logging
 Initialize-Logging -LogDirectory "$env:TEMP\HellionPowerTool" -DetailedLogging
 
-Write-Log "Hellion Power Tool v7.1.5.0 'Baldur' started (Modular version)" -Color Cyan
+Write-Log "Hellion Power Tool v7.1.5.1 'Baldur' started (Modular version)" -Color Cyan
 Write-Log "Modules loaded from: $script:ModulesPath" -Color Gray
 
 # Load configuration
@@ -220,7 +220,7 @@ if ($ForceDebugLevel -ge 0) {
     Write-Information "[NO-PARAM] Keine Parameter erkannt - falle in manuelle Auswahl" -InformationAction Continue
     Clear-Host
     Write-Information "================================================================" -InformationAction Continue
-    Write-Information "        HELLION POWER TOOL v7.1.5.0 'Baldur' (MODULAR)        " -InformationAction Continue
+    Write-Information "        HELLION POWER TOOL v7.1.5.1 'Baldur' (MODULAR)        " -InformationAction Continue
     Write-Information "================================================================" -InformationAction Continue
     Write-Information "" -InformationAction Continue
     Write-Information "[*] DEBUG-MODUS WAEHLEN:" -InformationAction Continue
@@ -247,9 +247,9 @@ if ($ForceDebugLevel -ge 0) {
 # Main Menu Function
 function Show-MainMenu {
     Clear-Host
-    Write-Information "================================================================" -InformationAction Continue
-    Write-Information "        HELLION POWER TOOL v7.1.5.0 'Baldur' (MODULAR)        " -InformationAction Continue
-    Write-Information "================================================================" -InformationAction Continue
+    Write-Host "================================================================" -ForegroundColor Cyan
+    Write-Host "        HELLION POWER TOOL v7.1.5.1 'Baldur' (MODULAR)        " -ForegroundColor White
+    Write-Host "================================================================" -ForegroundColor Cyan
     
     # Show current debug mode (nur in Debug-Modi)
     if ($script:DebugLevel -ge 1) {
@@ -265,40 +265,39 @@ function Show-MainMenu {
     Write-Information "Aktueller Modus: $modeText" -InformationAction Continue
     Write-Information "" -InformationAction Continue
     
-    Write-Information "  [*] SCHNELL-AKTIONEN:" -InformationAction Continue
-    Write-Information "     [A] AUTO-MODUS ERWEITERT (Empfohlen)" -InformationAction Continue
-    Write-Information "     [Q] Schnell-Bereinigung" -InformationAction Continue
-    Write-Information "     [W] Winget-Updates" -InformationAction Continue
+    # 🚀 HAUPT-AKTIONEN (Empfohlen für alle User)
+    Write-UIOutput "🚀 HAUPT-AKTIONEN" -ForegroundColor Cyan
+    Write-Information "   [A] Auto-Modus Erweitert     (Empfohlen - Alles automatisch)" -InformationAction Continue
+    Write-Information "   [Q] Schnell-Bereinigung      (5 Min - Grundreinigung)" -InformationAction Continue
+    Write-Information "   [1] System-Reparatur         (SFC + DISM + CheckDisk)" -InformationAction Continue
+    Write-Information "   [2] Performance-Boost        (Bereinigung + Optimierung)" -InformationAction Continue
     Write-Information "" -InformationAction Continue
-    Write-Information "  === SYSTEM-REPARATUR ===" -InformationAction Continue
-    Write-Information "     [1] System File Checker (SFC)" -InformationAction Continue
-    Write-Information "     [2] DISM Reparatur" -InformationAction Continue
-    Write-Information "     [3] CheckDisk Laufwerks-Pruefung" -InformationAction Continue
-    Write-Information "     [4] DLL Integritaets-Check" -InformationAction Continue
+    
+    # 🔧 DIAGNOSE & PROBLEMLÖSUNG
+    Write-UIOutput "🔧 DIAGNOSE & PROBLEMLÖSUNG" -ForegroundColor Yellow  
+    Write-Information "   [3] System-Information        (Hardware + Software Überblick)" -InformationAction Continue
+    Write-Information "   [4] Netzwerk-Test             (Internet + DNS + Speed)" -InformationAction Continue
+    Write-Information "   [5] Treiber-Diagnose          (ENE.SYS + Hardware-Probleme)" -InformationAction Continue
+    Write-Information "   [6] Bluescreen-Analyse        (Crash-Logs + Ursachen)" -InformationAction Continue
+    Write-Information "   [7] RAM-Test                  (Memory Diagnostic)" -InformationAction Continue
     Write-Information "" -InformationAction Continue
-    Write-Information "  === SYSTEM-BEREINIGUNG ===" -InformationAction Continue
-    Write-Information "     [5] Umfassende System-Bereinigung" -InformationAction Continue
-    Write-Information "     [6] Performance-Optimierung" -InformationAction Continue
-    Write-Information "     [7] Ungenutzte Programme finden" -InformationAction Continue
-    Write-Information "     [8] Bloatware erkennen" -InformationAction Continue
+    
+    # 🛡️ SICHERHEIT & VERWALTUNG  
+    Write-UIOutput "🛡️ SICHERHEIT & VERWALTUNG" -ForegroundColor Green
+    Write-Information "   [8] Wiederherstellungspunkte  (Backup + Restore)" -InformationAction Continue
+    Write-Information "   [9] Bloatware-Erkennung       (Unnötige Software finden)" -InformationAction Continue
+    Write-Information "   [W] Winget-Updates            (Software aktualisieren)" -InformationAction Continue
+    Write-Information "   [R] Netzwerk zurücksetzen     (Bei Internet-Problemen)" -InformationAction Continue
     Write-Information "" -InformationAction Continue
-    Write-Information "  === DIAGNOSE & INFO ===" -InformationAction Continue
-    Write-Information "     [9] System-Information" -InformationAction Continue
-    Write-Information "     [10] Netzwerk-Test" -InformationAction Continue
-    Write-Information "     [11] Treiber-Diagnose (Erweitert)" -InformationAction Continue
-    Write-Information "     [12] System-Bericht erstellen" -InformationAction Continue
-    Write-Information "     [13] Bluescreen/Crash Analyzer" -InformationAction Continue
-    Write-Information "     [14] RAM-Test (Memory Diagnostic)" -InformationAction Continue
+    
+    # 📊 ERWEITERTE FUNKTIONEN
+    Write-UIOutput "📊 ERWEITERTE FUNKTIONEN" -ForegroundColor Magenta
+    Write-Information "   [E] System-Bericht erstellen  (Detaillierte Analyse)" -InformationAction Continue
+    Write-Information "   [S] Safe Adblock verwalten    (Werbeblocker-Tools)" -InformationAction Continue
+    Write-Information "   [D] DLL-Integritäts-Check     (System-Dateien prüfen)" -InformationAction Continue
     Write-Information "" -InformationAction Continue
-    Write-Information "  === SICHERHEIT & VERWALTUNG ===" -InformationAction Continue
-    Write-Information "     [15] Safe Adblock verwalten" -InformationAction Continue
-    Write-Information "     [16] Wiederherstellungspunkte" -InformationAction Continue
-    Write-Information "     [17] Netzwerk zuruecksetzen" -InformationAction Continue
-    Write-Information "     [18] Winget Updates" -InformationAction Continue
-    Write-Information "     [19] Auto-Modus (Nochmal ausfuehren)" -InformationAction Continue
-    Write-Information "     [20] Schnell-Modus" -InformationAction Continue
-    Write-Information "" -InformationAction Continue
-    Write-Information "     [x] Beenden" -InformationAction Continue
+    
+    Write-UIOutput "[X] BEENDEN" -ForegroundColor Red
     Write-Information "" -InformationAction Continue
 }
 
@@ -375,60 +374,94 @@ do {
             Read-Host
         }
         '2' {
-            if (Get-Command Invoke-DISMRepair -ErrorAction SilentlyContinue) {
-                Invoke-DISMRepair
+            # Performance-Boost (Bereinigung + Optimierung)
+            if (Get-Command Invoke-ComprehensiveCleanup -ErrorAction SilentlyContinue) {
+                Invoke-ComprehensiveCleanup
+                if (Get-Command Optimize-SystemPerformance -ErrorAction SilentlyContinue) {
+                    Optimize-SystemPerformance
+                }
             } else {
-                Write-Error "ERROR: DISM Repair function not found." -ErrorAction Continue
+                Write-Error "ERROR: Performance-Boost functions not found." -ErrorAction Continue
             }
             Write-Information "`nPress Enter to continue..." -InformationAction Continue
             Read-Host
         }
         '3' {
-            if (Get-Command Invoke-CheckDisk -ErrorAction SilentlyContinue) {
-                Invoke-CheckDisk
+            # System-Information (Hardware + Software Überblick)
+            if (Get-Command Get-DetailedSystemInfo -ErrorAction SilentlyContinue) {
+                Get-DetailedSystemInfo
+                if (Get-Command Get-EnhancedDriveInfo -ErrorAction SilentlyContinue) {
+                    Get-EnhancedDriveInfo
+                }
             } else {
-                Write-Error "ERROR: CheckDisk function not found." -ErrorAction Continue
+                Write-Error "ERROR: System-Information functions not found." -ErrorAction Continue
             }
             Write-Information "`nPress Enter to continue..." -InformationAction Continue
             Read-Host
         }
         '4' {
-            if (Get-Command Test-DLLIntegrity -ErrorAction SilentlyContinue) {
-                Test-DLLIntegrity
+            # Netzwerk-Test (Internet + DNS + Speed)
+            if (Get-Command Test-EnhancedInternetConnectivity -ErrorAction SilentlyContinue) {
+                Test-EnhancedInternetConnectivity
             } else {
-                Write-Error "ERROR: DLL Integrity function not found." -ErrorAction Continue
+                Write-Error "ERROR: Netzwerk-Test function not found." -ErrorAction Continue
             }
             Write-Information "`nPress Enter to continue..." -InformationAction Continue
             Read-Host
         }
         '5' {
-            if (Get-Command Invoke-ComprehensiveCleanup -ErrorAction SilentlyContinue) {
-                Invoke-ComprehensiveCleanup
+            # Treiber-Diagnose (ENE.SYS + Hardware-Probleme)
+            if (Get-Command Start-DriverDiagnostic -ErrorAction SilentlyContinue) {
+                Start-DriverDiagnostic
             } else {
-                Write-Error "ERROR: Comprehensive Cleanup function not found." -ErrorAction Continue
+                Write-Error "ERROR: Treiber-Diagnose function not found." -ErrorAction Continue
             }
             Write-Information "`nPress Enter to continue..." -InformationAction Continue
             Read-Host
         }
         '6' {
-            if (Get-Command Optimize-SystemPerformance -ErrorAction SilentlyContinue) {
-                Optimize-SystemPerformance
+            # Bluescreen-Analyse (Crash-Logs + Ursachen)
+            if (Get-Command Get-SystemCrashAnalysis -ErrorAction SilentlyContinue) {
+                Get-SystemCrashAnalysis
             } else {
-                Write-Error "ERROR: Performance Optimization function not found." -ErrorAction Continue
+                Write-Error "ERROR: Bluescreen-Analyse function not found." -ErrorAction Continue
             }
             Write-Information "`nPress Enter to continue..." -InformationAction Continue
             Read-Host
         }
         '7' {
-            if (Get-Command Get-UnusedPrograms -ErrorAction SilentlyContinue) {
-                $null = Get-UnusedPrograms  # Capture return value to prevent console output
+            # RAM-Test (Memory Diagnostic)
+            if (Get-Command Start-WindowsMemoryDiagnostic -ErrorAction SilentlyContinue) {
+                Start-WindowsMemoryDiagnostic
             } else {
-                Write-Error "ERROR: Unused Programs function not found." -ErrorAction Continue
+                Write-Error "ERROR: RAM-Test function not found." -ErrorAction Continue
             }
             Write-Information "`nPress Enter to continue..." -InformationAction Continue
             Read-Host
         }
         '8' {
+            # Wiederherstellungspunkte verwalten
+            try {
+                # Lade das System-Restore Modul
+                . "$PSScriptRoot\modules\system-restore.ps1"
+                
+                # Starte Wiederherstellungspunkt-Verwaltung
+                Invoke-RestorePointManager
+                
+            } catch {
+                Write-Information "`n[ERROR] Wiederherstellungspunkt-Verwaltung fehlgeschlagen!" -InformationAction Continue
+                Write-Information "Fehlerdetails: $($_.Exception.Message)" -InformationAction Continue
+                Write-Information "Fehlerzeile: $($_.InvocationInfo.ScriptLineNumber)" -InformationAction Continue
+                
+                # Debug-Information
+                if ($_.Exception.InnerException) {
+                    Write-Information "Inner Exception: $($_.Exception.InnerException.Message)" -InformationAction Continue
+                }
+            }
+            Write-Information "`nPress Enter to continue..." -InformationAction Continue
+            Read-Host
+        }
+        '9' {
             # Simple Bloatware-Erkennung (robust und schnell)
             try {
                 # Lade das einfache Modul
@@ -444,23 +477,6 @@ do {
                 }
             } catch {
                 Write-Information "`n[ERROR] Bloatware-Erkennung fehlgeschlagen!" -InformationAction Continue
-                Write-Information "Fehlerdetails: $($_.Exception.Message)" -InformationAction Continue
-                Write-Information "Fehlerzeile: $($_.InvocationInfo.ScriptLineNumber)" -InformationAction Continue
-                
-                # Debug-Information
-                if ($_.Exception.InnerException) {
-                    Write-Information "Inner Exception: $($_.Exception.InnerException.Message)" -InformationAction Continue
-                }
-            }
-            Write-Information "`nPress Enter to continue..." -InformationAction Continue
-            Read-Host
-        }
-        '9' {
-            if (Get-Command Get-DetailedSystemInfo -ErrorAction SilentlyContinue) {
-                Get-DetailedSystemInfo
-                Get-EnhancedDriveInfo
-            } else {
-                Write-Error "ERROR: System Info function not found." -ErrorAction Continue
             }
             Write-Information "`nPress Enter to continue..." -InformationAction Continue
             Read-Host
@@ -680,6 +696,49 @@ do {
             Write-Log "Tool beendet durch Benutzer" -Color Yellow
             Write-Information "`nTool wird beendet..." -InformationAction Continue
             break
+        }
+        'E' {
+            # System-Bericht erstellen (Detaillierte Analyse)
+            if (Get-Command New-DetailedSystemReport -ErrorAction SilentlyContinue) {
+                $reportPath = New-DetailedSystemReport
+                if ($reportPath) {
+                    Write-Information "`nSystem-Bericht erstellt: $reportPath" -InformationAction Continue
+                }
+            } else {
+                Write-Error "ERROR: System report function not found." -ErrorAction Continue
+            }
+            Write-Information "`nPress Enter to continue..." -InformationAction Continue
+            Read-Host
+        }
+        'S' {
+            # Safe Adblock verwalten (Werbeblocker-Tools)
+            if (Get-Command Invoke-SafeAdblock -ErrorAction SilentlyContinue) {
+                Invoke-SafeAdblock
+            } else {
+                Write-Error "ERROR: Safe Adblock function not found." -ErrorAction Continue
+            }
+            Write-Information "`nPress Enter to continue..." -InformationAction Continue
+            Read-Host
+        }
+        'D' {
+            # DLL-Integritäts-Check (System-Dateien prüfen)
+            if (Get-Command Test-DLLIntegrity -ErrorAction SilentlyContinue) {
+                Test-DLLIntegrity
+            } else {
+                Write-Error "ERROR: DLL Integrity function not found." -ErrorAction Continue
+            }
+            Write-Information "`nPress Enter to continue..." -InformationAction Continue
+            Read-Host
+        }
+        'R' {
+            # Netzwerk zurücksetzen (Bei Internet-Problemen)
+            if (Get-Command Reset-NetworkConfiguration -ErrorAction SilentlyContinue) {
+                Reset-NetworkConfiguration
+            } else {
+                Write-Error "ERROR: Network Reset function not found." -ErrorAction Continue
+            }
+            Write-Information "`nPress Enter to continue..." -InformationAction Continue
+            Read-Host
         }
         default {
             Write-Information "Ungueltige Auswahl. Bitte waehlen Sie eine gueltige Option." -InformationAction Continue

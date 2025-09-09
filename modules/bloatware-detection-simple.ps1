@@ -4,8 +4,12 @@
 # =============================================================================
 
 function Get-SimpleBloatwarePrograms {
-    Write-Information "[INFO] `n=== BLOATWARE ERKENNUNG (SIMPLE) ===" -InformationAction Continue
-    Write-Information "[INFO] [*] Analysiere installierte Programme..." -InformationAction Continue
+    Write-Host ""
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "                >>> BLOATWARE ERKENNUNG (SIMPLE) <<<" -ForegroundColor White
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "Analysiere installierte Programme..." -ForegroundColor Yellow
+    Write-Host ""
     
     # Erweiterte Bloatware-Patterns
     $bloatwarePatterns = @(

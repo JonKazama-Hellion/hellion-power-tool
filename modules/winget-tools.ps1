@@ -29,11 +29,24 @@ function Install-WingetIfMissing {
     
     Write-Log "[*] Winget nicht gefunden - Installation wird vorbereitet..." -Color Yellow
     
-    Write-Information "[INFO] `n[*] WINGET INSTALLATION OPTIONEN:" -InformationAction Continue
-    Write-Information "[INFO]   [1] Microsoft Store oeffnen (App Installer)" -InformationAction Continue
-    Write-Information "[INFO]   [2] GitHub Release herunterladen (Manuell)" -InformationAction Continue
-    Write-Information "[INFO]   [3] PowerShell-Installation versuchen" -InformationAction Continue
-    Write-Information "[INFO]   [x] Abbrechen" -InformationAction Continue
+    Write-Host ""
+    Write-Host "[*] WINGET INSTALLATION OPTIONEN:" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   [1] " -ForegroundColor White -NoNewline
+    Write-Host "Microsoft Store " -ForegroundColor Green -NoNewline
+    Write-Host "(App Installer)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [2] " -ForegroundColor White -NoNewline
+    Write-Host "GitHub Release " -ForegroundColor Yellow -NoNewline
+    Write-Host "(Manuell)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [3] " -ForegroundColor White -NoNewline
+    Write-Host "PowerShell-Installation " -ForegroundColor Magenta -NoNewline
+    Write-Host "(Automatisch)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [x] " -ForegroundColor White -NoNewline
+    Write-Host "Abbrechen" -ForegroundColor Red
+    Write-Host ""
     
     $choice = Read-Host "`nWahl [1-3/x]"
     
@@ -160,20 +173,20 @@ function Get-WingetUpdates {
             # Deutsche Ausgabe: "4 Aktualisierungen verfügbar."
             if ($trimmedLine -match "^(\d+)\s+Aktualisierungen?\s+verfügbar") {
                 $updateCount = [int]$matches[1]
-                Write-Log "[DEBUG] Gefunden: Deutsche Ausgabe '$trimmedLine' -> $updateCount Updates" -Level "DEBUG"
+                Write-Log "Gefunden: Deutsche Ausgabe '$trimmedLine' -> $updateCount Updates" -Level "DEBUG"
                 break
             }
             # Englische Ausgabe: "4 available upgrades"
             if ($trimmedLine -match "^(\d+)\s+available\s+upgrades?") {
                 $updateCount = [int]$matches[1]
-                Write-Log "[DEBUG] Gefunden: Englische Ausgabe '$trimmedLine' -> $updateCount Updates" -Level "DEBUG"
+                Write-Log "Gefunden: Englische Ausgabe '$trimmedLine' -> $updateCount Updates" -Level "DEBUG"
                 break
             }
         }
         
         # Falls keine direkte Zählung gefunden, zähle Update-Zeilen in der Tabelle
         if ($updateCount -eq 0) {
-            Write-Log "[DEBUG] Keine direkte Zählung gefunden - parse Tabelle" -Level "DEBUG"
+            Write-Log "Keine direkte Zählung gefunden - parse Tabelle" -Level "DEBUG"
             $inUpdateSection = $false
             
             for ($i = 0; $i -lt $lines.Count; $i++) {
@@ -195,9 +208,8 @@ function Get-WingetUpdates {
                     $parts = $line -split '\s+'
                     if ($parts.Count -ge 3) {
                         $updateCount = $updateCount + 1
-                        if ($foundUpdates.Count -lt 8) {
-                            $foundUpdates += $parts[0]
-                        }
+                        # Sammle alle Update-Namen (kein Limit mehr)
+                        $foundUpdates += $parts[0]
                     }
                     
                     # Stop bei neuer Sektion
@@ -225,7 +237,8 @@ function Get-WingetUpdates {
                 
                 if ($inUpdateSection) {
                     $parts = $line -split '\s+'
-                    if ($parts.Count -ge 3 -and $foundUpdates.Count -lt 8) {
+                    if ($parts.Count -ge 3) {
+                        # Sammle alle Update-Namen (kein 8-Item-Limit)
                         $foundUpdates += $parts[0]
                     }
                     
@@ -240,20 +253,33 @@ function Get-WingetUpdates {
         if ($updateCount -gt 0) {
             Write-Log "[INFO] $updateCount Updates verfuegbar:" -Color Yellow
             
-            for ($j = 0; $j -lt $foundUpdates.Count; $j++) {
-                Write-Log "  - $($foundUpdates[$j])" -Color White
+            # Zeige alle gefundenen Update-Namen
+            if ($foundUpdates.Count -gt 0) {
+                for ($j = 0; $j -lt $foundUpdates.Count; $j++) {
+                    Write-Log "  - $($foundUpdates[$j])" -Color White
+                }
+                
+                # Falls mehr Updates als Namen gefunden, zeige Hinweis
+                if ($updateCount -gt $foundUpdates.Count) {
+                    $remaining = $updateCount - $foundUpdates.Count
+                    Write-Log "  ... und $remaining weitere (winget upgrade für Details)" -Color Gray
+                }
+            } else {
+                # Fallback: Keine Namen geparst, zeige generischen Hinweis
+                Write-Log "  Verwende 'winget upgrade --list' für Details" -Color Gray
             }
             
-            if ($updateCount -gt $foundUpdates.Count) {
-                Write-Log "  ... und weitere" -Color Gray
+            # Rückgabe: Echte Update-Namen (nicht Platzhalter)
+            if ($foundUpdates.Count -gt 0) {
+                return $foundUpdates  # Echte Namen
+            } else {
+                # Fallback: Erstelle Array mit korrekter Anzahl für .Count
+                $countArray = @()
+                for ($k = 0; $k -lt $updateCount; $k++) {
+                    $countArray += "Unbekanntes Update $($k + 1)"
+                }
+                return $countArray
             }
-            
-            # Erstelle Array für .Count
-            $resultArray = @()
-            for ($k = 0; $k -lt $updateCount; $k++) {
-                $resultArray += "Update$k"
-            }
-            return $resultArray
             
         } else {
             Write-Log "[OK] Keine Updates gefunden" -Color Green
@@ -276,12 +302,28 @@ function Install-WingetUpdates {
     }
     
     $updateCount = $availableUpdates[0]  # Erste Element ist die Anzahl
-    Write-Information "[INFO] `n[*] WINGET UPDATE-INSTALLATION ($updateCount verfuegbar):" -InformationAction Continue
-    Write-Information "[INFO]   [1] Alle Updates installieren" -InformationAction Continue
-    Write-Information "[INFO]   [2] Nur wichtige Updates (Microsoft, Browser)" -InformationAction Continue
-    Write-Information "[INFO]   [3] Updates anzeigen und manuell waehlen" -InformationAction Continue
-    Write-Information "[INFO]   [4] Einzelne Software installieren" -InformationAction Continue
-    Write-Information "[INFO]   [x] Abbrechen" -InformationAction Continue
+    Write-Host ""
+    Write-Host "[*] WINGET UPDATE-INSTALLATION ($updateCount verfuegbar):" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   [1] " -ForegroundColor White -NoNewline
+    Write-Host "Alle Updates installieren " -ForegroundColor Green -NoNewline
+    Write-Host "(Vollstaendig)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [2] " -ForegroundColor White -NoNewline
+    Write-Host "Nur wichtige Updates " -ForegroundColor Yellow -NoNewline
+    Write-Host "(Microsoft, Browser)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [3] " -ForegroundColor White -NoNewline
+    Write-Host "Updates anzeigen " -ForegroundColor Cyan -NoNewline
+    Write-Host "(Manuell waehlen)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [4] " -ForegroundColor White -NoNewline
+    Write-Host "Einzelne Software " -ForegroundColor Magenta -NoNewline
+    Write-Host "(Installieren)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [x] " -ForegroundColor White -NoNewline
+    Write-Host "Abbrechen" -ForegroundColor Red
+    Write-Host ""
     
     $choice = Read-Host "`nWahl [1-4/x]"
     

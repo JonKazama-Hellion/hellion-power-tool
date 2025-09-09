@@ -119,7 +119,7 @@ echo.
 REM Prüfe ob Hauptscript existiert
 if not exist "hellion_tool_main.ps1" (
     echo [ERROR] hellion_tool_main.ps1 nicht gefunden!
-    echo [LÖSUNG] Stelle sicher dass du im richtigen Verzeichnis bist
+    echo [LOESUNG] Stelle sicher dass du im richtigen Verzeichnis bist
     pause
     exit /b 1
 )
@@ -138,3 +138,7 @@ if "%DEBUG_MODE%"=="1" (
 
 echo.
 echo [FINISHED] Tool beendet
+echo.
+echo [INFO] Launcher schliesst sich in 10 Sekunden automatisch...
+echo [TIP] Druecke beliebige Taste um sofort zu schliessen
+timeout /t 10 >nul

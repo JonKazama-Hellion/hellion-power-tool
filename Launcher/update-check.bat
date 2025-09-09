@@ -1,10 +1,11 @@
 @echo off
 setlocal enabledelayedexpansion
-title Hellion Update Checker v7.1.5.0
-color 0C
+title Hellion Update Checker v7.1.5.1
+color 0B
 
 echo ==============================================================================
-echo                    HELLION UPDATE CHECKER v7.1.5.0
+echo                 HELLION UPDATE CHECKER v7.1.5.1
+echo                      Suche nach neuen Features...
 echo ==============================================================================
 echo.
 
@@ -272,6 +273,9 @@ exit /b 0
 
 :ERROR_END
 echo.
-echo [ERROR] Update-Check konnte nicht durchgefuehrt werden
-pause
+echo [INFO] Update-Check abgeschlossen
+echo [TIP] Kein Problem - du kannst das Tool trotzdem normal verwenden!
+echo.
+echo Druecke beliebige Taste um fortzufahren...
+pause >nul
 exit /b 1

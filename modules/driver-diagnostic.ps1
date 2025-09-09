@@ -4,24 +4,50 @@
 # ===================================================================
 
 function Start-DriverDiagnostic {
-    Write-Log "`n[*] --- ERWEITERTE TREIBER-DIAGNOSE ---" -Color Cyan
     Write-Host ""
-    Write-Host "Dieses Modul analysiert versteckte Treiber-Probleme, die im Gerätemanager" -ForegroundColor Yellow
-    Write-Host "oft nicht sichtbar sind (wie ene.sys, problematische Kernel-Treiber, etc.)" -ForegroundColor Yellow
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "                >>> ERWEITERTE TREIBER-DIAGNOSE <<<" -ForegroundColor White
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "Analysiert versteckte Treiber-Probleme (ene.sys, Kernel-Treiber, etc.)" -ForegroundColor Yellow
     Write-Host ""
     
     do {
-        Write-Host "=== ERWEITERTE TREIBER-DIAGNOSE ===" -ForegroundColor Cyan
+        Write-Host "[*] TREIBER-DIAGNOSE OPTIONEN:" -ForegroundColor Cyan
         Write-Host ""
-        Write-Host "[1] Vollständige Treiber-Analyse (Empfohlen)" -ForegroundColor Green
-        Write-Host "[2] Problematische Treiber scannen (ene.sys, etc.)" -ForegroundColor Yellow
-        Write-Host "[2b] ENE.SYS Problem-Analyse & Automatische Reparatur" -ForegroundColor Cyan
-        Write-Host "[2c] ENE.SYS Treiber Zwangs-Entfernung (Erweitert)" -ForegroundColor Red
-        Write-Host "[3] Treiber Event Log Analyse" -ForegroundColor Cyan
-        Write-Host "[4] Detaillierte System-Treiber Liste" -ForegroundColor White
-        Write-Host "[5] Treiber-Verifikation aktivieren (Erweitert)" -ForegroundColor Magenta
-        Write-Host "[6] Installierte Treiber-Pakete anzeigen" -ForegroundColor Blue
-        Write-Host "[0] Zurück zum Hauptmenü" -ForegroundColor Gray
+        Write-Host "   [1] " -ForegroundColor White -NoNewline
+        Write-Host "Vollständige Treiber-Analyse " -ForegroundColor Green -NoNewline
+        Write-Host "(Empfohlen)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [2] " -ForegroundColor White -NoNewline
+        Write-Host "Problematische Treiber scannen " -ForegroundColor Yellow -NoNewline
+        Write-Host "(ene.sys, etc.)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [2b] " -ForegroundColor White -NoNewline
+        Write-Host "ENE.SYS Problem-Analyse " -ForegroundColor Cyan -NoNewline
+        Write-Host "(Auto-Reparatur)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [2c] " -ForegroundColor White -NoNewline
+        Write-Host "ENE.SYS Zwangs-Entfernung " -ForegroundColor Red -NoNewline
+        Write-Host "(Erweitert)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [3] " -ForegroundColor White -NoNewline
+        Write-Host "Treiber Event Log Analyse " -ForegroundColor Magenta -NoNewline
+        Write-Host "(System-Logs)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [4] " -ForegroundColor White -NoNewline
+        Write-Host "Detaillierte System-Treiber Liste " -ForegroundColor Cyan -NoNewline
+        Write-Host "(Überblick)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [5] " -ForegroundColor White -NoNewline
+        Write-Host "Treiber-Verifikation aktivieren " -ForegroundColor Red -NoNewline
+        Write-Host "(Erweitert)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [6] " -ForegroundColor White -NoNewline
+        Write-Host "Installierte Treiber-Pakete anzeigen " -ForegroundColor Yellow -NoNewline
+        Write-Host "(Liste)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [0] " -ForegroundColor White -NoNewline
+        Write-Host "Zurück zum Hauptmenü" -ForegroundColor Red
         Write-Host ""
         
         $choice = Read-Host "Wähle eine Option"

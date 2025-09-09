@@ -4,9 +4,12 @@
 # =============================================================================
 
 function Start-WindowsMemoryDiagnostic {
-    Write-Information "[INFO] === WINDOWS SPEICHER-DIAGNOSE ===" -InformationAction Continue
-    Write-Information "[INFO] Überprüft RAM auf Hardwarefehler mittels Windows-eigenem Tool" -InformationAction Continue
-    Write-Information "[INFO] " -InformationAction Continue
+    Write-Host ""
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "                >>> WINDOWS SPEICHER-DIAGNOSE <<<" -ForegroundColor White
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "Überprüft RAM auf Hardwarefehler mittels Windows-eigenem Tool" -ForegroundColor Yellow
+    Write-Host ""
     
     # WICHTIGE WARNUNGEN
     Write-Warning "WICHTIGE HINWEISE:"
@@ -34,9 +37,15 @@ function Start-WindowsMemoryDiagnostic {
     Write-Information "[INFO] " -InformationAction Continue
     
     # Erste Bestätigung
-    Write-Information "[INFO] 🔄 RAM-TEST DURCHFÜHREN?" -InformationAction Continue
-    Write-Information "[INFO]    [J] Ja - Starte RAM-Test (System wird neu gestartet)" -InformationAction Continue
-    Write-Information "[INFO]    [N] Nein - Zurück zum Hauptmenü" -InformationAction Continue
+    Write-Host ""
+    Write-Host "🔄 RAM-TEST DURCHFÜHREN?" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   [J] " -ForegroundColor White -NoNewline
+    Write-Host "Ja - Starte RAM-Test " -ForegroundColor Green -NoNewline
+    Write-Host "(System wird neu gestartet)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [N] " -ForegroundColor White -NoNewline
+    Write-Host "Nein - Zurück zum Hauptmenü" -ForegroundColor Red
     Write-Information "[INFO] " -InformationAction Continue
     
     $choice1 = Read-Host "RAM-Test starten? [J/N]"
@@ -129,9 +138,12 @@ function Start-WindowsMemoryDiagnostic {
 }
 
 function Get-MemoryTestResults {
-    Write-Information "[INFO] `n=== SPEICHER-TEST ERGEBNISSE ===" -InformationAction Continue
-    Write-Information "[INFO] Zeigt Ergebnisse des letzten RAM-Tests" -InformationAction Continue
-    Write-Information "[INFO] " -InformationAction Continue
+    Write-Host ""
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "                >>> SPEICHER-TEST ERGEBNISSE <<<" -ForegroundColor White
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "Zeigt Ergebnisse des letzten RAM-Tests" -ForegroundColor Yellow
+    Write-Host ""
     
     try {
         # Suche nach Memory Diagnostic Einträgen im Ereignisprotokoll

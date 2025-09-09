@@ -45,19 +45,35 @@ function Test-EnhancedInternetConnectivity {
         Write-Log "[ERROR] Keine DNS-Server erreichbar!" -Color Red
     }
     
-    # HTTP-Test mit Test-NetConnection (Defender-safe)
+    # HTTP-Test mit System.Net.NetworkInformation (Fallback für NetTCPIP Probleme)
     Write-Log "`n[*] Pruefe HTTP-Verbindungen..." -Color Blue
     $httpSuccess = 0
     
     foreach ($site in $httpSites) {
         try {
             $hostName = ([System.Uri]$site).Host
-            $testResult = Test-NetConnection -ComputerName $hostName -Port 80 -InformationLevel Quiet -ErrorAction Stop
-            if ($testResult.TcpTestSucceeded) {
-                Write-Log "  [OK] $site erreichbar" -Color Green
-                $httpSuccess++
-            } else {
-                Write-Log "  [FAIL] $site nicht erreichbar" -Color Red
+            
+            # Fallback-Methode: System.Net.Sockets.TcpClient
+            try {
+                $tcpClient = New-Object System.Net.Sockets.TcpClient
+                $result = $tcpClient.BeginConnect($hostName, 80, $null, $null)
+                $success = $result.AsyncWaitHandle.WaitOne(3000, $false)
+                $tcpClient.Close()
+                
+                if ($success) {
+                    Write-Log "  [OK] $site erreichbar" -Color Green
+                    $httpSuccess++
+                } else {
+                    Write-Log "  [FAIL] $site - Timeout" -Color Red
+                }
+            } catch {
+                # Zweiter Fallback: Test-Connection auf Port 80 über ICMP
+                if (Test-Connection -ComputerName $hostName -Count 1 -Quiet -ErrorAction SilentlyContinue) {
+                    Write-Log "  [OK] $site Host erreichbar (ICMP)" -Color Yellow
+                    $httpSuccess++
+                } else {
+                    Write-Log "  [FAIL] $site nicht erreichbar" -Color Red
+                }
             }
         } catch {
             Write-Log "  [FAIL] $site - $($_.Exception.Message)" -Color Red
@@ -71,19 +87,35 @@ function Test-EnhancedInternetConnectivity {
         $testResults.Issues += "HTTP-Verbindungen fehlgeschlagen"
     }
     
-    # HTTPS-Test mit Test-NetConnection (Defender-safe)
+    # HTTPS-Test mit System.Net.Sockets (Fallback für NetTCPIP Probleme)
     Write-Log "`n[*] Pruefe HTTPS-Verbindungen..." -Color Blue
     $httpsSuccess = 0
     
     foreach ($site in $httpsSites) {
         try {
             $hostName = ([System.Uri]$site).Host
-            $testResult = Test-NetConnection -ComputerName $hostName -Port 443 -InformationLevel Quiet -ErrorAction Stop
-            if ($testResult.TcpTestSucceeded) {
-                Write-Log "  [OK] $site erreichbar" -Color Green
-                $httpsSuccess++
-            } else {
-                Write-Log "  [FAIL] $site nicht erreichbar" -Color Red
+            
+            # Fallback-Methode: System.Net.Sockets.TcpClient für Port 443
+            try {
+                $tcpClient = New-Object System.Net.Sockets.TcpClient
+                $result = $tcpClient.BeginConnect($hostName, 443, $null, $null)
+                $success = $result.AsyncWaitHandle.WaitOne(3000, $false)
+                $tcpClient.Close()
+                
+                if ($success) {
+                    Write-Log "  [OK] $site erreichbar" -Color Green
+                    $httpsSuccess++
+                } else {
+                    Write-Log "  [FAIL] $site - Timeout" -Color Red
+                }
+            } catch {
+                # Zweiter Fallback: Test-Connection ICMP
+                if (Test-Connection -ComputerName $hostName -Count 1 -Quiet -ErrorAction SilentlyContinue) {
+                    Write-Log "  [OK] $site Host erreichbar (ICMP)" -Color Yellow
+                    $httpsSuccess++
+                } else {
+                    Write-Log "  [FAIL] $site nicht erreichbar" -Color Red
+                }
             }
         } catch {
             Write-Log "  [FAIL] $site - $($_.Exception.Message)" -Color Red
@@ -97,19 +129,35 @@ function Test-EnhancedInternetConnectivity {
         $testResults.Issues += "HTTPS-Verbindungen fehlgeschlagen"
     }
     
-    # CDN-Test mit Test-NetConnection (Defender-safe)
+    # CDN-Test mit System.Net.Sockets (Fallback für NetTCPIP Probleme)
     Write-Log "`n[*] Pruefe CDN-Erreichbarkeit..." -Color Blue
     $cdnSuccess = 0
     
     foreach ($site in $cdnSites) {
         try {
             $hostName = ([System.Uri]$site).Host
-            $testResult = Test-NetConnection -ComputerName $hostName -Port 443 -InformationLevel Quiet -ErrorAction Stop
-            if ($testResult.TcpTestSucceeded) {
-                Write-Log "  [OK] $site erreichbar" -Color Green
-                $cdnSuccess++
-            } else {
-                Write-Log "  [FAIL] $site nicht erreichbar" -Color Red
+            
+            # Fallback-Methode: System.Net.Sockets.TcpClient für Port 443
+            try {
+                $tcpClient = New-Object System.Net.Sockets.TcpClient
+                $result = $tcpClient.BeginConnect($hostName, 443, $null, $null)
+                $success = $result.AsyncWaitHandle.WaitOne(3000, $false)
+                $tcpClient.Close()
+                
+                if ($success) {
+                    Write-Log "  [OK] $site erreichbar" -Color Green
+                    $cdnSuccess++
+                } else {
+                    Write-Log "  [FAIL] $site - Timeout" -Color Red
+                }
+            } catch {
+                # Zweiter Fallback: Test-Connection ICMP  
+                if (Test-Connection -ComputerName $hostName -Count 1 -Quiet -ErrorAction SilentlyContinue) {
+                    Write-Log "  [OK] $site Host erreichbar (ICMP)" -Color Yellow
+                    $cdnSuccess++
+                } else {
+                    Write-Log "  [FAIL] $site nicht erreichbar" -Color Red
+                }
             }
         } catch {
             Write-Log "  [FAIL] $site - $($_.Exception.Message)" -Color Red

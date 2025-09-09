@@ -6,7 +6,7 @@
 # Software Identity Information (reduces heuristic triggers)
 $script:SoftwareInfo = @{
     Name = "Hellion Power Tool"
-    Version = "7.1.5.0 Baldur"
+    Version = "7.1.5.1 Baldur"
     Purpose = "Legitimate System Maintenance"
     Developer = "Open Source Community"
     License = "Non-Commercial"
@@ -74,7 +74,7 @@ function Get-SafeString {
 
 .NOTES
     Author: Open Source Community
-    Version: 7.1.5.0 Baldur
+    Version: 7.1.5.1 Baldur
     License: Non-Commercial Use
     
     False-Positive Information:

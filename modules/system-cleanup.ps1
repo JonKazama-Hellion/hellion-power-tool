@@ -120,12 +120,28 @@ function Invoke-ComprehensiveCleanup {
     
     # Cleanup-Modus abfragen
     if (-not $script:AutoApproveCleanup) {
-        Write-Information "[INFO] `n[*] BEREINIGUNGSOPTIONEN:" -InformationAction Continue
-        Write-Information "[INFO]   [1] Basis-Bereinigung (Temp-Dateien)" -InformationAction Continue
-        Write-Information "[INFO]   [2] Erweiterte Bereinigung (+ Caches)" -InformationAction Continue
-        Write-Information "[INFO]   [3] Gaming-Bereinigung (+ Gaming-Caches)" -InformationAction Continue
-        Write-Information "[INFO]   [4] Vollstaendige Bereinigung (Alles)" -InformationAction Continue
-        Write-Information "[INFO]   [5] Abbrechen" -InformationAction Continue
+        Write-Host ""
+        Write-Host "[*] BEREINIGUNGSOPTIONEN:" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "   [1] " -ForegroundColor White -NoNewline
+        Write-Host "Basis-Bereinigung " -ForegroundColor Green -NoNewline
+        Write-Host "(Temp-Dateien)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [2] " -ForegroundColor White -NoNewline
+        Write-Host "Erweiterte Bereinigung " -ForegroundColor Yellow -NoNewline
+        Write-Host "(+ Caches)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [3] " -ForegroundColor White -NoNewline
+        Write-Host "Gaming-Bereinigung " -ForegroundColor Magenta -NoNewline
+        Write-Host "(+ Gaming-Caches)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [4] " -ForegroundColor White -NoNewline
+        Write-Host "Vollstaendige Bereinigung " -ForegroundColor Red -NoNewline
+        Write-Host "(Alles)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [5] " -ForegroundColor White -NoNewline
+        Write-Host "Abbrechen" -ForegroundColor Red
+        Write-Host ""
         
         $cleanupMode = Read-Host "`nWahl [1-5]"
     } else {

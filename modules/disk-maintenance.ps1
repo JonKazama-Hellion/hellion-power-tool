@@ -44,10 +44,21 @@ function Invoke-CheckDisk {
         Write-Log "[*] Gewaehlt: Laufwerk $driveLetter" -Color Cyan
         
         # Checkdisk-Optionen
-        Write-Information "[INFO] `n[*] CHECKDISK OPTIONEN:" -InformationAction Continue
-        Write-Information "[INFO]   [1] Nur pruefen (Nur-Lesen, empfohlen)" -InformationAction Continue
-        Write-Information "[INFO]   [2] Pruefen und reparieren (/f)" -InformationAction Continue
-        Write-Information "[INFO]   [3] Vollstaendige Pruefung (/f /r)" -InformationAction Continue
+        Write-Host ""
+        Write-Host "[*] CHECKDISK OPTIONEN:" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "   [1] " -ForegroundColor White -NoNewline
+        Write-Host "Nur pruefen " -ForegroundColor Green -NoNewline
+        Write-Host "(Nur-Lesen, empfohlen)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [2] " -ForegroundColor White -NoNewline
+        Write-Host "Pruefen und reparieren " -ForegroundColor Yellow -NoNewline
+        Write-Host "(/f)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [3] " -ForegroundColor White -NoNewline
+        Write-Host "Vollstaendige Pruefung " -ForegroundColor Red -NoNewline
+        Write-Host "(/f /r)" -ForegroundColor DarkGray
+        Write-Host ""
         
         $modeChoice = Read-Host "`nModus waehlen [1-3]"
         
@@ -300,11 +311,24 @@ function Invoke-DISMRepair {
     Write-Log "`n[*] --- DISM SYSTEM-REPARATUR ---" -Color Cyan
     Write-Log "Repariert das Windows-Image mit DISM (Deployment Image Servicing)" -Color Yellow
     
-    Write-Information "[INFO] `n[*] DISM OPTIONEN:" -InformationAction Continue
-    Write-Information "[INFO]   [1] Health-Check (/CheckHealth)" -InformationAction Continue  
-    Write-Information "[INFO]   [2] Erweiterte Pruefung (/ScanHealth)" -InformationAction Continue
-    Write-Information "[INFO]   [3] Online-Reparatur (/RestoreHealth)" -InformationAction Continue
-    Write-Information "[INFO]   [x] Abbrechen" -InformationAction Continue
+    Write-Host ""
+    Write-Host "[*] DISM OPTIONEN:" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   [1] " -ForegroundColor White -NoNewline
+    Write-Host "Health-Check " -ForegroundColor Green -NoNewline
+    Write-Host "(/CheckHealth)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [2] " -ForegroundColor White -NoNewline
+    Write-Host "Erweiterte Pruefung " -ForegroundColor Yellow -NoNewline
+    Write-Host "(/ScanHealth)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [3] " -ForegroundColor White -NoNewline
+    Write-Host "Online-Reparatur " -ForegroundColor Red -NoNewline
+    Write-Host "(/RestoreHealth)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [x] " -ForegroundColor White -NoNewline
+    Write-Host "Abbrechen" -ForegroundColor Red
+    Write-Host ""
     
     $choice = Read-Host "`nWahl [1-3/x]"
     

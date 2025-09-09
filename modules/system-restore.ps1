@@ -3,6 +3,80 @@
 # Hellion Power Tool - Modular Version
 # ===================================================================
 
+function Invoke-RestorePointManager {
+    Write-Host ""
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "                >>> WIEDERHERSTELLUNGSPUNKT-VERWALTUNG <<<" -ForegroundColor White
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "Verwalte System-Wiederherstellungspunkte sicher" -ForegroundColor Yellow
+    Write-Host ""
+    
+    Write-Host "[*] WIEDERHERSTELLUNGSOPTIONEN:" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   [1] " -ForegroundColor White -NoNewline
+    Write-Host "Neuen Wiederherstellungspunkt erstellen " -ForegroundColor Green -NoNewline
+    Write-Host "(Empfohlen)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [2] " -ForegroundColor White -NoNewline
+    Write-Host "Verfügbare Wiederherstellungspunkte anzeigen " -ForegroundColor White -NoNewline
+    Write-Host "(Liste)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [3] " -ForegroundColor White -NoNewline
+    Write-Host "System zu Wiederherstellungspunkt zurücksetzen " -ForegroundColor White -NoNewline
+    Write-Host "(Vorsicht)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [4] " -ForegroundColor White -NoNewline
+    Write-Host "System Restore aktivieren " -ForegroundColor White -NoNewline
+    Write-Host "(Falls deaktiviert)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [x] " -ForegroundColor White -NoNewline
+    Write-Host "Zurück zum Hauptmenü" -ForegroundColor Red
+    Write-Host ""
+    
+    $choice = Read-Host "Wahl [1-4/x]"
+    
+    switch ($choice.ToLower()) {
+        '1' {
+            if (Get-Command New-SystemRestorePoint -ErrorAction SilentlyContinue) {
+                New-SystemRestorePoint
+            } else {
+                Write-Error "ERROR: New-SystemRestorePoint function not found." -ErrorAction Continue
+            }
+        }
+        '2' {
+            if (Get-Command Get-SystemRestorePoints -ErrorAction SilentlyContinue) {
+                Get-SystemRestorePoints
+            } else {
+                Write-Error "ERROR: Get-SystemRestorePoints function not found." -ErrorAction Continue
+            }
+        }
+        '3' {
+            if (Get-Command Restore-SystemToPoint -ErrorAction SilentlyContinue) {
+                Restore-SystemToPoint
+            } else {
+                Write-Error "ERROR: Restore-SystemToPoint function not found." -ErrorAction Continue
+            }
+        }
+        '4' {
+            if (Get-Command Enable-SystemRestore -ErrorAction SilentlyContinue) {
+                Enable-SystemRestore
+            } else {
+                Write-Error "ERROR: Enable-SystemRestore function not found." -ErrorAction Continue
+            }
+        }
+        'x' {
+            Write-Information "[INFO] Zurück zum Hauptmenü..." -InformationAction Continue
+            return
+        }
+        default {
+            Write-Information "[ERROR] Ungültige Auswahl: $choice" -InformationAction Continue
+        }
+    }
+    
+    Write-Information "`nPress Enter to continue..." -InformationAction Continue
+    Read-Host
+}
+
 function New-SystemRestorePoint {
     param([string]$Description = "Hellion Tool v7.0.3 (Modular)")
     
@@ -23,9 +97,43 @@ function New-SystemRestorePoint {
             Enable-ComputerRestore -Drive "C:\" -ErrorAction Stop
         }
         
-        # Erstelle Restore Point
+        # Erstelle Restore Point mit 24h-Bypass
         $fullDescription = "$Description - $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
-        Checkpoint-Computer -Description $fullDescription -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
+        
+        try {
+            # Versuche zuerst normalen Wiederherstellungspunkt
+            Checkpoint-Computer -Description $fullDescription -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
+        } catch {
+            # Falls 24h-Limit, versuche Registry-Override
+            if ($_.Exception.Message -like "*1440 Minuten*" -or $_.Exception.Message -like "*24*hour*") {
+                Write-Log "[INFO] 24h-Limit erreicht, versuche Registry-Override..." -Color Yellow
+                try {
+                    # Registry-Hack: Zeitlimit umgehen
+                    $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore"
+                    $originalValue = Get-ItemProperty -Path $regPath -Name "SystemRestorePointCreationFrequency" -ErrorAction SilentlyContinue
+                    
+                    Set-ItemProperty -Path $regPath -Name "SystemRestorePointCreationFrequency" -Value 0 -ErrorAction Stop
+                    
+                    # Nochmal versuchen
+                    Start-Sleep -Seconds 2
+                    Checkpoint-Computer -Description "$fullDescription (Registry-Override)" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
+                    
+                    # Registry-Wert zurücksetzen (24h Standard)
+                    if ($originalValue) {
+                        Set-ItemProperty -Path $regPath -Name "SystemRestorePointCreationFrequency" -Value $originalValue.SystemRestorePointCreationFrequency -ErrorAction SilentlyContinue
+                    } else {
+                        Set-ItemProperty -Path $regPath -Name "SystemRestorePointCreationFrequency" -Value 1440 -ErrorAction SilentlyContinue
+                    }
+                    
+                    Write-Log "[INFO] Wiederherstellungspunkt mit Registry-Override erstellt" -Color Green
+                } catch {
+                    Write-Log "[WARNING] Auch Registry-Override fehlgeschlagen: $($_.Exception.Message)" -Color Red
+                    throw $_
+                }
+            } else {
+                throw $_
+            }
+        }
         
         Add-Success "Wiederherstellungspunkt erstellt: $fullDescription"
         $script:RestorePointCreated = $true
@@ -39,7 +147,22 @@ function New-SystemRestorePoint {
             Add-Warning "Wiederherstellungspunkt: Zeitlimit (24h) noch nicht erreicht"
             return $true  # Nicht als Fehler werten
         } else {
-            Add-Warning "Wiederherstellungspunkt konnte nicht erstellt werden: $($_.Exception.Message)"
+            # KRITISCHER FEHLER: Wiederherstellungspunkt fehlgeschlagen
+            Write-Log "\n🚨 KRITISCHER FEHLER: Wiederherstellungspunkt konnte NICHT erstellt werden!" -Color Red
+            Write-Log "\nGrund: $($_.Exception.Message)" -Color Red
+            Write-Log "\n🛡️ SICHERHEITS-WARNUNG:" -Color Red
+            Write-Log "Ohne Backup ist das automatische Ausführen von System-Änderungen" -Color Yellow
+            Write-Log "zu riskant. Auto-Modus wird aus Sicherheitsgründen abgebrochen." -Color Yellow
+            Write-Log "\n📝 EMPFOHLENE LÖSUNGEN:" -Color Cyan
+            Write-Log "1. System Restore in Windows aktivieren" -Color White
+            Write-Log "2. Als Administrator ausführen" -Color White
+            Write-Log "3. Ausreichend Festplattenspeicher sicherstellen (min. 300 MB)" -Color White
+            Write-Log "4. Manueller Modus verwenden (ohne automatische Änderungen)" -Color White
+            Write-Log "\n🚫 AUTO-MODUS ABGEBROCHEN - Sicherheit geht vor!" -Color Red
+            
+            Add-Warning "KRITISCH: Wiederherstellungspunkt fehlgeschlagen - Auto-Modus abgebrochen"
+            
+            # Rückgabe false signalisiert kritischen Fehler
             return $false
         }
     }
@@ -99,11 +222,24 @@ function Restore-SystemToPoint {
         return $false
     }
     
-    Write-Information "[INFO] `n[*] WIEDERHERSTELLUNGSOPTIONEN:" -InformationAction Continue
-    Write-Information "[INFO]   [1] Letzten Wiederherstellungspunkt verwenden" -InformationAction Continue
-    Write-Information "[INFO]   [2] Wiederherstellungspunkt auswählen" -InformationAction Continue
-    Write-Information "[INFO]   [3] System Restore GUI öffnen" -InformationAction Continue
-    Write-Information "[INFO]   [x] Abbrechen" -InformationAction Continue
+    Write-Host ""
+    Write-Host "[*] WIEDERHERSTELLUNGSOPTIONEN:" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   [1] " -ForegroundColor White -NoNewline
+    Write-Host "Letzten Wiederherstellungspunkt verwenden " -ForegroundColor Green -NoNewline
+    Write-Host "(Schnell)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [2] " -ForegroundColor White -NoNewline
+    Write-Host "Wiederherstellungspunkt auswählen " -ForegroundColor Yellow -NoNewline
+    Write-Host "(Erweitert)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [3] " -ForegroundColor White -NoNewline
+    Write-Host "System Restore GUI öffnen " -ForegroundColor Magenta -NoNewline
+    Write-Host "(Manuell)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [x] " -ForegroundColor White -NoNewline
+    Write-Host "Abbrechen" -ForegroundColor Red
+    Write-Host ""
     
     $choice = Read-Host "`nWahl [1-3/x]"
     
@@ -208,11 +344,24 @@ function Enable-SystemRestore {
         }
         
         # Speicherplatz-Konfiguration (optional)
-        Write-Information "[INFO] `nSpeicherplatz fuer System Restore konfigurieren?" -InformationAction Continue
-        Write-Information "[INFO]   [1] Standard (5% der Festplatte)" -InformationAction Continue
-        Write-Information "[INFO]   [2] Minimal (2% der Festplatte)" -InformationAction Continue  
-        Write-Information "[INFO]   [3] Maximal (10% der Festplatte)" -InformationAction Continue
-        Write-Information "[INFO]   [s] Ueberspringen" -InformationAction Continue
+        Write-Host ""
+        Write-Host "Speicherplatz fuer System Restore konfigurieren?" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "   [1] " -ForegroundColor White -NoNewline
+        Write-Host "Standard " -ForegroundColor Green -NoNewline
+        Write-Host "(5% der Festplatte)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [2] " -ForegroundColor White -NoNewline
+        Write-Host "Minimal " -ForegroundColor Yellow -NoNewline
+        Write-Host "(2% der Festplatte)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [3] " -ForegroundColor White -NoNewline
+        Write-Host "Maximal " -ForegroundColor Magenta -NoNewline
+        Write-Host "(10% der Festplatte)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [s] " -ForegroundColor White -NoNewline
+        Write-Host "Ueberspringen" -ForegroundColor Gray
+        Write-Host ""
         
         $spaceChoice = Read-Host "`nWahl [1-3/s]"
         

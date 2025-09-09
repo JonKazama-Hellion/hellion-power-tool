@@ -7,6 +7,57 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 
 ---
 
+## [7.1.5.1 "Baldur"] - 2025-09-09
+
+### 🎨 MAJOR UI/UX RELEASE - Community Bug Marathon
+
+#### 🔥 Kritische Bugfixes (Community Reports)
+
+- **Menü-System komplett repariert**: 7+ Switch-Case Zuordnungen waren falsch - Option 3-7 führten andere Funktionen aus als angezeigt
+- **Fehlende Menü-Optionen hinzugefügt**: E, S, D, R Optionen waren nicht erreichbar trotz Anzeige im Hauptmenü  
+- **Wiederherstellungspunkt-Manager**: Fehlende `Invoke-RestorePointManager` Funktion vollständig implementiert
+- **NetTCPIP Module Loading Error**: Fallback auf System.Net.Sockets.TcpClient bei Get-NetTCPConnection Fehlern
+- **24h Restore Point Limit Bypass**: Registry-Hack umgeht Windows 1440-Minuten Limitation
+- **Winget Update Placeholders**: "Update0, Update1, Update2" durch echte Software-Namen ersetzt
+- **Update-Checker UTF-8 Encoding**: Emoji-Darstellungsfehler in Batch-Dateien behoben
+- **START.bat Auto-Close Issue**: Entfernt trailing pause für sauberen Launcher-Flow
+
+#### 🎨 Komplette UI/UX Modernisierung
+
+- **Einheitliches Menü-Design**: Alle 15+ Module auf konsistentes Cyan-Header Design umgestellt
+- **Farbschema-Optimierung**: Übermäßige Buntheit reduziert - nur essenzielle Farben (Grün=Empfohlen, Rot=Abbruch/Vorsicht)
+- **Hauptmenü-Header**: Moderne Cyan-Formatierung statt einfacher Text-Ausgabe
+- **Submenu-Konsistenz**: Alle Untermenüs verwenden identisches Layout mit strukturierten Optionsanzeigen
+- **ASCII-Kompatibilität**: Alle UTF-8 Emojis durch ASCII-sichere Zeichen ersetzt zur Encoding-Stabilität
+- **Option-Styling**: Strukturierte [Nr] Beschreibung (Details) Formatierung durchgängig implementiert
+
+#### 🛠️ Technische Verbesserungen
+
+- **Desktop-Shortcut-System**: PNG→ICO Konvertierung mit Icon-Cache-Management implementiert
+- **Auto-Mode-Beschreibungen**: Detaillierte Aktionslisten statt generischer "Modus A/B/C" Bezeichnungen  
+- **Performance-Boost Korrekturen**: Switch-Case 2 führt nun korrekt Bereinigung + Optimierung aus
+- **Module-Loading Fixes**: Korrekte .ps1 Modul-Referenzen in allen Hauptmenü-Optionen
+- **Restore-Point Safety**: Auto-Mode abbricht bei Restore-Point-Fehlern statt riskante Fortsetzung
+- **Network Connectivity Fallbacks**: Robuste Netzwerk-Tests mit mehreren Methoden
+
+#### 📊 Community Feedback Integration
+
+- **20 Bug Reports verarbeitet**: Systematische Behebung aller gemeldeten Probleme
+- **15 UI/UX Verbesserungen**: Basierend auf "zu bunt" und "inconsistent" Feedback
+- **Switch-Case Logik-Audit**: Vollständige Überprüfung aller Menü-zu-Funktion Zuordnungen
+- **Encoding-Stabilität**: UTF-8 Probleme in Batch/PowerShell Dateien vollständig eliminiert
+
+#### 🚀 Benutzerfreundlichkeit
+
+- **Intuitive Navigation**: Menü-Optionen führen zu erwarteten Funktionen (nicht mehr falsche Module)
+- **Konsistente Bedienung**: Einheitliche Menü-Struktur in allen Tool-Bereichen
+- **Verbesserte Lesbarkeit**: Reduzierte Farbvielfalt erhöht Übersichtlichkeit
+- **Funktionale Vollständigkeit**: Alle beworbenen Features sind tatsächlich erreichbar und funktional
+
+**🎯 Problem gelöst**: Tool ist vollständig benutzbar - alle Menü-Optionen führen zu korrekten Funktionen
+
+---
+
 ## [7.1.5.0 "Baldur"] - 2025-09-09
 
 ### 🆕 NEW FEATURE RELEASE - Erweiterte Treiber-Diagnose

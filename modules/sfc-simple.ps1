@@ -4,15 +4,26 @@
 # =============================================================================
 
 function Invoke-SimpleSFC {
-    Write-Information "[INFO] `n=== SYSTEM FILE CHECKER (EINFACH & SICHER) ===" -InformationAction Continue
-    Write-Information "[INFO] Prueft und repariert beschaedigte Windows-Systemdateien" -InformationAction Continue
-    Write-Information "[INFO] " -InformationAction Continue
+    Write-Host ""
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "                >>> SYSTEM FILE CHECKER (SICHER) <<<" -ForegroundColor White
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "Prueft und repariert beschaedigte Windows-Systemdateien" -ForegroundColor Yellow
+    Write-Host ""
     
-    Write-Information "[INFO] [*] SFC OPTIONEN:" -InformationAction Continue
-    Write-Information "[INFO]   [1] Schnelle Pruefung (sfc /verifyonly)" -InformationAction Continue
-    Write-Information "[INFO]   [2] Vollstaendige Reparatur (sfc /scannow)" -InformationAction Continue
-    Write-Information "[INFO]   [x] Abbrechen" -InformationAction Continue
-    Write-Information "[INFO] " -InformationAction Continue
+    Write-Host "[*] SFC OPTIONEN:" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   [1] " -ForegroundColor White -NoNewline
+    Write-Host "Schnelle Pruefung " -ForegroundColor Green -NoNewline
+    Write-Host "(sfc /verifyonly)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [2] " -ForegroundColor White -NoNewline
+    Write-Host "Vollstaendige Reparatur " -ForegroundColor Yellow -NoNewline
+    Write-Host "(sfc /scannow)" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [x] " -ForegroundColor White -NoNewline
+    Write-Host "Abbrechen" -ForegroundColor Red
+    Write-Host ""
     
     $choice = Read-Host "Wahl [1-2/x]"
     

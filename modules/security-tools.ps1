@@ -83,12 +83,28 @@ function Invoke-SafeAdblock {
             }
         }
         
-        Write-Information "[INFO] `n[*] ADBLOCK-OPTIONEN:" -InformationAction Continue
-        Write-Information "[INFO]   [1] Adblock aktivieren ($($missingDomains.Count) neue Domains)" -InformationAction Continue
-        Write-Information "[INFO]   [2] Adblock-Status anzeigen" -InformationAction Continue
-        Write-Information "[INFO]   [3] Adblock deaktivieren (Backup wiederherstellen)" -InformationAction Continue
-        Write-Information "[INFO]   [4] Host-Datei bearbeiten (Notepad)" -InformationAction Continue
-        Write-Information "[INFO]   [x] Abbrechen" -InformationAction Continue
+        Write-Host ""
+        Write-Host "[*] ADBLOCK-OPTIONEN:" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "   [1] " -ForegroundColor White -NoNewline
+        Write-Host "Adblock aktivieren " -ForegroundColor Green -NoNewline
+        Write-Host "($($missingDomains.Count) neue Domains)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [2] " -ForegroundColor White -NoNewline
+        Write-Host "Adblock-Status anzeigen " -ForegroundColor Yellow -NoNewline
+        Write-Host "(Uebersicht)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [3] " -ForegroundColor White -NoNewline
+        Write-Host "Adblock deaktivieren " -ForegroundColor Magenta -NoNewline
+        Write-Host "(Backup wiederherstellen)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [4] " -ForegroundColor White -NoNewline
+        Write-Host "Host-Datei bearbeiten " -ForegroundColor Red -NoNewline
+        Write-Host "(Notepad)" -ForegroundColor DarkGray
+        Write-Host ""
+        Write-Host "   [x] " -ForegroundColor White -NoNewline
+        Write-Host "Abbrechen" -ForegroundColor Red
+        Write-Host ""
         
         $choice = Read-Host "`nWahl [1-4/x]"
         

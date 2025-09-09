@@ -18,9 +18,12 @@ function Get-SystemCrashAnalysis {
     - Interactive error retry options
     #>
     
-    Write-Information "[INFO] `n=== BLUESCREEN/CRASH ANALYZER (Enhanced) ===" -InformationAction Continue
-    Write-Information "[INFO] Analysiere System-Abstuerze und Bluescreens..." -InformationAction Continue
-    Write-Information "[INFO] " -InformationAction Continue
+    Write-Host ""
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "                >>> BLUESCREEN/CRASH ANALYZER <<<" -ForegroundColor White
+    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "Analysiere System-Abstuerze und Bluescreens..." -ForegroundColor Yellow
+    Write-Host ""
     
     # Hardware-Erkennung für spezifische Empfehlungen
     $HardwareInfo = @{}
@@ -187,7 +190,8 @@ function Get-SystemCrashAnalysis {
         }
         
         # 4. Analyse-Ausgabe
-        Write-Information "[INFO] `n=== CRASH-ANALYSE ERGEBNISSE ===" -InformationAction Continue
+        Write-Host ""
+        Write-Host "=== CRASH-ANALYSE ERGEBNISSE ===" -ForegroundColor Cyan
         
         if ($CrashEvents.Count -eq 0 -and $MinidumpFiles.Count -eq 0) {
             Write-Information "[INFO] [GOOD NEWS] Keine aktuellen System-Abstuerze gefunden!" -InformationAction Continue
@@ -336,7 +340,8 @@ function Get-SystemCrashAnalysis {
         }
         
         # Allgemeine Empfehlungen
-        Write-Information "[INFO] `n=== ALLGEMEINE EMPFEHLUNGEN ===" -InformationAction Continue
+        Write-Host ""
+        Write-Host "=== ALLGEMEINE EMPFEHLUNGEN ===" -ForegroundColor Cyan
         Write-Information "[INFO] [1] Windows Updates installieren" -InformationAction Continue
         Write-Information "[INFO] [2] Alle Treiber aktualisieren (besonders Grafik/Netzwerk)" -InformationAction Continue
         Write-Information "[INFO] [3] RAM mit Windows Memory Diagnostic testen" -InformationAction Continue
@@ -346,7 +351,8 @@ function Get-SystemCrashAnalysis {
         
         # Hardware-Zusammenfassung
         if ($HardwareInfo.Count -gt 0) {
-            Write-Information "[INFO] `n=== ERKANNTE HARDWARE ===" -InformationAction Continue
+            Write-Host ""
+            Write-Host "=== ERKANNTE HARDWARE ===" -ForegroundColor Cyan
             if ($HardwareInfo.CPU) {
                 Write-Information "[INFO] CPU: $($HardwareInfo.CPU.Name)" -InformationAction Continue
             }
@@ -359,7 +365,8 @@ function Get-SystemCrashAnalysis {
         }
         
         # Automatische Log-Bereinigung
-        Write-Information "[INFO] `n=== LOG-BEREINIGUNG ===" -InformationAction Continue
+        Write-Host ""
+        Write-Host "=== LOG-BEREINIGUNG ===" -ForegroundColor Cyan
         try {
             $LogsPath = "$env:SystemRoot\Logs"
             if (Test-Path $LogsPath) {
@@ -386,7 +393,8 @@ function Get-SystemCrashAnalysis {
         }
         
         # Erweiterte Diagnose-Hinweise
-        Write-Information "[INFO] `n=== ERWEITERTE DIAGNOSE ===" -InformationAction Continue
+        Write-Host ""
+        Write-Host "=== ERWEITERTE DIAGNOSE ===" -ForegroundColor Cyan
         Write-Information "[INFO] Fuer detaillierte Minidump-Analyse:" -InformationAction Continue
         Write-Information "[INFO] - BlueScreenView (nirsoft.net)" -InformationAction Continue
         Write-Information "[INFO] - WinDbg (Microsoft Debugging Tools)" -InformationAction Continue
@@ -396,13 +404,30 @@ function Get-SystemCrashAnalysis {
         if ($CrashEvents.Count -gt 1) {
             $RecentCrashes = $CrashEvents | Where-Object { $_.Time -gt (Get-Date).AddDays(-7) }
             if ($RecentCrashes.Count -gt 2) {
-                Write-Information "[INFO] `n=== INTERAKTIVE PROBLEMLOESUNG ===" -InformationAction Continue
-                Write-Information "[INFO] Aufgrund haeufiger Crashes werden zusaetzliche Aktionen empfohlen:" -InformationAction Continue
-                Write-Information "[INFO] [1] Windows Memory Diagnostic jetzt ausfuehren" -InformationAction Continue
-                Write-Information "[INFO] [2] System File Check (SFC) starten" -InformationAction Continue  
-                Write-Information "[INFO] [3] DISM Health Check durchfuehren" -InformationAction Continue
-                Write-Information "[INFO] [4] Ereignisanzeige oeffnen (eventvwr.msc)" -InformationAction Continue
-                Write-Information "[INFO] [x] Ueberspringe zusaetzliche Aktionen" -InformationAction Continue
+                Write-Host ""
+                Write-Host "=== INTERAKTIVE PROBLEMLOESUNG ===" -ForegroundColor Cyan
+                Write-Host ""
+                Write-Host "Aufgrund haeufiger Crashes werden zusaetzliche Aktionen empfohlen:" -ForegroundColor Yellow
+                Write-Host ""
+                Write-Host "   [1] " -ForegroundColor White -NoNewline
+                Write-Host "Windows Memory Diagnostic jetzt ausfuehren " -ForegroundColor Green -NoNewline
+                Write-Host "(RAM-Test)" -ForegroundColor DarkGray
+                Write-Host ""
+                Write-Host "   [2] " -ForegroundColor White -NoNewline
+                Write-Host "System File Check (SFC) starten " -ForegroundColor Yellow -NoNewline
+                Write-Host "(Dateisystem)" -ForegroundColor DarkGray
+                Write-Host ""
+                Write-Host "   [3] " -ForegroundColor White -NoNewline
+                Write-Host "DISM Health Check durchfuehren " -ForegroundColor Magenta -NoNewline
+                Write-Host "(System-Image)" -ForegroundColor DarkGray
+                Write-Host ""
+                Write-Host "   [4] " -ForegroundColor White -NoNewline
+                Write-Host "Ereignisanzeige oeffnen " -ForegroundColor Red -NoNewline
+                Write-Host "(eventvwr.msc)" -ForegroundColor DarkGray
+                Write-Host ""
+                Write-Host "   [x] " -ForegroundColor White -NoNewline
+                Write-Host "Ueberspringe zusaetzliche Aktionen" -ForegroundColor Red
+                Write-Host ""
                 
                 $actionChoice = Read-Host "`nWahl [1-4/x]"
                 switch ($actionChoice) {
@@ -468,7 +493,8 @@ function Get-SystemCrashAnalysis {
         Write-Error "Crash-Analyse fehlgeschlagen: $($_.Exception.Message)"
     }
     
-    Write-Information "[INFO] `n=== CRASH-ANALYSE ABGESCHLOSSEN ===" -InformationAction Continue
+    Write-Host ""
+    Write-Host "=== CRASH-ANALYSE ABGESCHLOSSEN ===" -ForegroundColor Green
 }
 
 # Export function for dot-sourcing
