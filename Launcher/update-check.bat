@@ -125,33 +125,38 @@ if "!LOCAL_DATE!"=="" set "LOCAL_DATE=20250901"
 if "!GITHUB_DATE!"=="" set "GITHUB_DATE=20250908"
 
 REM NEUE LOGIK: Prüfe ob Timestamp verfügbar (ab v7.1.4)
-if NOT "!GITHUB_TIMESTAMP!"=="" if NOT "!LOCAL_TIMESTAMP!"=="" (
-    echo [DEBUG] Verwende Timestamp-Vergleich (neue Methode)
-    REM Beide haben Timestamp - verwende präzisen numerischen Vergleich
-    if !LOCAL_TIMESTAMP! LSS !GITHUB_TIMESTAMP! (
-        set "UPDATE_NEEDED=1"
-        set "UPDATE_REASON=Neuere Timestamp-Version verfuegbar"
-    )
-) else (
-    echo [DEBUG] Verwende Legacy-Vergleich (alte Methode)
-    REM Fallback auf alte Methode für Abwärtskompatibilität
-    
-    REM Datum-Check
-    if "!LOCAL_DATE!" LSS "!GITHUB_DATE!" (
-        set "UPDATE_NEEDED=1"
-        set "UPDATE_REASON=Datum aelter"
-    )
-    
-    REM Version-Check
-    if NOT "!LOCAL_VERSION!"=="!GITHUB_VERSION!" (
-        set "UPDATE_NEEDED=1" 
-        if "!UPDATE_REASON!"=="" (
-            set "UPDATE_REASON=Version unterschiedlich"
-        ) else (
-            set "UPDATE_REASON=!UPDATE_REASON!, Version unterschiedlich"
+if NOT "!GITHUB_TIMESTAMP!"=="" (
+    if NOT "!LOCAL_TIMESTAMP!"=="" (
+        echo [DEBUG] Verwende Timestamp-Vergleich (neue Methode)
+        REM Beide haben Timestamp - verwende präzisen numerischen Vergleich
+        if !LOCAL_TIMESTAMP! LSS !GITHUB_TIMESTAMP! (
+            set "UPDATE_NEEDED=1"
+            set "UPDATE_REASON=Neuere Timestamp-Version verfuegbar"
         )
+        goto :VERSION_COMPARE_DONE
     )
 )
+
+echo [DEBUG] Verwende Legacy-Vergleich (alte Methode)
+REM Fallback auf alte Methode für Abwärtskompatibilität
+
+REM Datum-Check
+if "!LOCAL_DATE!" LSS "!GITHUB_DATE!" (
+    set "UPDATE_NEEDED=1"
+    set "UPDATE_REASON=Datum aelter"
+)
+
+REM Version-Check (nur wenn nicht Timestamp-basiert)
+if NOT "!LOCAL_VERSION!"=="!GITHUB_VERSION!" (
+    set "UPDATE_NEEDED=1" 
+    if "!UPDATE_REASON!"=="" (
+        set "UPDATE_REASON=Version unterschiedlich"
+    ) else (
+        set "UPDATE_REASON=!UPDATE_REASON!, Version unterschiedlich"
+    )
+)
+
+:VERSION_COMPARE_DONE
 
 echo.
 

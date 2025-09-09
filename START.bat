@@ -1,9 +1,9 @@
 @echo off
-title Hellion Power Tool v7.1.4.1 "Odin"
+title Hellion Power Tool v7.1.4.2 "Odin"
 color 0B
 
 echo ==============================================================================
-echo                HELLION POWER TOOL v7.1.4.1 "Odin"
+echo                HELLION POWER TOOL v7.1.4.2 "Odin"
 echo ==============================================================================
 echo.
 
