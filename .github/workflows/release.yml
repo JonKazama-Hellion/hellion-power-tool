@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., v7.1.4.2)'
+        description: 'Release version (e.g., v7.1.4.3)'
         required: true
-        default: 'v7.1.4.2'
+        default: 'v7.1.4.3'
 
 permissions:
   contents: write
@@ -172,7 +172,7 @@ jobs:
         $content += "- **``hellion-certificate.cer``** - Zertifikat fuer Signatur-Verifikation`n"
         $content += "- **``checksums.txt``** - SHA256 Hashes zur Verifikation`n`n"
         
-        $content += "## Neue Features in v7.1.4.2`n"
+        $content += "## Neue Features in v7.1.4.3`n"
         $content += "- **4-stelliges Timestamp-Format** - Neues VVVVYYYYMMDDHHNN Format fuer praezise Versionierung`n"
         $content += "- **Hybrid-Versionsystem** - Kombiniert alte Datum-Methode mit neuen Timestamps`n"
         $content += "- **Vereinfachtes Release-System** - Nur noch 1 ZIP statt 3 verwirrende Varianten`n"

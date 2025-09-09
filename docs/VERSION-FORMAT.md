@@ -7,10 +7,10 @@ Diese Datei erklärt das Versionierungs-System des Hellion Power Tools.
 Die Datei `config/version.txt` enthält genau 4 Zeilen:
 
 ```text
-7.1.4.2
+7.1.4.3
 Odin
 20250910
-71422509101155
+71432509101245
 ```
 
 ---
@@ -20,7 +20,7 @@ Odin
 ### ZEILE 1: VERSION (Semantic Versioning)
 
 **Format**: `MAJOR.MINOR.PATCH.BUILD`  
-**Beispiel**: `7.1.4.2`
+**Beispiel**: `7.1.4.3`
 
 - **MAJOR (7)**: Große Änderungen, Breaking Changes
 - **MINOR (1)**: Neue Features, abwärtskompatibel  
@@ -41,18 +41,18 @@ Odin
 ### ZEILE 4: TIMESTAMP (Neue Versionierung ab v7.1.4)
 
 **Format**: `VVVVYYYYMMDDHHNN`  
-**Beispiel**: `71422509101155`
+**Beispiel**: `71432509101245`
 
 **Aufbau**:
 
-- **VVVV**: Version (7142 = 7.1.4.2)
+- **VVVV**: Version (7142 = 7.1.4.3)
 - **YYYY**: Jahr (2025)
 - **MM**: Monat (09)  
 - **DD**: Tag (10)
 - **HH**: Stunde (11)
 - **NN**: Minute (42)
 
-**Erklärung**: `71422509101155` = v7.1.4.2 vom 10.09.2025 um 11:42  
+**Erklärung**: `71432509101245` = v7.1.4.3 vom 10.09.2025 um 12:45  
 **Zweck**: Ermöglicht minutengenaue Updates am gleichen Tag
 
 ---
@@ -73,4 +73,4 @@ Odin
 
 ---
 
-**Letzte Aktualisierung**: 2025-09-10 - Hellion Power Tool v7.1.4.2 "Odin"
+**Letzte Aktualisierung**: 2025-09-10 - Hellion Power Tool v7.1.4.3 "Odin"
