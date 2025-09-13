@@ -48,6 +48,7 @@ $RECYCLE.BIN/
 *.suo
 *.user
 CLAUDE.md
+DEBUG.md
 
 # ================================================================
 # INTERNE GUIDES UND ENTWICKLUNG (NICHT FÜR END-USER)
