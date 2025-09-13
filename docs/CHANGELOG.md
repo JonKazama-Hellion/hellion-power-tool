@@ -7,6 +7,14 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 
 ---
 
+## [7.1.5.3 "Baldur"] - 2025-09-13
+
+### Bug Fixes
+- **Fixed PowerShell.Diagnostics module loading** - Graceful degradation when module unavailable
+- **Fixed ForegroundColor Orange error** - Changed to DarkYellow (valid PowerShell color)
+- **Fixed NT Object Manager path error** - Proper conversion of `\??\C:` paths for signature verification
+- **Improved driver diagnostic robustness** - Better error handling for path and signature issues
+
 ## [7.1.5.2 "Baldur"] - 2025-09-10
 
 ### 🐛 CRITICAL BUGFIX RELEASE

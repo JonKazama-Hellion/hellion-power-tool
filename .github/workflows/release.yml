@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., v7.1.5.2)'
+        description: 'Release version (e.g., v7.1.5.3)'
         required: true
-        default: 'v7.1.5.2'
+        default: 'v7.1.5.3'
 
 permissions:
   contents: write
@@ -172,7 +172,7 @@ jobs:
         $content += "- **``hellion-certificate.cer``** - Zertifikat fuer Signatur-Verifikation`n"
         $content += "- **``checksums.txt``** - SHA256 Hashes zur Verifikation`n`n"
         
-        $content += "## Kritische Bugfixes in v7.1.5.2`n"
+        $content += "## Kritische Bugfixes in v7.1.5.3`n"
         $content += "- **Get-WinEvent Modul-Fehler behoben** - PowerShell Diagnostics Import mit Fallback-Handling`n"
         $content += "- **Doppelte Enter-Bestätigung entfernt** - Wiederherstellungspunkt-Modul UI bereinigt`n"
         $content += "- **TCP/IP Reset repariert** - Admin-Rechte-Prüfung und robuste Fehlerbehandlung`n"

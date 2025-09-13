@@ -20,7 +20,7 @@ Odin
 ### ZEILE 1: VERSION (Semantic Versioning)
 
 **Format**: `MAJOR.MINOR.PATCH.BUILD`  
-**Beispiel**: `7.1.5.2`
+**Beispiel**: `7.1.5.3`
 
 - **MAJOR (7)**: Große Änderungen, Breaking Changes
 - **MINOR (1)**: Neue Features, abwärtskompatibel  
@@ -45,14 +45,14 @@ Odin
 
 **Aufbau**:
 
-- **VVVV**: Version (7150 = 7.1.5.2)
+- **VVVV**: Version (7153 = 7.1.5.3)
 - **YYYY**: Jahr (2025)
 - **MM**: Monat (09)  
 - **DD**: Tag (10)
 - **HH**: Stunde (11)
 - **NN**: Minute (42)
 
-**Erklärung**: `71502509091645` = v7.1.5.2 vom 09.09.2025 um 16:45  
+**Erklärung**: `715325091314500` = v7.1.5.3 vom 13.09.2025 um 14:50  
 **Zweck**: Ermöglicht minutengenaue Updates am gleichen Tag
 
 ---
@@ -73,4 +73,4 @@ Odin
 
 ---
 
-**Letzte Aktualisierung**: 2025-09-09 - Hellion Power Tool v7.1.5.2 "Baldur"
+**Letzte Aktualisierung**: 2025-09-13 - Hellion Power Tool v7.1.5.3 "Baldur"

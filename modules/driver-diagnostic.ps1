@@ -119,7 +119,7 @@ function Invoke-FullDriverAnalysis {
     }
     
     if ($unsignedDrivers.Count -gt 0) {
-        Write-Host "⚠️  NICHT SIGNIERTE TREIBER:" -ForegroundColor Orange
+        Write-Host "⚠️  NICHT SIGNIERTE TREIBER:" -ForegroundColor DarkYellow
         Write-Host "   Anzahl: $($unsignedDrivers.Count)" -ForegroundColor Yellow
         Write-Host ""
     }
@@ -280,10 +280,19 @@ function Analyze-DriverEventLogs {
     
     try {
         # System Event Log nach Treiber-Fehlern durchsuchen
+        # PowerShell Diagnostics Modul mit Fallback-Handling
+        $diagnosticsAvailable = $false
         try {
-            Import-Module Microsoft.PowerShell.Diagnostics -Force -ErrorAction Stop
+            if (Get-Module -ListAvailable -Name Microsoft.PowerShell.Diagnostics) {
+                Import-Module Microsoft.PowerShell.Diagnostics -Force -ErrorAction Stop
+                $diagnosticsAvailable = $true
+            }
         } catch {
-            Write-Log "Microsoft.PowerShell.Diagnostics Modul konnte nicht geladen werden. Event Log Analyse übersprungen." -Level "WARNING"
+            Write-Log "Microsoft.PowerShell.Diagnostics Modul konnte nicht geladen werden. Verwende alternative Methode." -Level "INFO"
+        }
+
+        if (-not $diagnosticsAvailable) {
+            Write-Log "Event Log Analyse übersprungen - Modul nicht verfügbar." -Level "WARNING"
             return @()
         }
         $events = Get-WinEvent -FilterHashtable @{
@@ -394,13 +403,26 @@ function Get-UnsignedDrivers {
         
         foreach ($driver in $drivers) {
             if ($driver.PathName) {
-                $signature = Get-AuthenticodeSignature -FilePath $driver.PathName -ErrorAction SilentlyContinue
-                if ($signature -and $signature.Status -ne "Valid") {
-                    $unsignedDrivers += [PSCustomObject]@{
-                        Name = $driver.Name
-                        Path = $driver.PathName
-                        SignatureStatus = $signature.Status
-                        State = $driver.State
+                # NT Object Manager Pfad zu Windows-Pfad konvertieren
+                $filePath = $driver.PathName
+                if ($filePath -match '^\\\\?\?\\(.+)$') {
+                    $filePath = $matches[1]
+                }
+
+                # Nur prüfen wenn Pfad existiert
+                if (Test-Path $filePath -ErrorAction SilentlyContinue) {
+                    try {
+                        $signature = Get-AuthenticodeSignature -FilePath $filePath -ErrorAction SilentlyContinue
+                        if ($signature -and $signature.Status -ne "Valid") {
+                            $unsignedDrivers += [PSCustomObject]@{
+                                Name = $driver.Name
+                                Path = $driver.PathName
+                                SignatureStatus = $signature.Status
+                                State = $driver.State
+                            }
+                        }
+                    } catch {
+                        Write-Log "Signatur-Prüfung übersprungen für $($driver.Name): $($_.Exception.Message)" -Level "DEBUG"
                     }
                 }
             }
@@ -507,9 +529,20 @@ function Analyze-ENEDriverProblem {
     
     # Schritt 3: Event Log nach ENE-spezifischen Fehlern durchsuchen
     Write-Host "[3/5] Durchsuche Event Logs nach ENE-spezifischen Problemen..." -ForegroundColor Yellow
+    # PowerShell Diagnostics Modul für ENE Event Log Analyse
+    $diagnosticsAvailable = $false
     try {
-        Import-Module Microsoft.PowerShell.Diagnostics -Force -ErrorAction Stop
-        $eneErrors = Get-WinEvent -FilterHashtable @{
+        if (Get-Module -ListAvailable -Name Microsoft.PowerShell.Diagnostics) {
+            Import-Module Microsoft.PowerShell.Diagnostics -Force -ErrorAction Stop
+            $diagnosticsAvailable = $true
+        }
+    } catch {
+        Write-Log "Microsoft.PowerShell.Diagnostics Modul nicht verfügbar." -Level "INFO"
+    }
+
+    if ($diagnosticsAvailable) {
+        try {
+            $eneErrors = Get-WinEvent -FilterHashtable @{
         LogName = 'System'
         Level = 1,2
         StartTime = (Get-Date).AddDays(-14)
@@ -521,8 +554,12 @@ function Analyze-ENEDriverProblem {
          $_.Message -notlike "*Server*" -and
          $_.Message -notlike "*Zeitabschnitt*"
     } | Select-Object -First 5
-    } catch {
-        Write-Log "Microsoft.PowerShell.Diagnostics Modul konnte nicht geladen werden. Event Log Analyse übersprungen." -Level "WARNING"
+        } catch {
+            Write-Log "Event Log Zugriff fehlgeschlagen. ENE-Event-Analyse übersprungen." -Level "WARNING"
+            $eneErrors = @()
+        }
+    } else {
+        Write-Log "Event Log Analyse übersprungen - Diagnostics Modul nicht verfügbar." -Level "INFO"
         $eneErrors = @()
     }
     
@@ -623,8 +660,14 @@ function Analyze-ENEDriverProblem {
                     Write-Host "      • Erstellt: $($fileInfo.CreationTime.ToString('yyyy-MM-dd'))" -ForegroundColor Gray
                     Write-Host "      • Version: $(try { $fileInfo.VersionInfo.FileVersion } catch { 'Unbekannt' })" -ForegroundColor Gray
                     
-                    # Signatur prüfen
-                    $signature = Get-AuthenticodeSignature $_.PathName -ErrorAction SilentlyContinue
+                    # Signatur prüfen - NT Pfad zu Windows-Pfad konvertieren
+                    $signaturePath = $_.PathName
+                    if ($signaturePath -match '^\\\\?\?\\(.+)$') {
+                        $signaturePath = $matches[1]
+                    }
+                    $signature = if (Test-Path $signaturePath -ErrorAction SilentlyContinue) {
+                        Get-AuthenticodeSignature $signaturePath -ErrorAction SilentlyContinue
+                    } else { $null }
                     if ($signature) {
                         switch ($signature.Status) {
                             "Valid" { Write-Host "      • Signatur: ✅ Gültig signiert" -ForegroundColor Green }

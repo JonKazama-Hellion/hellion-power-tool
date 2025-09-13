@@ -12,7 +12,7 @@ Ehrlich gesagt - ohne diese Leute wäre das Tool nie so gut geworden. Jeder hat 
 
 - **Das bin ich** - lerne noch programmieren und das Tool ist mein erstes größeres Projekt
 - **Was ich gemacht hab**:
-  - Das Tool von der ersten Idee bis v7.1.5.2 "Baldur" entwickelt
+  - Das Tool von der ersten Idee bis v7.1.5.3 "Baldur" entwickelt
   - Viel gegoogelt, YouTube geschaut und Fehler gemacht
   - Langsam gelernt wie PowerShell und Batch-Scripting funktioniert
 - **Expertise**: **Quasi keine** - bin Anfänger und lerne noch, aber das Tool läuft trotzdem xD
@@ -161,6 +161,6 @@ Ehrlich - ohne diese Leute hier wäre das Tool kompletter Müll geworden. Jeder 
 ---
 
 *Erstellt: 2025-09-09*  
-*Letzte Aktualisierung: v7.1.5.2 "Baldur" Release*
+*Letzte Aktualisierung: v7.1.5.3 "Baldur" Release*
 
 ## 🚀 Zusammen machen wir das Tool noch geiler

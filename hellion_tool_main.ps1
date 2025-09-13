@@ -1,5 +1,5 @@
 ﻿# ===================================================================
-# HELLION POWER TOOL - MODULAR VERSION v7.1.5.2 "Baldur"
+# HELLION POWER TOOL - MODULAR VERSION v7.1.5.3 "Baldur"
 # Main Entry Point - Loads all modules and provides menu interface
 # ===================================================================
 <#
@@ -156,7 +156,7 @@ $script:RootPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $script:ModulesPath = Join-Path $script:RootPath "modules"
 
 Write-Information "================================================================" -InformationAction Continue
-Write-Information "        HELLION POWER TOOL v7.1.5.2 'Baldur' (MODULAR)        " -InformationAction Continue
+Write-Information "        HELLION POWER TOOL v7.1.5.3 'Baldur' (MODULAR)        " -InformationAction Continue
 Write-Information "================================================================" -InformationAction Continue
 Write-Information "Loading modules..." -InformationAction Continue
 
@@ -182,7 +182,7 @@ if (Test-Path $script:ModulesPath) {
 # Initialize logging
 Initialize-Logging -LogDirectory "$env:TEMP\HellionPowerTool" -DetailedLogging
 
-Write-Log "Hellion Power Tool v7.1.5.2 'Baldur' started (Modular version)" -Color Cyan
+Write-Log "Hellion Power Tool v7.1.5.3 'Baldur' started (Modular version)" -Color Cyan
 Write-Log "Modules loaded from: $script:ModulesPath" -Color Gray
 
 # Load configuration
@@ -244,7 +244,7 @@ if ($ForceDebugLevel -ge 0) {
     Write-Information "[NO-PARAM] Keine Parameter erkannt - falle in manuelle Auswahl" -InformationAction Continue
     Clear-Host
     Write-Information "================================================================" -InformationAction Continue
-    Write-Information "        HELLION POWER TOOL v7.1.5.2 'Baldur' (MODULAR)        " -InformationAction Continue
+    Write-Information "        HELLION POWER TOOL v7.1.5.3 'Baldur' (MODULAR)        " -InformationAction Continue
     Write-Information "================================================================" -InformationAction Continue
     Write-Information "" -InformationAction Continue
     Write-Information "[*] DEBUG-MODUS WAEHLEN:" -InformationAction Continue
@@ -272,7 +272,7 @@ if ($ForceDebugLevel -ge 0) {
 function Show-MainMenu {
     Clear-Host
     Write-Host "================================================================" -ForegroundColor Cyan
-    Write-Host "        HELLION POWER TOOL v7.1.5.2 'Baldur' (MODULAR)        " -ForegroundColor White
+    Write-Host "        HELLION POWER TOOL v7.1.5.3 'Baldur' (MODULAR)        " -ForegroundColor White
     Write-Host "================================================================" -ForegroundColor Cyan
     
     # Show current debug mode (nur in Debug-Modi)

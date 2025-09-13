@@ -1,8 +1,8 @@
-# 🔧 Hellion Power Tool v7.1.5.2 "Baldur"
+# 🔧 Hellion Power Tool v7.1.5.3 "Baldur"
 
 **Ein Windows System-Tool, zur Optimirung und Reinigung** ⚡
 
-[![Version](https://img.shields.io/badge/Version-7.1.5.2%20Baldur-blue.svg)](https://github.com/JonKazama-Hellion/hellion-power-tool)
+[![Version](https://img.shields.io/badge/Version-7.1.5.3%20Baldur-blue.svg)](https://github.com/JonKazama-Hellion/hellion-power-tool)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B%20%7C%207.0%2B-blue.svg)](https://github.com/PowerShell/PowerShell)
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-green.svg)](https://www.microsoft.com/windows)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-orange.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
@@ -128,7 +128,7 @@ hellion-power-tool/
 │   ├── memory-diagnostic.ps1    # 🧠 RAM-Test & Diagnose
 │   └── logging-utils.ps1        # 📝 Logging & Debug-System
 ├── config/
-│   ├── version.txt              # 📌 Aktuelle Version (7.1.5.2 Baldur)
+│   ├── version.txt              # 📌 Aktuelle Version (7.1.5.3 Baldur)
 │   └── settings.json            # ⚙️ Konfiguration & Feature-Flags
 ├── scripts/                     # 🔧 Entwickler-Scripts
 │   ├── sign-local.ps1           # ✍️ Code-Signierung (lokal)

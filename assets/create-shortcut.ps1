@@ -81,7 +81,7 @@ try {
     $Shortcut = $WshShell.CreateShortcut($shortcutPath)
     $Shortcut.TargetPath = $toolPath
     $Shortcut.WorkingDirectory = (Split-Path $toolPath -Parent)
-    $Shortcut.Description = "Hellion Power Tool v7.1.5.2 - System-Optimierung und Reparatur"
+    $Shortcut.Description = "Hellion Power Tool v7.1.5.3 - System-Optimierung und Reparatur"
     $Shortcut.IconLocation = $iconPath
     $Shortcut.WindowStyle = 1  # Normal window
     $Shortcut.Hotkey = ""      # Kein Hotkey
