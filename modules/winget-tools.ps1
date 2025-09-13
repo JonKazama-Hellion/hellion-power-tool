@@ -9,40 +9,44 @@ function Test-WingetAvailability {
         $wingetVersion = & winget --version 2>$null
         
         if ($LASTEXITCODE -eq 0) {
-            Write-Log "[OK] Winget verfuegbar: $wingetVersion" -Color Green
+            Write-Log "✅ Winget verfügbar: $wingetVersion" -Color Green
             return $true
         }
     } catch {
-        Write-Log "[WARNING] Winget nicht verfuegbar" -Level "WARNING"
-        Write-Log "[INFO] Installation ueber Microsoft Store: 'App Installer'" -Color Yellow
+        Write-Log "⚠️ Winget nicht verfügbar" -Level "WARNING"
+        Write-Log "💡 Installation über Microsoft Store: 'App Installer'" -Color Yellow
     }
     return $false
 }
 
 function Install-WingetIfMissing {
-    Write-Log "`n[*] --- WINGET INSTALLATION ---" -Color Cyan
+    Write-Log ""
+    Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+    Write-Log "           📦 WINGET INSTALLATION" -Color White
+    Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+    Write-Log "Installiert Windows Package Manager für Software-Verwaltung" -Color Yellow
+    Write-Log ""
     
     if (Test-WingetAvailability) {
-        Write-Log "[OK] Winget ist bereits verfuegbar" -Color Green
+        Write-Log "✅ Winget ist bereits verfügbar" -Color Green
         return $true
     }
     
-    Write-Log "[*] Winget nicht gefunden - Installation wird vorbereitet..." -Color Yellow
+    Write-Log "🔍 Winget nicht gefunden - Installation wird vorbereitet..." -Color Yellow
     
-    Write-Host ""
-    Write-Host "[*] WINGET INSTALLATION OPTIONEN:" -ForegroundColor Cyan
+    Write-Host "📦 WINGET INSTALLATION OPTIONEN:" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "   [1] " -ForegroundColor White -NoNewline
     Write-Host "Microsoft Store " -ForegroundColor Green -NoNewline
-    Write-Host "(App Installer)" -ForegroundColor DarkGray
+    Write-Host "(App Installer, empfohlen)" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [2] " -ForegroundColor White -NoNewline
     Write-Host "GitHub Release " -ForegroundColor Yellow -NoNewline
-    Write-Host "(Manuell)" -ForegroundColor DarkGray
+    Write-Host "(Manueller Download)" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [3] " -ForegroundColor White -NoNewline
     Write-Host "PowerShell-Installation " -ForegroundColor Magenta -NoNewline
-    Write-Host "(Automatisch)" -ForegroundColor DarkGray
+    Write-Host "(Automatisch, experimentell)" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [x] " -ForegroundColor White -NoNewline
     Write-Host "Abbrechen" -ForegroundColor Red

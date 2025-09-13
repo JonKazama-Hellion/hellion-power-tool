@@ -451,10 +451,14 @@ function Get-SystemCrashAnalysis {
                                 $processInfo.Verb = "runas"
                                 $processInfo.UseShellExecute = $true
                                 [System.Diagnostics.Process]::Start($processInfo) | Out-Null
-                            } catch { }
-                            Write-Information "[OK] SFC gestartet (Admin-Rechte erforderlich)" -InformationAction Continue
+                                Write-Information "[OK] SFC gestartet (Admin-Rechte erforderlich)" -InformationAction Continue
+                            } catch {
+                                # Process.Start mit UAC fehlgeschlagen - könnte durch Defender oder Benutzer abgelehnt worden sein
+                                Write-Verbose "SFC-Process-Start fehlgeschlagen: $($_.Exception.Message)"
+                                throw "SFC-Prozess konnte nicht gestartet werden"
+                            }
                         } catch {
-                            Write-Error "SFC konnte nicht gestartet werden"
+                            Write-Error "SFC konnte nicht gestartet werden: $($_.Exception.Message)"
                         }
                     }
                     '3' { 
@@ -468,10 +472,14 @@ function Get-SystemCrashAnalysis {
                                 $processInfo.Verb = "runas"
                                 $processInfo.UseShellExecute = $true
                                 [System.Diagnostics.Process]::Start($processInfo) | Out-Null
-                            } catch { }
-                            Write-Information "[OK] DISM Check gestartet (Admin-Rechte erforderlich)" -InformationAction Continue
+                                Write-Information "[OK] DISM Check gestartet (Admin-Rechte erforderlich)" -InformationAction Continue
+                            } catch {
+                                # Process.Start mit UAC fehlgeschlagen - könnte durch Defender oder Benutzer abgelehnt worden sein
+                                Write-Verbose "DISM-Process-Start fehlgeschlagen: $($_.Exception.Message)"
+                                throw "DISM-Prozess konnte nicht gestartet werden"
+                            }
                         } catch {
-                            Write-Error "DISM konnte nicht gestartet werden"
+                            Write-Error "DISM konnte nicht gestartet werden: $($_.Exception.Message)"
                         }
                     }
                     '4' {

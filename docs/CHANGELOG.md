@@ -7,6 +7,31 @@ und dieses Projekt folgt der [Semantischen Versionierung](https://semver.org/lan
 
 ---
 
+## [7.1.5.2 "Baldur"] - 2025-09-10
+
+### 🐛 CRITICAL BUGFIX RELEASE
+
+#### 🔧 Kritische System-Reparaturen
+
+- **Get-WinEvent Modul-Fehler behoben**: `Microsoft.PowerShell.Diagnostics` Import mit Fallback-Handling für driver-diagnostic.ps1
+- **Doppelte Enter-Bestätigung entfernt**: Wiederherstellungspunkt-Modul zeigte doppelte "Press Enter" Prompts
+- **TCP/IP Reset Fehler korrigiert**: Admin-Rechte-Prüfung und bessere Fehlerbehandlung für netsh-Befehle
+- **Batch Unicode-Probleme gelöst**: Versteckte Unicode-Zeichen in simple-launcher.bat verursachten "etzt", "omatisches", "nd" Befehlsfehler
+- **Update-Installer Escaping repariert**: Falsche `^>nul` → korrekte `^^^>nul` Batch-Escaping-Sequenzen
+
+#### 🎯 System-Stabilität
+
+- **Graceful Degradation**: Event Log Analyse funktioniert auch ohne PowerShell Diagnostics Modul
+- **Robuste Fehlerbehandlung**: Netzwerk-Tools arbeiten auch bei partiellen Fehlern weiter
+- **ASCII-Kompatibilität**: Alle Batch-Dateien nutzen ASCII-kompatible Zeichen statt Unicode
+
+#### 📝 Entwickler-Notizen
+
+- Unicode-BOM Probleme in Batch-Dateien können zu Parsing-Fehlern führen wo Wortteile als separate Befehle interpretiert werden
+- Batch-Escaping erfordert dreifaches `^^^` für verschachtelte echo-Befehle in dynamisch erstellten Scripts
+
+---
+
 ## [7.1.5.1 "Baldur"] - 2025-09-09
 
 ### 🎨 MAJOR UI/UX RELEASE - Community Bug Marathon

@@ -73,8 +73,7 @@ function Invoke-RestorePointManager {
         }
     }
     
-    Write-Information "`nPress Enter to continue..." -InformationAction Continue
-    Read-Host
+    Read-Host "`nPress Enter to continue..."
 }
 
 function New-SystemRestorePoint {

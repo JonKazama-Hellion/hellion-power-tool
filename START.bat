@@ -1,9 +1,9 @@
 @echo off
-title Hellion Power Tool v7.1.5.1 "Baldur"
+title Hellion Power Tool v7.1.5.2 "Baldur"
 color 0B
 
 echo ==============================================================================
-echo                HELLION POWER TOOL v7.1.5.1 "Baldur"
+echo                HELLION POWER TOOL v7.1.5.2 "Baldur"
 echo ==============================================================================
 echo.
 
@@ -81,7 +81,7 @@ goto :RESTART
 
 :RESTART
 echo ==============================================================================
-echo                HELLION POWER TOOL v7.1.5.1 "Baldur"
+echo                HELLION POWER TOOL v7.1.5.2 "Baldur"
 echo ==============================================================================
 echo.
 if "%DEBUG_MODE%"=="1" (

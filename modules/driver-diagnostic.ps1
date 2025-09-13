@@ -141,7 +141,14 @@ function Find-ProblematicDrivers {
     
     $problematicDrivers = [System.Collections.ArrayList]::new()
     
-    # Liste bekannter problematischer Treiber
+    # Kritische Windows System-Treiber (NIEMALS als problematisch behandeln)
+    $criticalSystemDrivers = @(
+        "fltmgr.sys", "win32k.sys", "ntoskrnl.exe", "hal.dll", "ci.dll",
+        "acpi.sys", "msahci.sys", "storport.sys", "classpnp.sys", "disk.sys",
+        "volsnap.sys", "rdyboost.sys", "partmgr.sys", "mountmgr.sys"
+    )
+
+    # Liste bekannter problematischer Treiber (OHNE kritische System-Treiber)
     $knownProblematicDrivers = @{
         "ene.sys" = "ENE Technology CardReader/LED Controller - kann Bootprobleme verursachen"
         "nvlddmkm.sys" = "NVIDIA Display Driver - häufige BSOD-Ursache bei veralteten Versionen"
@@ -150,30 +157,59 @@ function Find-ProblematicDrivers {
         "igdkmd64.sys" = "Intel Graphics Driver - Display-Probleme"
         "aswsp.sys" = "Avast Antivirus - kann Performance-Probleme verursachen"
         "klif.sys" = "Kaspersky Driver - System-Kompatibilitätsprobleme"
-        "fltmgr.sys" = "File System Filter Manager - Critical System File"
-        "win32k.sys" = "Windows Kernel - Blue Screen häufige Ursache"
-        "ntoskrnl.exe" = "Windows NT Kernel - Memory Management Issues"
+        "avgsp.sys" = "AVG Antivirus - System-Performance Probleme"
+        "bdselfpr.sys" = "Bitdefender Self Protection - Boot-Probleme"
     }
     
     # Aktuelle Treiber abrufen
     try {
-        # Verwende Get-WmiObject für zuverlässigere Daten
-        $systemDrivers = Get-WmiObject -Class Win32_SystemDriver
-        $pnpDrivers = Get-WmiObject -Class Win32_PnPEntity -ErrorAction SilentlyContinue
+        # Verwende Get-CimInstance für moderne PowerShell-Kompatibilität
+        $systemDrivers = Get-CimInstance -ClassName Win32_SystemDriver -ErrorAction SilentlyContinue
+        $pnpDrivers = Get-CimInstance -ClassName Win32_PnPEntity -ErrorAction SilentlyContinue
         
         foreach ($knownDriver in $knownProblematicDrivers.GetEnumerator()) {
-            # Suche in System-Treibern
-            $driverFound = $systemDrivers | Where-Object { 
-                $_.Name -like "*$($knownDriver.Key.Replace('.sys',''))*" -or 
-                $_.PathName -like "*$($knownDriver.Key)*" 
-            } | Select-Object -First 1
-            
-            # Fallback: Suche in PnP-Geräten
-            if (-not $driverFound -and $pnpDrivers) {
-                $driverFound = $pnpDrivers | Where-Object { 
-                    $_.Name -like "*$($knownDriver.Key.Replace('.sys',''))*" -or
-                    $_.HardwareID -like "*$($knownDriver.Key.Replace('.sys',''))*"
+            # Safety-Check: Überspringe kritische System-Treiber
+            if ($criticalSystemDrivers -contains $knownDriver.Key) {
+                Write-Log "   [SKIP] $($knownDriver.Key) - Kritischer System-Treiber" -Level "DEBUG"
+                continue
+            }
+            # Suche in System-Treibern mit spezieller ene.sys Behandlung
+            $driverSearchKey = $knownDriver.Key.Replace('.sys','')
+
+            if ($driverSearchKey -eq "ene") {
+                # Spezialbehandlung für ene.sys - nur ECHTE ENE-Treiber
+                $driverFound = $systemDrivers | Where-Object {
+                    ($_.Name -eq "ene" -and $_.Name -notlike "*generic*") -or
+                    $_.PathName -like "*\ene.sys" -or
+                    $_.PathName -like "*\enecir.sys" -or
+                    $_.PathName -like "*ENE Technology*"
                 } | Select-Object -First 1
+            } else {
+                # Normale Suche für andere Treiber
+                $driverFound = $systemDrivers | Where-Object {
+                    $_.Name -like "*$driverSearchKey*" -or
+                    $_.PathName -like "*$($knownDriver.Key)*"
+                } | Select-Object -First 1
+            }
+            
+            # Fallback: Suche in PnP-Geräten (nur exakte Matches für ene.sys)
+            if (-not $driverFound -and $pnpDrivers) {
+                $driverSearchKey = $knownDriver.Key.Replace('.sys','')
+
+                # Spezialbehandlung für ene.sys - nur ECHTE ENE-Hardware
+                if ($driverSearchKey -eq "ene") {
+                    $driverFound = $pnpDrivers | Where-Object {
+                        $_.HardwareID -like "ENE\*" -or
+                        $_.HardwareID -like "*VID_1524*" -or
+                        ($_.Name -eq "ene" -and $_.Name -notlike "*generic*")
+                    } | Select-Object -First 1
+                } else {
+                    # Normale Suche für andere Treiber
+                    $driverFound = $pnpDrivers | Where-Object {
+                        $_.Name -like "*$driverSearchKey*" -or
+                        $_.HardwareID -like "*$driverSearchKey*"
+                    } | Select-Object -First 1
+                }
             }
             
             if ($driverFound) {
@@ -244,6 +280,12 @@ function Analyze-DriverEventLogs {
     
     try {
         # System Event Log nach Treiber-Fehlern durchsuchen
+        try {
+            Import-Module Microsoft.PowerShell.Diagnostics -Force -ErrorAction Stop
+        } catch {
+            Write-Log "Microsoft.PowerShell.Diagnostics Modul konnte nicht geladen werden. Event Log Analyse übersprungen." -Level "WARNING"
+            return @()
+        }
         $events = Get-WinEvent -FilterHashtable @{
             LogName = 'System'
             Level = 1,2,3  # Critical, Error, Warning
@@ -276,20 +318,25 @@ function Analyze-DriverEventLogs {
         }
         
         # Zusätzlich: Application Event Log für Driver-Crashes
-        $appEvents = Get-WinEvent -FilterHashtable @{
+        try {
+            $appEvents = Get-WinEvent -FilterHashtable @{
             LogName = 'Application'
             Level = 1,2
             StartTime = (Get-Date).AddDays(-3)
         } -ErrorAction SilentlyContinue | Where-Object {
             $_.Message -like "*driver*" -or $_.Message -like "*.sys*"
         } | Select-Object -First 20
-        
-        if ($appEvents -and -not $Silent) {
-            Write-Host "📱 APPLICATION LOG - TREIBER-BEZOGENE FEHLER:" -ForegroundColor Cyan
-            $appEvents | ForEach-Object {
-                Write-Host "   • $($_.TimeCreated.ToString('MM-dd HH:mm')) - $($_.ProviderName)" -ForegroundColor Gray
+            
+            if ($appEvents -and -not $Silent) {
+                Write-Host "📱 APPLICATION LOG - TREIBER-BEZOGENE FEHLER:" -ForegroundColor Cyan
+                $appEvents | ForEach-Object {
+                    Write-Host "   • $($_.TimeCreated.ToString('MM-dd HH:mm')) - $($_.ProviderName)" -ForegroundColor Gray
+                }
+                Write-Host ""
             }
-            Write-Host ""
+        } catch {
+            Write-Log "Application Event Log konnte nicht gelesen werden." -Level "WARNING"
+            $appEvents = @()
         }
         
     } catch {
@@ -316,7 +363,7 @@ function Get-DetailedDriverList {
         Write-Host "💾 ALLE SYSTEM-TREIBER (TOP 50):" -ForegroundColor Cyan
         Write-Host ""
         
-        $drivers = Get-WmiObject -Class Win32_SystemDriver | 
+        $drivers = Get-CimInstance -ClassName Win32_SystemDriver -ErrorAction SilentlyContinue | 
             Sort-Object Name | 
             Select-Object -First 50
         
@@ -343,7 +390,7 @@ function Get-UnsignedDrivers {
     
     try {
         # Verwende sigverif oder alternative Methoden
-        $drivers = Get-WmiObject -Class Win32_SystemDriver
+        $drivers = Get-CimInstance -ClassName Win32_SystemDriver -ErrorAction SilentlyContinue
         
         foreach ($driver in $drivers) {
             if ($driver.PathName) {
@@ -372,7 +419,7 @@ function Get-OutdatedDrivers {
     
     try {
         # Verwende Windows Update API oder WMI für Treiber-Versionen
-        $devices = Get-WmiObject -Class Win32_PnPEntity | Where-Object { $_.ConfigManagerErrorCode -ne 0 }
+        $devices = Get-CimInstance -ClassName Win32_PnPEntity -ErrorAction SilentlyContinue | Where-Object { $_.ConfigManagerErrorCode -ne 0 }
         
         foreach ($device in $devices) {
             $outdatedDrivers += [PSCustomObject]@{
@@ -430,8 +477,8 @@ function Analyze-ENEDriverProblem {
     
     # Schritt 1: ENE Treiber finden
     Write-Host "[1/5] Suche nach ENE-Treibern..." -ForegroundColor Yellow
-    $systemDrivers = Get-WmiObject -Class Win32_SystemDriver
-    $pnpDevices = Get-WmiObject -Class Win32_PnPEntity -ErrorAction SilentlyContinue
+    $systemDrivers = Get-CimInstance -ClassName Win32_SystemDriver -ErrorAction SilentlyContinue
+    $pnpDevices = Get-CimInstance -ClassName Win32_PnPEntity -ErrorAction SilentlyContinue
     
     # Suche nur nach ECHTEN ENE-Treibern (sehr spezifisch)
     $eneSystemDriver = $systemDrivers | Where-Object { 
@@ -460,7 +507,9 @@ function Analyze-ENEDriverProblem {
     
     # Schritt 3: Event Log nach ENE-spezifischen Fehlern durchsuchen
     Write-Host "[3/5] Durchsuche Event Logs nach ENE-spezifischen Problemen..." -ForegroundColor Yellow
-    $eneErrors = Get-WinEvent -FilterHashtable @{
+    try {
+        Import-Module Microsoft.PowerShell.Diagnostics -Force -ErrorAction Stop
+        $eneErrors = Get-WinEvent -FilterHashtable @{
         LogName = 'System'
         Level = 1,2
         StartTime = (Get-Date).AddDays(-14)
@@ -472,11 +521,15 @@ function Analyze-ENEDriverProblem {
          $_.Message -notlike "*Server*" -and
          $_.Message -notlike "*Zeitabschnitt*"
     } | Select-Object -First 5
+    } catch {
+        Write-Log "Microsoft.PowerShell.Diagnostics Modul konnte nicht geladen werden. Event Log Analyse übersprungen." -Level "WARNING"
+        $eneErrors = @()
+    }
     
     # Schritt 4: System-Info sammeln
     Write-Host "[4/5] Sammle System-Informationen..." -ForegroundColor Yellow
-    $computerInfo = Get-WmiObject -Class Win32_ComputerSystem
-    $biosInfo = Get-WmiObject -Class Win32_BIOS
+    $computerInfo = Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction SilentlyContinue
+    $biosInfo = Get-CimInstance -ClassName Win32_BIOS -ErrorAction SilentlyContinue
     
     # Schritt 5: Analyse und Empfehlungen
     Write-Host "[5/5] Generiere Analyse-Bericht..." -ForegroundColor Yellow
@@ -514,7 +567,7 @@ function Analyze-ENEDriverProblem {
                 Write-Host "      → Bekannt für Bootprobleme und Bluescreens" -ForegroundColor Red
                 
                 # Prüfe zugehörige Hardware
-                $relatedHardware = Get-WmiObject -Class Win32_PnPEntity -ErrorAction SilentlyContinue | Where-Object { 
+                $relatedHardware = Get-CimInstance -ClassName Win32_PnPEntity -ErrorAction SilentlyContinue | Where-Object { 
                     $_.HardwareID -like "*ENE*" -or $_.Name -like "*ENE*" 
                 }
                 
@@ -528,7 +581,7 @@ function Analyze-ENEDriverProblem {
                 Write-Host "   ✅ GUT: Treiber ist deaktiviert" -ForegroundColor Green
                 
                 # Prüfe warum er gestoppt ist - nur ENE-spezifische Geräte
-                $deviceErrors = Get-WmiObject -Class Win32_PnPEntity -ErrorAction SilentlyContinue | Where-Object { 
+                $deviceErrors = Get-CimInstance -ClassName Win32_PnPEntity -ErrorAction SilentlyContinue | Where-Object { 
                     ($_.HardwareID -like "*ENE*" -or 
                      $_.Name -like "*ENE*" -or 
                      $_.Description -like "*ENE*" -or
@@ -672,7 +725,7 @@ function Analyze-ENEDriverProblem {
                     Write-Host "[*] Repariere: $($_.Name)" -ForegroundColor Yellow
                     try {
                         # Neuinstallation über pnputil versuchen
-                        $deviceInstanceId = (Get-WmiObject -Class Win32_PnPEntity | Where-Object { $_.Name -like "*$($_.Name)*" } | Select-Object -First 1).PNPDeviceID
+                        $deviceInstanceId = (Get-CimInstance -ClassName Win32_PnPEntity | Where-Object { $_.Name -like "*$($_.Name)*" } | Select-Object -First 1).PNPDeviceID
                         if ($deviceInstanceId) {
                             & pnputil /restart-device "$deviceInstanceId" 2>$null
                             Write-Host "   → Gerät neugestartet" -ForegroundColor Green
@@ -767,7 +820,7 @@ function Remove-ENEDriverForce {
         Write-Host "   📝 Versuche Wiederherstellungspunkt..." -ForegroundColor Yellow
         
         # Prüfe ob SystemRestore aktiviert ist
-        $restoreEnabled = Get-WmiObject -Class Win32_SystemRestore -ErrorAction SilentlyContinue
+        $restoreEnabled = Get-CimInstance -ClassName Win32_SystemRestore -ErrorAction SilentlyContinue
         if ($restoreEnabled) {
             # Versuche zuerst normalen Wiederherstellungspunkt
             try {
@@ -827,12 +880,12 @@ function Remove-ENEDriverForce {
     # Schritt 1: Alle ENE-bezogenen Treiber und Dateien finden
     
     # System-Treiber
-    $systemDrivers = Get-WmiObject -Class Win32_SystemDriver | Where-Object {
+    $systemDrivers = Get-CimInstance -ClassName Win32_SystemDriver -ErrorAction SilentlyContinue | Where-Object {
         $_.Name -like "*ene*" -or $_.PathName -like "*ene.sys*"
     }
     
     # PnP-Geräte (auch defekte)
-    $pnpDevices = Get-WmiObject -Class Win32_PnPEntity | Where-Object {
+    $pnpDevices = Get-CimInstance -ClassName Win32_PnPEntity | Where-Object {
         $_.HardwareID -like "*ENE*" -or $_.Name -like "*ENE*" -or
         $_.ConfigManagerErrorCode -ne 0 -and ($_.Name -like "*Card Reader*" -or $_.Description -like "*ENE*")
     }

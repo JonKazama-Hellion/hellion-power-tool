@@ -158,4 +158,4 @@ Für Entwickler und Tester:
 
 ---
 
-Letzte Aktualisierung: 2025-09-09 - Hellion Power Tool v7.1.5.0 "Baldur"
+Letzte Aktualisierung: 2025-09-09 - Hellion Power Tool v7.1.5.2 "Baldur"

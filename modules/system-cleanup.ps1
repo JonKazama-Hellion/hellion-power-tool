@@ -19,22 +19,41 @@ function Get-FolderSize {
     }
 }
 
+function Test-WindowsUpdateStatus {
+    try {
+        $wuService = Get-Service -Name "wuauserv" -ErrorAction SilentlyContinue
+        if ($wuService -and $wuService.Status -eq "Running") {
+            return $true
+        }
+        return $false
+    } catch {
+        return $false
+    }
+}
+
 function Remove-SafeFiles {
     param(
         [string]$Path,
         [string]$Description,
         [switch]$Force
     )
-    
+
     if (-not (Test-Path $Path)) {
         Write-Log "  [SKIP] $Description - Pfad existiert nicht" -Level "DEBUG"
+        return 0
+    }
+
+    # Windows Update Cache Spezialbehandlung
+    if ($Description -eq "Windows Update Cache" -and (Test-WindowsUpdateStatus)) {
+        Write-Log "  ⏭️ $Description - Übersprungen (Windows Update Service aktiv)" -Color Yellow
+        Write-Log "   💡 Tipp: Warten bis Updates abgeschlossen sind" -Color Gray
         return 0
     }
     
     $sizeBefore = Get-FolderSize $Path
     
     if ($sizeBefore -eq 0) {
-        Write-Log "  [OK] $Description - Bereits sauber" -Color Green
+        Write-Log "  ✅ $Description - Bereits sauber" -Color Green
         return 0
     }
     
@@ -43,7 +62,7 @@ function Remove-SafeFiles {
         $choice = Read-Host "    Bereinigen? [j/n/a fuer alle]"
         
         if ($choice -eq 'n') {
-            Write-Log "  [SKIP] $Description - Vom Benutzer uebersprungen" -Color Gray
+            Write-Log "  ⏭️ $Description - Vom Benutzer übersprungen" -Color Gray
             return 0
         }
         
@@ -52,42 +71,67 @@ function Remove-SafeFiles {
         }
     }
     
-    Write-Information "[INFO]   [*] Bereinige $Description..." -InformationAction Continue
+    Write-Log "  🧹 Bereinige $Description..." -Color Blue
     
     try {
         # Antiviren-sicheres Loeschen mit Delay
         $files = Get-ChildItem $Path -Recurse -Force -ErrorAction SilentlyContinue
+        $totalFiles = $files.Count
         $deleted = 0
         $failed = 0
-        
+
+        Write-Log "   Gefunden: $totalFiles Dateien zum Bereinigen" -Level "DEBUG"
+
         foreach ($file in $files) {
             try {
                 if ($script:AVSafeMode -and ($deleted % 10 -eq 0)) {
                     Start-Sleep -Milliseconds $script:AVDelayMs
                 }
-                
+
                 Remove-Item $file.FullName -Recurse -Force -ErrorAction Stop
                 $deleted++
+
+                # Progress für grosse Operations
+                if ($totalFiles -gt 100 -and ($deleted % 50 -eq 0)) {
+                    Write-Log "   Fortschritt: $deleted/$totalFiles Dateien bearbeitet" -Level "DEBUG"
+                }
             } catch {
                 $failed++
+                Write-Log "   Fehler beim Löschen: $($file.Name)" -Level "DEBUG"
             }
         }
-        
-        $freed = $sizeBefore
-        $script:TotalFreedSpace += $freed
-        
-        Write-Information "[INFO]  [OK] $freed MB freigegeben" -InformationAction Continue
-        return $freed
+
+        $sizeAfter = Get-FolderSize $Path
+        $actualFreed = $sizeBefore - $sizeAfter
+        $script:TotalFreedSpace += $actualFreed
+
+        if ($actualFreed -gt 0) {
+            Write-Log "  ✅ ${actualFreed} MB freigegeben ($deleted/$totalFiles Dateien entfernt)" -Color Green
+        } else {
+            Write-Log "  ℹ️ Keine Dateien bereinigt" -Color Gray
+        }
+
+        if ($failed -gt 0) {
+            Write-Log "   ⚠️ $failed Dateien konnten nicht entfernt werden" -Color Yellow
+        }
+
+        return $actualFreed
         
     } catch {
-        Write-Error " [ERROR]"
+        Write-Log "  ❌ Fehler bei ${Description}: $($_.Exception.Message)" -Color Red
+        Write-Log "   Debug: Zugriff verweigert oder Datei in Verwendung" -Level "DEBUG"
         Add-Warning "Bereinigung fehlgeschlagen: $Description"
         return 0
     }
 }
 
 function Invoke-ComprehensiveCleanup {
-    Write-Log "`n[*] --- ERWEITERTE SYSTEM-BEREINIGUNG ---" -Color Cyan
+    Write-Log ""
+    Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+    Write-Log "           🧹 SYSTEM-BEREINIGUNG" -Color White
+    Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+    Write-Log "Entfernt temporäre Dateien und Cache-Daten für mehr Speicherplatz" -Color Yellow
+    Write-Log ""
     
     $cleanupTargets = @(
         @{Path="$env:TEMP"; Description="Temp-Dateien"; Priority="High"},
@@ -174,7 +218,12 @@ function Invoke-ComprehensiveCleanup {
             }
         }
         '4' {
-            Write-Log "[*] Vollstaendige Bereinigung..." -Color Red
+            Write-Log ""
+            Write-Log "🔥 Starte vollständige Bereinigung..." -Color Red
+            Write-Log "   Fokus: Alle Caches + Browser-Daten (optional)" -Color Gray
+            Write-Log ""
+            
+            Write-Log "🔥 Aktiviere Auto-Genehmigung für vollständige Bereinigung" -Level "DEBUG"
             $script:AutoApproveCleanup = $true
             
             foreach ($target in $cleanupTargets) {
@@ -186,23 +235,53 @@ function Invoke-ComprehensiveCleanup {
                 }
             }
             
-            $browserChoice = Read-Host "`nBrowser-Caches auch bereinigen? [j/n]"
-            if ($browserChoice -eq 'j') {
+            Write-Host ""
+            Write-Host "🌐 " -ForegroundColor Yellow -NoNewline
+            Write-Host "OPTIONAL: " -ForegroundColor Yellow -NoNewline
+            Write-Host "Browser-Caches können Anmeldedaten löschen!" -ForegroundColor White
+            $browserChoice = Read-Host "Browser-Caches auch bereinigen? [j/n]"
+            if ($browserChoice -eq 'j' -or $browserChoice -eq 'J') {
+                Write-Log "  🌐 Bereinige Browser-Caches..." -Color Blue
                 foreach ($browser in $browserCaches) {
                     if (Test-Path $browser.Path) {
                         $totalFreed += Remove-SafeFiles -Path $browser.Path -Description $browser.Description -Force
                     }
                 }
+            } else {
+                Write-Log "  ⏭️ Browser-Caches übersprungen" -Color Gray
             }
         }
         default {
-            Write-Log "[SKIP] Bereinigung abgebrochen" -Color Gray
-            return
+            Write-Information "[INFO] [ABGEBROCHEN] System-Bereinigung nicht gestartet" -InformationAction Continue
+            return $false
         }
     }
     
-    Write-Log "`n[OK] Bereinigung abgeschlossen!" -Level "SUCCESS"
-    Write-Log "[INFO] Gesamt freigegeben: $totalFreed MB" -Color Cyan
+    # Bereinigungsergebnis anzeigen
+    Write-Log ""
+    Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+    Write-Log "              BEREINIGUNGSERGEBNIS" -Color White
+    Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+    Write-Log ""
+    
+    if ($totalFreed -gt 0) {
+        Write-Log "✅ System-Bereinigung: ERFOLGREICH" -Color Green
+        Write-Log "   Gesamt freigegeben: ${totalFreed} MB Speicherplatz" -Color Green
+        
+        if ($totalFreed -gt 1000) {
+            $freedGB = [math]::Round($totalFreed / 1024, 2)
+            Write-Log "   Das entspricht: ${freedGB} GB" -Color Cyan
+        }
+        
+        Write-Log "   💡 Empfehlung: Papierkorb leeren für endgültige Freigabe" -Color Yellow
+        
+        Add-Success "System-Bereinigung: $totalFreed MB freigegeben"
+    } else {
+        Write-Log "ℹ️ System-Bereinigung: KEINE ÄNDERUNGEN" -Color Gray
+        Write-Log "   Alle ausgewählten Bereiche waren bereits sauber" -Color Gray
+    }
+    
+    Write-Log "📋 Bereinigungsstatistik für Analyse gespeichert" -Level "DEBUG"
     
     return $totalFreed
 }

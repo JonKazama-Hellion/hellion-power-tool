@@ -4,11 +4,16 @@
 # ===================================================================
 
 function Invoke-CheckDisk {
-    Write-Log "`n[*] --- CHECKDISK (CHKDSK) LAUFWERKS-PRUEFUNG ---" -Color Cyan
-    Write-Log "Prueft und repariert Dateisystem-Fehler auf Laufwerken" -Color Yellow
+    Write-Log ""
+    Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+    Write-Log "           🛠️ CHECK DISK TOOL" -Color White
+    Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+    Write-Log "Prüft und repariert Dateisystem-Fehler auf Laufwerken" -Color Yellow
+    Write-Log ""
     
     # Verfuegbare Laufwerke anzeigen
-    Write-Log "`n[*] Verfuegbare Laufwerke:" -Color Blue
+    Write-Host "💿 VERFÜGBARE LAUFWERKE:" -ForegroundColor Cyan
+    Write-Host ""
     $drives = Get-WmiObject -Class Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
     $driveIndex = 1
     
@@ -18,30 +23,55 @@ function Invoke-CheckDisk {
         $totalSpace = [math]::Round($drive.Size / 1GB, 2)
         $usedPercent = [math]::Round((($totalSpace - $freeSpace) / $totalSpace) * 100, 1)
         
-        Write-Information "[INFO]   [$driveIndex] $driveLetter ($totalSpace GB, $usedPercent% belegt)" -InformationAction Continue
+        $usageColor = if ($usedPercent -gt 90) { "Red" } elseif ($usedPercent -gt 75) { "Yellow" } else { "Green" }
+        Write-Host "   [$driveIndex] " -ForegroundColor White -NoNewline
+        Write-Host "$driveLetter " -ForegroundColor Cyan -NoNewline  
+        Write-Host "($totalSpace GB, " -ForegroundColor Gray -NoNewline
+        Write-Host "$usedPercent% belegt" -ForegroundColor $usageColor -NoNewline
+        Write-Host ")" -ForegroundColor Gray
         $driveIndex++
     }
     
-    Write-Information "[INFO] `n[WARNUNG] Checkdisk kann bei Systemplatte einen Neustart erfordern!" -InformationAction Continue
-    Write-Information "[INFO] Nur-Lesen-Modus wird zuerst versucht" -InformationAction Continue
+    Write-Host ""
+    Write-Host "⚠️  " -ForegroundColor Yellow -NoNewline
+    Write-Host "WARNUNG: " -ForegroundColor Yellow -NoNewline
+    Write-Host "Checkdisk kann bei Systemplatte einen Neustart erfordern!" -ForegroundColor White
+    Write-Host "💡 " -ForegroundColor Blue -NoNewline
+    Write-Host "Tipp: " -ForegroundColor Blue -NoNewline
+    Write-Host "Nur-Lesen-Modus wird zuerst versucht" -ForegroundColor Gray
     
     $driveChoice = Read-Host "`nLaufwerk waehlen [1-$($drives.Count)] oder [x] zum Abbrechen"
     
     if ($driveChoice -eq 'x' -or $driveChoice -eq 'X') {
-        Write-Log "[SKIP] Checkdisk abgebrochen" -Color Gray
+        Write-Information "[INFO] [ABGEBROCHEN] CheckDisk nicht gestartet" -InformationAction Continue
+        return $false
+    }
+    
+    # Eingabe-Validierung mit benutzerfreundlicher Behandlung
+    if (-not [int]::TryParse($driveChoice, [ref]$null)) {
+        Write-Host ""
+        Write-Host "❌ Ungültige Eingabe!" -ForegroundColor Red
+        Write-Host "💡 Bitte geben Sie eine Zahl zwischen 1 und $($drives.Count) ein" -ForegroundColor Yellow
+        Write-Host "   Beispiel: '1' für das erste Laufwerk" -ForegroundColor Gray
+        Write-Information "[INFO] [ABGEBROCHEN] Ungültige Laufwerk-Auswahl" -InformationAction Continue
+        return $false
+    }
+    
+    $selectedIndex = [int]$driveChoice - 1
+    if ($selectedIndex -lt 0 -or $selectedIndex -ge $drives.Count) {
+        Write-Host ""
+        Write-Host "❌ Laufwerk nicht gefunden!" -ForegroundColor Red
+        Write-Host "💡 Wählen Sie eine Zahl zwischen 1 und $($drives.Count)" -ForegroundColor Yellow
+        Write-Information "[INFO] [ABGEBROCHEN] Ungültige Laufwerk-Nummer" -InformationAction Continue
         return $false
     }
     
     try {
-        $selectedIndex = [int]$driveChoice - 1
-        if ($selectedIndex -lt 0 -or $selectedIndex -ge $drives.Count) {
-            throw "Ungueltige Auswahl"
-        }
         
         $selectedDrive = $drives[$selectedIndex]
         $driveLetter = $selectedDrive.DeviceID.TrimEnd(':')
         
-        Write-Log "[*] Gewaehlt: Laufwerk $driveLetter" -Color Cyan
+        Write-Log "💿 Gewählt: Laufwerk $driveLetter" -Color Blue
         
         # Checkdisk-Optionen
         Write-Host ""
@@ -72,22 +102,30 @@ function Invoke-CheckDisk {
             }
             '2' {
                 $chkdskArgs = "${driveLetter}: /f"
-                $description = "Pruefung und Reparatur"
-                Write-Information "[INFO] [WARNUNG] Reparatur-Modus kann Datenverlust verursachen!" -InformationAction Continue
+                $description = "Prüfung und Reparatur"
+                Write-Host ""
+                Write-Host "⚠️  " -ForegroundColor Red -NoNewline
+                Write-Host "WARNUNG: " -ForegroundColor Red -NoNewline
+                Write-Host "Reparatur-Modus kann Datenverlust verursachen!" -ForegroundColor White
                 $confirm = Read-Host "Fortfahren? [j/n]"
                 if ($confirm -ne 'j' -and $confirm -ne 'J') {
-                    Write-Log "[SKIP] Checkdisk abgebrochen" -Color Gray
+                    Write-Information "[INFO] [ABGEBROCHEN] CheckDisk-Reparatur nicht gestartet" -InformationAction Continue
                     return $false
                 }
             }
             '3' {
                 $chkdskArgs = "${driveLetter}: /f /r"
-                $description = "Vollstaendige Pruefung und Reparatur"
-                Write-Information "[INFO] [WARNUNG] Vollstaendige Pruefung kann STUNDEN dauern!" -InformationAction Continue
-                Write-Information "[INFO] [WARNUNG] Reparatur-Modus kann Datenverlust verursachen!" -InformationAction Continue
+                $description = "Vollständige Prüfung und Reparatur"
+                Write-Host ""
+                Write-Host "⏰ " -ForegroundColor Red -NoNewline
+                Write-Host "WARNUNG: " -ForegroundColor Red -NoNewline
+                Write-Host "Vollständige Prüfung kann STUNDEN dauern!" -ForegroundColor White
+                Write-Host "⚠️  " -ForegroundColor Red -NoNewline
+                Write-Host "WARNUNG: " -ForegroundColor Red -NoNewline
+                Write-Host "Reparatur-Modus kann Datenverlust verursachen!" -ForegroundColor White
                 $confirm = Read-Host "Wirklich fortfahren? [j/n]"
                 if ($confirm -ne 'j' -and $confirm -ne 'J') {
-                    Write-Log "[SKIP] Checkdisk abgebrochen" -Color Gray
+                    Write-Information "[INFO] [ABGEBROCHEN] CheckDisk-Vollprüfung nicht gestartet" -InformationAction Continue
                     return $false
                 }
             }
@@ -97,37 +135,141 @@ function Invoke-CheckDisk {
             }
         }
         
-        Write-Log "[*] Starte Checkdisk: $description" -Color Blue
-        Write-Log "[*] Parameter: chkdsk $chkdskArgs" -Color Gray
+        Write-Log ""
+        Write-Log "🔍 Starte CheckDisk: $description" -Color Blue
+        Write-Log "⏱️  Geschätzte Dauer: " -Color Yellow -NoNewline
+        if ($modeChoice -eq '1') {
+            Write-Log "2-5 Minuten" -Color Yellow
+        } elseif ($modeChoice -eq '2') {
+            Write-Log "5-30 Minuten" -Color Yellow  
+        } else {
+            Write-Log "30 Minuten - mehrere Stunden" -Color Red
+        }
+        Write-Log ""
         
-        # Checkdisk ausfuehren
-        $chkdskResult = & chkdsk $chkdskArgs.Split(' ') 2>&1 | Out-String
+        Write-Log "🔍 Bereite CheckDisk vor..." -Level "DEBUG"
+        Write-Log "   Parameter: chkdsk $chkdskArgs" -Level "DEBUG"
+        
+        # CheckDisk mit Progress-Simulation ausführen (da chkdsk keine echte Progress-API hat)
+        Write-Host "📊 Fortschritt:" -ForegroundColor Cyan
+        Write-Host ""
+        
+        $startTime = Get-Date
+        
+        # Starte chkdsk im Hintergrund
+        $chkdskJob = Start-Job -ScriptBlock {
+            param($commandArgs)
+            $argsList = $commandArgs.Split(' ')
+            & chkdsk $argsList 2>&1 | Out-String
+        } -ArgumentList $chkdskArgs
+        
+        # Progress-Bar während chkdsk läuft
+        $progressChars = @('⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏')
+        $progressIndex = 0
+        $secondsElapsed = 0
+        
+        while ($chkdskJob.State -eq 'Running') {
+            $minutes = [math]::Floor($secondsElapsed / 60)
+            $seconds = $secondsElapsed % 60
+            $timeStr = $minutes.ToString("00") + ":" + $seconds.ToString("00")
+            
+            # Einfachere Progress-Anzeige ohne Prozentangabe (da unmöglich zu ermitteln)
+            Write-Host "`r   $($progressChars[$progressIndex]) CheckDisk läuft... $timeStr" -NoNewline -ForegroundColor Green
+            
+            Start-Sleep -Seconds 2
+            $secondsElapsed += 2
+            $progressIndex = ($progressIndex + 1) % $progressChars.Length
+        }
+        
+        Write-Host "`r   ✅ CheckDisk abgeschlossen! - $timeStr    " -ForegroundColor Green
+        Write-Host ""
+        
+        # Ergebnis vom Job abrufen
+        $chkdskResult = Receive-Job $chkdskJob
+        Remove-Job $chkdskJob
         $chkdskExitCode = $LASTEXITCODE
+        
+        Write-Log "⏳ Warte auf CheckDisk-Abschluss und analysiere Ergebnisse..." -Level "DEBUG"
+        Write-Log "✅ CheckDisk-Prozess beendet mit Exit-Code: $chkdskExitCode" -Level "DEBUG"
+        
+        $endTime = Get-Date
+        $duration = [math]::Round(($endTime - $startTime).TotalMinutes, 1)
+        
+        Write-Log ""
+        Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+        Write-Log "                CHECKDISK-ERGEBNIS" -Color White
+        Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+        Write-Log ""
+        Write-Log "⏱️  Dauer: ${duration} Minuten" -Color Gray
+        
+        # Detaillierte Ergebnis-Interpretation
+        $success = $false
+        
+        Write-Log "📊 Analysiere CheckDisk-Ergebnisse..." -Level "DEBUG"
+        Write-Log "   Ausgabe-Länge: $($chkdskResult.Length) Zeichen" -Level "DEBUG"
         
         # Ergebnis auswerten
         if ($chkdskResult -match "errors found" -or $chkdskResult -match "Fehler gefunden") {
             if ($chkdskResult -match "fixed" -or $chkdskResult -match "repariert") {
+                Write-Log "✅ Dateisystem: REPARIERT" -Color Yellow
+                Write-Log "   Fehler wurden gefunden und automatisch repariert" -Color Yellow
+                Write-Log "   💡 Empfehlung: Neustart für vollständige Reparatur" -Color Yellow
                 Add-Success "Checkdisk: Fehler gefunden und repariert"
-                Write-Log "[*] Ein Neustart kann erforderlich sein" -Level "WARNING"
                 $script:UpdateRecommendations += "Neustart nach Checkdisk-Reparatur empfohlen"
+                $success = $true
             } else {
+                Write-Log "⚠️  Dateisystem: PROBLEME GEFUNDEN" -Color Red
+                Write-Log "   Fehler gefunden - Reparatur-Modus erforderlich" -Color Red
+                Write-Log "   💡 Empfehlung: CheckDisk mit Reparatur-Option ausführen" -Color Yellow
                 Add-Warning "Checkdisk: Fehler gefunden - Reparatur-Modus empfohlen"
                 $script:UpdateRecommendations += "Checkdisk mit Reparatur-Option ausfuehren"
             }
         } elseif ($chkdskResult -match "no problems found" -or $chkdskResult -match "keine Probleme" -or $chkdskExitCode -eq 0) {
+            Write-Log "✅ Dateisystem: OK" -Color Green
+            Write-Log "   Keine Probleme gefunden - Laufwerk ist gesund!" -Color Green
             Add-Success "Checkdisk: Keine Probleme gefunden"
+            $success = $true
         } elseif ($chkdskResult -match "scheduled" -or $chkdskResult -match "geplant") {
+            Write-Log "🔄 CheckDisk: FÜR NEUSTART GEPLANT" -Color Yellow
+            Write-Log "   Prüfung wird beim nächsten Neustart ausgeführt" -Color Yellow
+            Write-Log "   💡 Empfehlung: System neu starten" -Color Yellow
             Add-Success "Checkdisk: Fuer naechsten Neustart geplant"
-            Write-Log "[*] Checkdisk wird beim naechsten Neustart ausgefuehrt" -Level "WARNING"
             $script:UpdateRecommendations += "Neustart fuer geplante Checkdisk-Pruefung erforderlich"
+            $success = $true
         } else {
+            Write-Log "❓ Unbekannter CheckDisk-Status" -Color Yellow
+            Write-Log "   Prüfung beendet, Status unklar" -Color Yellow
+            Write-Log "   💡 Empfehlung: Event-Log prüfen für Details" -Color Yellow
+            
             # Debug-Info bei unklarem Status
-            if ($script:ExplainMode) {
-                $resultLength = if ($chkdskResult) { $chkdskResult.Length } else { 0 }
-                Write-Log "[DEBUG] Checkdisk Ausgabe: $($chkdskResult.Substring(0, [Math]::Min(300, $resultLength)))" -Level "DEBUG"
-                Write-Log "[DEBUG] Exit Code: $chkdskExitCode" -Level "DEBUG"
+            Write-Log "🔎 CheckDisk Ausgabe zur Analyse:" -Level "DEBUG"
+            if ($chkdskResult -and $chkdskResult.Length -gt 0) {
+                $resultLength = $chkdskResult.Length
+                $maxDebugLength = [Math]::Min(500, $resultLength)
+                Write-Log "   $($chkdskResult.Substring(0, $maxDebugLength))" -Level "DEBUG"
+                if ($resultLength -gt 500) {
+                    Write-Log "   ... und weitere $($resultLength - 500) Zeichen" -Level "DEBUG"
+                }
             }
+            Write-Log "   Exit Code: $chkdskExitCode" -Level "DEBUG"
+            
             Add-Warning "Checkdisk abgeschlossen - Details im Event-Log pruefen"
+        }
+        
+        # Für Debug-Modus: Vollständige CheckDisk-Ausgabe
+        if (($null -ne $script:DebugLevel) -and ([int]$script:DebugLevel -ge 1)) {
+            if ($chkdskResult -and $chkdskResult.Length -gt 0) {
+                Write-Information "[INFO] " -InformationAction Continue
+                Write-Information "[INFO] [DEBUG] CheckDisk-Ausgabe zur Analyse:" -InformationAction Continue
+                $lines = $chkdskResult -split "`n" | Where-Object { $_.Trim() -ne "" }
+                $maxLines = [Math]::Min(15, $lines.Count)
+                for ($i = 0; $i -lt $maxLines; $i++) {
+                    Write-Information "[INFO]   $($lines[$i])" -InformationAction Continue
+                }
+                if ($lines.Count -gt 15) {
+                    Write-Information "[INFO] [DEBUG] Weitere $($lines.Count - 15) Zeilen verfügbar in Log-Datei" -InformationAction Continue
+                }
+            }
         }
         
         # Vollstaendige Ausgabe im Debug-Modus anzeigen
@@ -138,7 +280,7 @@ function Invoke-CheckDisk {
             }
         }
         
-        return $true
+        return $success
         
     } catch {
         Add-Error "Checkdisk fehlgeschlagen" $_.Exception.Message

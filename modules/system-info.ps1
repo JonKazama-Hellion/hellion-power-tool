@@ -10,10 +10,10 @@ function Get-DetailedSystemInfo {
     
     try {
         # Grundlegende System-Info
-        $computerSystem = Get-WmiObject -Class Win32_ComputerSystem
-        $operatingSystem = Get-WmiObject -Class Win32_OperatingSystem
-        $processor = Get-WmiObject -Class Win32_Processor | Select-Object -First 1
-        $memory = Get-WmiObject -Class Win32_PhysicalMemory
+        $computerSystem = Get-CimInstance -ClassName Win32_ComputerSystem
+        $operatingSystem = Get-CimInstance -ClassName Win32_OperatingSystem
+        $processor = Get-CimInstance -ClassName Win32_Processor | Select-Object -First 1
+        $memory = Get-CimInstance -ClassName Win32_PhysicalMemory
         
         $systemInfo.ComputerName = $computerSystem.Name
         $systemInfo.Manufacturer = $computerSystem.Manufacturer
@@ -54,23 +54,60 @@ function Get-DetailedSystemInfo {
         $systemInfo.CPUThreads = $processor.NumberOfLogicalProcessors
         $systemInfo.CPUSpeed = $processor.MaxClockSpeed
         
-        # Anzeige
-        Write-Log "`n=== SYSTEM ====" -Color Blue
-        Write-Log "Computer: $($systemInfo.ComputerName)" -Color White
-        Write-Log "Hersteller: $($systemInfo.Manufacturer)" -Color White
-        Write-Log "Modell: $($systemInfo.Model)" -Color White
+        # Strukturierte Anzeige mit Emojis und Farben
+        Write-Log ""
+        Write-Host "💻 " -ForegroundColor Blue -NoNewline
+        Write-Host "SYSTEM-ÜBERSICHT" -ForegroundColor Blue
+        Write-Host "────────────────────" -ForegroundColor DarkGray
         
-        Write-Log "`n=== BETRIEBSSYSTEM ===" -Color Blue
-        Write-Log "OS: $($systemInfo.OSName)" -Color White
-        Write-Log "Version: $($systemInfo.OSVersion) (Build $($systemInfo.OSBuild))" -Color White
-        Write-Log "Architektur: $($systemInfo.OSArchitecture)" -Color White
-        Write-Log "Installation: $($systemInfo.InstallDate.ToString('yyyy-MM-dd'))" -Color White
+        Write-Host "🏠 Computer: " -ForegroundColor Cyan -NoNewline
+        Write-Host "$($systemInfo.ComputerName)" -ForegroundColor White
         
-        Write-Log "`n=== HARDWARE ===" -Color Blue
-        Write-Log "CPU: $($systemInfo.CPUName)" -Color White
-        Write-Log "Kerne: $($systemInfo.CPUCores) (Threads: $($systemInfo.CPUThreads))" -Color White
-        Write-Log "Takt: $($systemInfo.CPUSpeed) MHz" -Color White
-        Write-Log "RAM: $($systemInfo.TotalRAM) GB" -Color White
+        Write-Host "🏭 Hersteller: " -ForegroundColor Cyan -NoNewline
+        Write-Host "$($systemInfo.Manufacturer)" -ForegroundColor White
+        
+        Write-Host "📱 Modell: " -ForegroundColor Cyan -NoNewline
+        Write-Host "$($systemInfo.Model)" -ForegroundColor White
+        
+        Write-Host ""
+        Write-Host "🗺️ " -ForegroundColor Green -NoNewline
+        Write-Host "BETRIEBSSYSTEM" -ForegroundColor Green
+        Write-Host "────────────────────" -ForegroundColor DarkGray
+        
+        Write-Host "💾 OS: " -ForegroundColor Cyan -NoNewline
+        Write-Host "$($systemInfo.OSName)" -ForegroundColor White
+        
+        Write-Host "🏷️ Version: " -ForegroundColor Cyan -NoNewline
+        Write-Host "$($systemInfo.OSVersion) (Build $($systemInfo.OSBuild))" -ForegroundColor White
+        
+        Write-Host "🏢 Architektur: " -ForegroundColor Cyan -NoNewline
+        Write-Host "$($systemInfo.OSArchitecture)" -ForegroundColor White
+        
+        Write-Host "📅 Installation: " -ForegroundColor Cyan -NoNewline
+        if ($systemInfo.InstallDate -is [DateTime]) {
+            Write-Host "$($systemInfo.InstallDate.ToString('yyyy-MM-dd'))" -ForegroundColor White
+        } else {
+            Write-Host "$($systemInfo.InstallDate)" -ForegroundColor Gray
+        }
+        
+        Write-Host ""
+        Write-Host "⚙️ " -ForegroundColor Yellow -NoNewline
+        Write-Host "HARDWARE" -ForegroundColor Yellow
+        Write-Host "────────────────────" -ForegroundColor DarkGray
+        
+        Write-Host "🧠 CPU: " -ForegroundColor Cyan -NoNewline
+        Write-Host "$($systemInfo.CPUName)" -ForegroundColor White
+        
+        Write-Host "🔢 Kerne: " -ForegroundColor Cyan -NoNewline
+        Write-Host "$($systemInfo.CPUCores) (Threads: $($systemInfo.CPUThreads))" -ForegroundColor White
+        
+        Write-Host "⏱️ Takt: " -ForegroundColor Cyan -NoNewline
+        $speedGHz = [math]::Round($systemInfo.CPUSpeed / 1000, 2)
+        Write-Host "$speedGHz GHz ($($systemInfo.CPUSpeed) MHz)" -ForegroundColor White
+        
+        Write-Host "💾 RAM: " -ForegroundColor Cyan -NoNewline
+        $ramColor = if ($systemInfo.TotalRAM -ge 16) { "Green" } elseif ($systemInfo.TotalRAM -ge 8) { "Yellow" } else { "Red" }
+        Write-Host "$($systemInfo.TotalRAM) GB" -ForegroundColor $ramColor
         
     } catch {
         Add-Error "System-Information konnte nicht abgerufen werden" $_.Exception.Message
@@ -80,7 +117,14 @@ function Get-DetailedSystemInfo {
 }
 
 function Test-SystemCompatibility {
-    Write-Log "`n[*] --- SYSTEM-KOMPATIBILITAETS-PRUEFUNG ---" -Color Cyan
+    Write-Log ""
+    Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+    Write-Log "           ⚙️ SYSTEM-KOMPATIBILITÄT" -Color White
+    Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+    Write-Log "Prüft System-Anforderungen und potenzielle Probleme" -Color Yellow
+    Write-Log ""
+    
+    Write-Log "⚙️ Führe System-Kompatibilitätsprüfung durch..." -Level "DEBUG"
     
     $compatible = $true
     $issues = @()
@@ -113,7 +157,7 @@ function Test-SystemCompatibility {
         }
         
         # Speicherplatz pruefen
-        $systemDrive = Get-WmiObject -Class Win32_LogicalDisk | Where-Object { $_.DeviceID -eq "$env:SystemDrive" }
+        $systemDrive = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DeviceID -eq "$env:SystemDrive" }
         $freeSpaceGB = [math]::Round($systemDrive.FreeSpace / 1GB, 2)
         if ($freeSpaceGB -lt 5) {
             $issues += "Mindestens 5 GB freier Speicher empfohlen (verfuegbar: $freeSpaceGB GB)"
@@ -161,7 +205,7 @@ function Test-AntivirusStatus {
     
     try {
         # Windows Security Center abfragen
-        $antivirusProducts = Get-WmiObject -Namespace "root\SecurityCenter2" -Class AntiVirusProduct -ErrorAction SilentlyContinue
+        $antivirusProducts = Get-CimInstance -Namespace "root\SecurityCenter2" -ClassName AntiVirusProduct -ErrorAction SilentlyContinue
         
         if ($antivirusProducts) {
             foreach ($product in $antivirusProducts) {
@@ -234,7 +278,7 @@ function Get-DetailedDriverStatus {
     
     try {
         # Problemgeraete aus Device Manager
-        $problemDevices = Get-WmiObject -Class Win32_PnPEntity | Where-Object { 
+        $problemDevices = Get-CimInstance -ClassName Win32_PnPEntity | Where-Object { 
             $_.ConfigManagerErrorCode -ne 0 -and $null -ne $_.ConfigManagerErrorCode 
         }
         
@@ -265,7 +309,7 @@ function Get-DetailedDriverStatus {
         }
         
         # Veraltete Treiber suchen (vereinfacht)
-        $drivers = Get-WmiObject -Class Win32_SystemDriver | Where-Object { $_.State -eq "Running" }
+        $drivers = Get-CimInstance -ClassName Win32_SystemDriver | Where-Object { $_.State -eq "Running" }
         $outdatedDrivers = @()
         
         foreach ($driver in $drivers) {
@@ -357,7 +401,7 @@ Generiert am: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
         }
         
         # Laufwerks-Information
-        $drives = Get-WmiObject -Class Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
+        $drives = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
         $report += "`nLAUFWERKE:`n"
         foreach ($drive in $drives) {
             $freeGB = [math]::Round($drive.FreeSpace / 1GB, 2)

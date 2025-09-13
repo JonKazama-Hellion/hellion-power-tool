@@ -1,10 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
-title Hellion Update Checker v7.1.5.1
+title Hellion Update Checker v7.1.5.2
 color 0B
 
 echo ==============================================================================
-echo                 HELLION UPDATE CHECKER v7.1.5.1
+echo                 HELLION UPDATE CHECKER v7.1.5.2
 echo                      Suche nach neuen Features...
 echo ==============================================================================
 echo.
@@ -116,8 +116,20 @@ if "!LOCAL_TIMESTAMP!"=="!GITHUB_TIMESTAMP!" (
     echo [OK] Du hast bereits die neueste Version: !LOCAL_VERSION! "!LOCAL_CODENAME!"
     echo ==============================================================================
     goto :SUCCESS_END
+)
+
+REM Numerischer Timestamp-Vergleich (lokal vs GitHub)
+if !LOCAL_TIMESTAMP! GTR !GITHUB_TIMESTAMP! (
+    echo [RESULT] Lokale Version ist neuer als GitHub - kein Update verfuegbar
+    echo.
+    echo ==============================================================================
+    echo [OK] Du hast eine neuere Version als auf GitHub verfuegbar!
+    echo [LOKAL] !LOCAL_VERSION! "!LOCAL_CODENAME!" (!LOCAL_DATE!)
+    echo [GITHUB] !GITHUB_VERSION! "!GITHUB_CODENAME!" (!GITHUB_DATE!)
+    echo ==============================================================================
+    goto :SUCCESS_END
 ) else (
-    echo [RESULT] Unterschiedliche Timestamps - Update verfuegbar
+    echo [RESULT] GitHub Version ist neuer - Update verfuegbar
     echo.
     echo ==============================================================================
     echo                            UPDATE VERFUEGBAR
@@ -230,12 +242,12 @@ echo timeout /t 3 /nobreak ^>nul >> "!INSTALLER_SCRIPT!"
 echo. >> "!INSTALLER_SCRIPT!"
 
 echo REM Loesche alte Dateien (behalte backups) >> "!INSTALLER_SCRIPT!"
-echo for /f %%%%i in ('dir /b /a-d 2^^^>nul ^^^| findstr /v /i "backup"') do del /f /q "%%%%i" ^>nul 2^>^&1 >> "!INSTALLER_SCRIPT!"
-echo for /f %%%%i in ('dir /b /ad 2^^^>nul ^^^| findstr /v /i "backup"') do rmdir /s /q "%%%%i" ^>nul 2^>^&1 >> "!INSTALLER_SCRIPT!"
+echo for /f %%%%i in ('dir /b /a-d 2^^^>nul ^^^| findstr /v /i "backup"') do del /f /q "%%%%i" ^^^>nul 2^^^>^^^&1 >> "!INSTALLER_SCRIPT!"
+echo for /f %%%%i in ('dir /b /ad 2^^^>nul ^^^| findstr /v /i "backup"') do rmdir /s /q "%%%%i" ^^^>nul 2^^^>^^^&1 >> "!INSTALLER_SCRIPT!"
 echo. >> "!INSTALLER_SCRIPT!"
 
 echo REM Kopiere neue Version >> "!INSTALLER_SCRIPT!"
-echo xcopy /E /I /Q /Y "!UPDATE_TEMP_DIR!\hellion-new\*" "." ^>nul 2^>^&1 >> "!INSTALLER_SCRIPT!"
+echo xcopy /E /I /Q /Y "!UPDATE_TEMP_DIR!\hellion-new\*" "." ^^^>nul 2^^^>^^^&1 >> "!INSTALLER_SCRIPT!"
 echo. >> "!INSTALLER_SCRIPT!"
 
 echo echo [SUCCESS] Update erfolgreich installiert! >> "!INSTALLER_SCRIPT!"

@@ -69,7 +69,8 @@ function Write-Log {
                 }
             }
             default { 
-                Write-Information $Message -InformationAction Continue 
+                # Verwende Write-Host mit Farben statt Write-Information
+                Write-Host $Message -ForegroundColor $Color
             }
         }
     }
@@ -166,7 +167,7 @@ function Add-Success {
 
 function Initialize-Logging {
     param(
-        [string]$LogDirectory = "$env:TEMP\HellionPowerTool",
+        [string]$LogDirectory = (Join-Path $PSScriptRoot "..\logs"),
         [switch]$DetailedLogging = $false
     )
     

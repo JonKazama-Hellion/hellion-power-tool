@@ -16,7 +16,7 @@ echo.
 REM Wechsel ins Hauptverzeichnis
 cd /d "%~dp0.."
 
-REM Finde PowerShell (Priorität: PS7 → PS5)
+REM Finde PowerShell (Prioritaet: PS7 > PS5)
 set "USE_PS=powershell"
 set "PS_VERSION=5"
 
@@ -24,19 +24,19 @@ REM Multi-Level PS7 Detection (Phase 1)
 where pwsh >nul 2>&1
 
 if %errorlevel%==0 (
-    echo [OK] PowerShell 7 gefunden über PATH (empfohlen)
+    echo [OK] PowerShell 7 gefunden ueber PATH (empfohlen)
     set "USE_PS=pwsh"
     set "PS_VERSION=7"
     goto :PS_DETECTION_DONE
 ) else (
     if exist "C:\Program Files\PowerShell\7\pwsh.exe" (
-        echo [OK] PowerShell 7 über direkten Pfad gefunden
+        echo [OK] PowerShell 7 ueber direkten Pfad gefunden
         set "USE_PS=C:\Program Files\PowerShell\7\pwsh.exe"
         set "PS_VERSION=7"
         goto :PS_DETECTION_DONE
     ) else (
         if exist "%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe" (
-            echo [OK] PowerShell 7 über Store-Installation gefunden
+            echo [OK] PowerShell 7 ueber Store-Installation gefunden
             set "USE_PS=%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe"
             set "PS_VERSION=7"
             goto :PS_DETECTION_DONE
@@ -68,25 +68,25 @@ if %errorlevel%==0 (
                 REM Multi-Level PS7 Detection (robust)
                 where pwsh >nul 2>&1
                 if %errorlevel%==0 (
-                    echo [SUCCESS] PowerShell 7 gefunden über PATH
+                    echo [SUCCESS] PowerShell 7 gefunden ueber PATH
                     set "USE_PS=pwsh"
                     set "PS_VERSION=7"
                     goto :PS_DETECTION_DONE
                 ) else (
                     if exist "C:\Program Files\PowerShell\7\pwsh.exe" (
-                        echo [SUCCESS] PowerShell 7 über direkten Pfad gefunden
+                        echo [SUCCESS] PowerShell 7 ueber direkten Pfad gefunden
                         set "USE_PS=C:\Program Files\PowerShell\7\pwsh.exe"
                         set "PS_VERSION=7"
                         goto :PS_DETECTION_DONE
                     ) else (
                         if exist "%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe" (
-                            echo [SUCCESS] PowerShell 7 über Store-App gefunden
+                            echo [SUCCESS] PowerShell 7 ueber Store-App gefunden
                             set "USE_PS=%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe"
                             set "PS_VERSION=7"
                             goto :PS_DETECTION_DONE
                         ) else (
                             echo [WARNING] PowerShell 7 nach Installation nicht gefunden
-                            echo [FALLBACK] Verwende Windows PowerShell für diesen Start
+                            echo [FALLBACK] Verwende Windows PowerShell fuer diesen Start
                             set "USE_PS=powershell"
                             set "PS_VERSION=5"
                             pause
@@ -116,7 +116,7 @@ if not errorlevel 2 (
 )
 echo.
 
-REM Prüfe ob Hauptscript existiert
+REM Pruefe ob Hauptscript existiert
 if not exist "hellion_tool_main.ps1" (
     echo [ERROR] hellion_tool_main.ps1 nicht gefunden!
     echo [LOESUNG] Stelle sicher dass du im richtigen Verzeichnis bist

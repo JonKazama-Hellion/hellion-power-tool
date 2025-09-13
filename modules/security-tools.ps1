@@ -13,7 +13,12 @@ function Invoke-SafeAdblock {
     Verwendet eine konservative Whitelist fuer maximale Sicherheit.
     #>
     
-    Write-Log "`n[*] --- SAFE ADBLOCK VERWALTUNG ---" -Color Cyan
+    Write-Log ""
+    Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+    Write-Log "           🔒 SAFE ADBLOCK TOOL" -Color White
+    Write-Log "═══════════════════════════════════════════════════" -Color Cyan
+    Write-Log "Blockiert bekannte Werbe- und Tracking-Domains sicher über Hosts-Datei" -Color Yellow
+    Write-Log ""
     
     # Host-Datei Pfad
     $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
@@ -23,7 +28,7 @@ function Invoke-SafeAdblock {
         # Backup erstellen falls nicht vorhanden
         if (-not (Test-Path $backupPath)) {
             Copy-Item $hostsPath $backupPath -Force
-            Write-Log "[OK] Host-Datei Backup erstellt" -Level "SUCCESS"
+            Write-Log "✅ Host-Datei Backup erstellt: hosts.hellion.backup" -Level "SUCCESS"
         }
         
         # Erweiterte Adblock-Liste (sichere Tracking/Werbung-Domains)

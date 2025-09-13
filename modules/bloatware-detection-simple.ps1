@@ -74,10 +74,16 @@ function Get-SimpleBloatwarePrograms {
                         if ($prog.DisplayName -and $prog.DisplayName -is [string] -and $prog.DisplayName.Length -gt 2) {
                             $allPrograms += $prog.DisplayName
                         }
-                    } catch { }
+                    } catch {
+                        # Registry-Zugriff auf einzelnes Programm fehlgeschlagen - überspringen
+                        Write-Verbose "Registry-Zugriff auf $($item.PSPath) fehlgeschlagen: $($_.Exception.Message)"
+                    }
                 }
             }
-        } catch { }
+        } catch {
+            # 64-bit Registry-Pfad nicht verfügbar - überspringen
+            Write-Verbose "64-bit Uninstall-Registry nicht verfügbar: $($_.Exception.Message)"
+        }
         
         # 32-bit Programme (Defender-safe Registry access)
         try {
@@ -90,10 +96,16 @@ function Get-SimpleBloatwarePrograms {
                         if ($prog.DisplayName -and $prog.DisplayName -is [string] -and $prog.DisplayName.Length -gt 2) {
                             $allPrograms += $prog.DisplayName
                         }
-                    } catch { }
+                    } catch {
+                        # Registry-Zugriff auf einzelnes WOW64-Programm fehlgeschlagen - überspringen
+                        Write-Verbose "WOW64 Registry-Zugriff auf $($item.PSPath) fehlgeschlagen: $($_.Exception.Message)"
+                    }
                 }
             }
-        } catch { }
+        } catch {
+            # 32-bit WOW64-Registry-Pfad nicht verfügbar - überspringen
+            Write-Verbose "32-bit WOW64 Uninstall-Registry nicht verfügbar: $($_.Exception.Message)"
+        }
         
         Write-Information "[INFO] [*] $($allPrograms.Count) Programme gefunden" -InformationAction Continue
         
