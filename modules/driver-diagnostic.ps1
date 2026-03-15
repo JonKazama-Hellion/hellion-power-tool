@@ -79,7 +79,7 @@ function Start-DriverDiagnostic {
 }
 
 function Invoke-FullDriverAnalysis {
-    Write-Log "[*] Starte vollstaendige Treiber-Analyse..." -Color Yellow
+    Write-Log "[*] Starte vollständige Treiber-Analyse..." -Color Yellow
     Write-Host ""
 
     # Schritt 1: Problematische Treiber suchen
@@ -87,7 +87,7 @@ function Invoke-FullDriverAnalysis {
     $problematicDrivers = Find-ProblematicDrivers -Silent
 
     # Schritt 2: Event Logs analysieren
-    Write-Host "[2/4] Analysiere Event Logs fuer Treiber-Fehler..." -ForegroundColor Cyan
+    Write-Host "[2/4] Analysiere Event Logs für Treiber-Fehler..." -ForegroundColor Cyan
     $eventErrors = Analyze-DriverEventLogs -Silent
 
     # Schritt 3: Nicht signierte Treiber finden
@@ -124,7 +124,7 @@ function Invoke-FullDriverAnalysis {
     }
 
     if ($outdatedDrivers.Count -gt 0) {
-        Write-Host "FEHLERHAFTE GERAETE:" -ForegroundColor Red
+        Write-Host "FEHLERHAFTE GERÄTE:" -ForegroundColor Red
         foreach ($device in $outdatedDrivers) {
             Write-Host "   - $($device.Name) - Fehlercode: $($device.ErrorCode)" -ForegroundColor Yellow
         }
@@ -135,7 +135,7 @@ function Invoke-FullDriverAnalysis {
     if ($totalIssues -eq 0) {
         Write-Host "Keine kritischen Treiber-Probleme erkannt!" -ForegroundColor Green
     } else {
-        Write-Host "$totalIssues Probleme gefunden. Fuehre spezifische Diagnosen fuer Details aus." -ForegroundColor Cyan
+        Write-Host "$totalIssues Probleme gefunden. Führe spezifische Diagnosen für Details aus." -ForegroundColor Cyan
     }
 }
 
@@ -771,11 +771,11 @@ function Analyze-ENEDriverProblem {
                 & pnputil /scan-devices
                 Write-Host "✅ Geräte-Scan abgeschlossen" -ForegroundColor Green
                 
-                # Versuche problematische Geraete neu zu installieren
+                # Versuche problematische Geräte neu zu installieren
                 foreach ($eneDriver in $eneSystemDriver) {
                     Write-Host "[*] Repariere: $($eneDriver.Name)" -ForegroundColor Yellow
                     try {
-                        # Neuinstallation ueber pnputil versuchen
+                        # Neuinstallation über pnputil versuchen
                         $driverName = $eneDriver.Name
                         $deviceInstanceId = (Get-CimInstance -ClassName Win32_PnPEntity | Where-Object { $_.Name -like "*$driverName*" } | Select-Object -First 1).PNPDeviceID
                         if ($deviceInstanceId) {
@@ -871,15 +871,15 @@ function Remove-ENEDriverForce {
     try {
         Write-Host "   📝 Versuche Wiederherstellungspunkt..." -ForegroundColor Yellow
         
-        # Pruefe ob SystemRestore aktiviert ist
+        # Prüfe ob SystemRestore aktiviert ist
         $restoreEnabled = Get-CimInstance -ClassName Win32_SystemRestore -ErrorAction SilentlyContinue
         if ($restoreEnabled) {
             # PS7-kompatible Wiederherstellungspunkt-Erstellung
-            # Checkpoint-Computer existiert nur in PS5, daher WMI-Fallback fuer PS7
+            # Checkpoint-Computer existiert nur in PS5, daher WMI-Fallback für PS7
             $restorePointCreated = $false
 
             if (Get-Command Checkpoint-Computer -ErrorAction SilentlyContinue) {
-                # PS5: Checkpoint-Computer verfuegbar
+                # PS5: Checkpoint-Computer verfügbar
                 try {
                     Checkpoint-Computer -Description "ENE-Treiber Reparatur Backup" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
                     Write-Host "   -> Wiederherstellungspunkt erstellt" -ForegroundColor Green
@@ -901,7 +901,7 @@ function Remove-ENEDriverForce {
             }
 
             if (-not $restorePointCreated) {
-                # PS7 Fallback: WMI-Methode fuer Wiederherstellungspunkt
+                # PS7 Fallback: WMI-Methode für Wiederherstellungspunkt
                 try {
                     $srClass = [wmiclass]"\\.\root\default:SystemRestore"
                     $result = $srClass.CreateRestorePoint("ENE-Treiber Reparatur Backup", 12, 100)
@@ -1147,7 +1147,7 @@ function Get-InstalledDriverPackages {
             }
         }
         
-        Write-Host "💡 Fuer vollstaendige Liste: pnputil /enum-drivers" -ForegroundColor Yellow
+        Write-Host "💡 Für vollständige Liste: pnputil /enum-drivers" -ForegroundColor Yellow
         
     } catch {
         Write-Log "Fehler beim Abrufen der Treiber-Pakete: $($_.Exception.Message)" -Level "ERROR"

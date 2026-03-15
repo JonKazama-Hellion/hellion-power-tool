@@ -1,6 +1,6 @@
-# Hellion Power Tool v7.1.5.4 "Baldur"
+# Hellion Power Tool v7.2.0.0 "Heimdall"
 
-![Version](https://img.shields.io/badge/Version-7.1.5.4%20Baldur-blue)
+![Version](https://img.shields.io/badge/Version-7.2.0.0%20Heimdall-blue)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%7C%207.x-blue?logo=powershell)
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011%20%7C%20Server-green?logo=windows)
 ![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-orange)

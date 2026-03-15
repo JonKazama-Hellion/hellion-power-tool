@@ -59,7 +59,7 @@ function Remove-SafeFiles {
     
     if (-not $Force -and -not $script:AutoApproveCleanup) {
         Write-Information "[INFO]   $Description ($sizeBefore MB)" -InformationAction Continue
-        $choice = Read-Host "    Bereinigen? [j/n/a fuer alle]"
+        $choice = Read-Host "    Bereinigen? [j/n/a für alle]"
         
         if ($choice -eq 'n') {
             Write-Log "  ⏭️ $Description - Vom Benutzer übersprungen" -Color Gray
@@ -74,7 +74,7 @@ function Remove-SafeFiles {
     Write-Log "  🧹 Bereinige $Description..." -Color Blue
     
     try {
-        # Antiviren-sicheres Loeschen mit Delay
+        # Antiviren-sicheres Löschen mit Delay
         $files = Get-ChildItem $Path -Recurse -Force -ErrorAction SilentlyContinue
         $totalFiles = $files.Count
         $deleted = 0
@@ -180,7 +180,7 @@ function Invoke-ComprehensiveCleanup {
         Write-Host "(+ Gaming-Caches)" -ForegroundColor DarkGray
         Write-Host ""
         Write-Host "   [4] " -ForegroundColor White -NoNewline
-        Write-Host "Vollstaendige Bereinigung " -ForegroundColor Red -NoNewline
+        Write-Host "Vollständige Bereinigung " -ForegroundColor Red -NoNewline
         Write-Host "(Alles)" -ForegroundColor DarkGray
         Write-Host ""
         Write-Host "   [5] " -ForegroundColor White -NoNewline
@@ -189,10 +189,10 @@ function Invoke-ComprehensiveCleanup {
         
         $cleanupMode = Read-Host "`nWahl [1-5]"
     } else {
-        $cleanupMode = "2"  # Standard fuer Auto-Modus
+        $cleanupMode = "2"  # Standard für Auto-Modus
     }
     
-    # Bereinigung durchfuehren basierend auf Modus
+    # Bereinigung durchführen basierend auf Modus
     switch ($cleanupMode) {
         '1' {
             Write-Log "[*] Basis-Bereinigung..." -Color Green
@@ -344,7 +344,7 @@ function Optimize-SystemPerformance {
     Write-Log "`n[OK] Performance-Optimierung abgeschlossen!" -Level "SUCCESS"
     Write-Log "[INFO] $optimizations Optimierungen angewendet" -Color Cyan
     
-    $script:ActionsPerformed += "Performance-Optimierung ($optimizations Aenderungen)"
+    $script:ActionsPerformed += "Performance-Optimierung ($optimizations Änderungen)"
     return $optimizations -gt 0
 }
 
@@ -518,7 +518,7 @@ function Get-UnusedPrograms {
                 Write-Information "[INFO] `n  [INFO] ... und $remainingCount weitere Programme (siehe Log-Datei)" -InformationAction Continue
                 
                 # Alle weiteren Programme ins Log schreiben
-                Write-Log "VOLLSTAENDIGE LISTE UNGENUTZTER PROGRAMME (Log-Datei):" -Level "DEBUG"
+                Write-Log "VOLLSTÄNDIGE LISTE UNGENUTZTER PROGRAMME (Log-Datei):" -Level "DEBUG"
                 for ($i = $displayCount; $i -lt $unusedPrograms.Count; $i++) {
                     $prog = $unusedPrograms[$i]
                     Write-Log "[$($i+1)] $($prog.Name) by $($prog.Publisher)" -Level "DEBUG"
@@ -538,9 +538,9 @@ function Get-UnusedPrograms {
             Write-Information "[INFO] `n[STATISTIKEN]" -InformationAction Continue
             Write-Information "[INFO]   Geschaetzte Speicher-Einsparung: $([math]::Round($totalSize, 1)) MB ($([math]::Round($totalSize/1024, 2)) GB)" -InformationAction Continue
             Write-Information "[INFO]   Hohes Risiko (empfohlen zu entfernen): $highRiskCount Programme" -InformationAction Continue
-            Write-Information "[INFO]   Mittleres Risiko (pruefen): $mediumRiskCount Programme" -InformationAction Continue
+            Write-Information "[INFO]   Mittleres Risiko (prüfen): $mediumRiskCount Programme" -InformationAction Continue
             
-            Write-Information "[INFO] `n[EMPFEHLUNG] Programme manuell pruefen - Automatische Deinstallation nicht implementiert" -InformationAction Continue
+            Write-Information "[INFO] `n[EMPFEHLUNG] Programme manuell prüfen - Automatische Deinstallation nicht implementiert" -InformationAction Continue
             
         } else {
             Write-Log "[OK] Keine offensichtlich ungenutzten Programme gefunden!" -Color Green

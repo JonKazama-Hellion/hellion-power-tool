@@ -4,8 +4,8 @@
 # ===================================================================
 
 function Test-DLLIntegrity {
-    Write-Log "`n[*] --- DLL INTEGRITAETS-PRUEFUNG ---" -Color Cyan
-    Write-Log "Prueft kritische System- und Anwendungs-DLLs auf Vollstaendigkeit" -Color Yellow
+    Write-Log "`n[*] --- DLL INTEGRITÄTS-PRÜFUNG ---" -Color Cyan
+    Write-Log "Prüft kritische System- und Anwendungs-DLLs auf Vollständigkeit" -Color Yellow
     
     # Einfache Arrays für Ergebnisse
     $foundDLLs = @()
@@ -27,7 +27,7 @@ function Test-DLLIntegrity {
     $syswow64 = "$env:SystemRoot\SysWOW64"
     $dotnetPath = "$env:SystemRoot\Microsoft.NET\Framework64\v4.0.30319"
     
-    Write-Log "`nPruefe kritische DLL-Dateien..." -Color White
+    Write-Log "`nPrüfe kritische DLL-Dateien..." -Color White
     
     $totalChecked = 0
     $totalFound = 0
@@ -272,8 +272,8 @@ function Test-DLLIntegrity {
     }
     
     # Zusammenfassung
-    Write-Log "`n[*] --- DLL-PRUEFUNG ZUSAMMENFASSUNG ---" -Color Cyan
-    Write-Log "Geprueft: $totalChecked DLLs" -Color White
+    Write-Log "`n[*] --- DLL-PRÜFUNG ZUSAMMENFASSUNG ---" -Color Cyan
+    Write-Log "Geprüft: $totalChecked DLLs" -Color White
     Write-Log "Gefunden: $totalFound DLLs" -Color Green
     Write-Log "Fehlend:  $totalMissing DLLs" -Color Red
     
@@ -288,7 +288,7 @@ function Test-DLLIntegrity {
         
         if ($vcppMissing -and $vcppMissing.Count -gt 0) {
             Write-Log "• Visual C++ Redistributable installieren (https://aka.ms/vs/17/release/vc_redist.x64.exe)" -Color Yellow
-            Write-Log "  [INFO] HINWEIS: VC++ 2015-2022 ist abwaerts kompatibel - aeltere Versionen meist unnoetig" -Color Cyan
+            Write-Log "  [INFO] HINWEIS: VC++ 2015-2022 ist abwärts kompatibel - ältere Versionen meist unnötig" -Color Cyan
         }
         
         if ($dotnetMissing -and $dotnetMissing.Count -gt 0) {
@@ -301,7 +301,7 @@ function Test-DLLIntegrity {
         
         if ($windowsMissing -and $windowsMissing.Count -gt 0) {
             Write-Log "[WARNING] KRITISCH: Windows-Systemdateien fehlen!" -Color Red
-            Write-Log "   Fuehre 'sfc /scannow' als Administrator aus" -Color Red
+            Write-Log "   Führe 'sfc /scannow' als Administrator aus" -Color Red
         }
     }
     
@@ -309,7 +309,7 @@ function Test-DLLIntegrity {
     try {
         if ($script:GenerateReport -and $script:LogDirectory) {
         $reportPath = Join-Path $script:LogDirectory "dll_integrity_report.txt"
-        $report = "DLL INTEGRITAETS-BERICHT`nGeneriert am: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`n`nZUSAMMENFASSUNG:`n- Geprueft: $totalChecked DLLs`n- Gefunden: $totalFound DLLs`n- Fehlend: $totalMissing DLLs`n"
+        $report = "DLL INTEGRITÄTS-BERICHT`nGeneriert am: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`n`nZUSAMMENFASSUNG:`n- Geprüft: $totalChecked DLLs`n- Gefunden: $totalFound DLLs`n- Fehlend: $totalMissing DLLs`n"
         
         if ($missingDLLs -and $missingDLLs.Count -gt 0) {
             $report += "`nFEHLENDE DLLs:`n"
@@ -322,30 +322,30 @@ function Test-DLLIntegrity {
         Write-Log "`nBericht gespeichert: $reportPath" -Color Green
         }
     } catch {
-        # GenerateReport Variable nicht verfuegbar - Report wird uebersprungen
+        # GenerateReport Variable nicht verfügbar - Report wird übersprungen
     }
     
     # Erweiterte Erfolgsstatus-Bewertung
     if ($totalMissing -eq 0) {
-        $script:ActionsPerformed += "DLL-Check (Alle DLLs vollstaendig)"
-        Write-Log "`n[SUCCESS] DLL-Integritaetspruefung erfolgreich!" -Color Green
+        $script:ActionsPerformed += "DLL-Check (Alle DLLs vollständig)"
+        Write-Log "`n[SUCCESS] DLL-Integritätsprüfung erfolgreich!" -Color Green
         return $true
     } elseif ($criticalMissing -eq 0) {
         # Nur Low-Priority DLLs fehlen - das ist OK!
-        $script:ActionsPerformed += "DLL-Check (Kritische DLLs vollstaendig, $lowPriorityMissing Low-Priority DLLs fehlen)"
-        Write-Log "`n[SUCCESS] DLL-Integritaetspruefung erfolgreich!" -Color Green
+        $script:ActionsPerformed += "DLL-Check (Kritische DLLs vollständig, $lowPriorityMissing Low-Priority DLLs fehlen)"
+        Write-Log "`n[SUCCESS] DLL-Integritätsprüfung erfolgreich!" -Color Green
         Write-Log "[INFO] $lowPriorityMissing Low-Priority DLLs fehlen - System funktioniert normal" -Color Cyan
         if ($lowPriorityMissing -gt 0) {
-            Write-Log "[TIPP] Fehlende Low-Priority DLLs werden nur bei speziellen Anwendungen benoetigt" -Color Gray
+            Write-Log "[TIPP] Fehlende Low-Priority DLLs werden nur bei speziellen Anwendungen benötigt" -Color Gray
         }
         return $true
     } else {
         # Kritische DLLs fehlen - das ist ein echtes Problem!
         $script:ActionsPerformed += "DLL-Check ($criticalMissing kritische DLLs fehlend - PROBLEM)"
-        Write-Log "`n[ERROR] DLL-Integritaetspruefung FEHLGESCHLAGEN!" -Color Red
+        Write-Log "`n[ERROR] DLL-Integritätsprüfung FEHLGESCHLAGEN!" -Color Red
         Write-Log "[ERROR] $criticalMissing KRITISCHE DLLs fehlen (System instabil)" -Color Red
         if ($lowPriorityMissing -gt 0) {
-            Write-Log "[INFO] Zusaetzlich fehlen $lowPriorityMissing Low-Priority DLLs" -Color Yellow
+            Write-Log "[INFO] Zusätzlich fehlen $lowPriorityMissing Low-Priority DLLs" -Color Yellow
         }
         return $false
     }

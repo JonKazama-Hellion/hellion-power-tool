@@ -15,10 +15,10 @@ function Write-Log {
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
     $logEntry = "[$timestamp] [$Level] $Message"
     
-    # In Log-Buffer schreiben (fuer spaeteren Abruf)
+    # In Log-Buffer schreiben (für spaeteren Abruf)
     $script:LogBuffer += $logEntry
     
-    # Begrenzung des Log-Buffers auf 1000 Eintraege
+    # Begrenzung des Log-Buffers auf 1000 Einträge
     if ($script:LogBuffer.Count -gt 1000) {
         $script:LogBuffer = $script:LogBuffer[-500..-1]
     }
@@ -86,7 +86,7 @@ function Clear-OldLogs {
             Write-Log "Alte Logs bereinigt: $($oldLogs.Count) Dateien" -Level "DEBUG"
         }
         
-        # Zusaetzlich: Sehr grosse Log-Dateien komprimieren (>10MB)
+        # Zusätzlich: Sehr grosse Log-Dateien komprimieren (>10MB)
         $largeLogs = $logFiles | Where-Object { $_.Length -gt 10MB }
         foreach ($largeLog in $largeLogs) {
             try {

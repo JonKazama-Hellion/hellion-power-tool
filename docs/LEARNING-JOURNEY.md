@@ -1,105 +1,78 @@
-# 🤖 AI-Unterstützung beim Lernen
+# AI-Unterstützung und Entwicklungsprozess
 
-## Ehrlich gesagt: Ich bin Anfänger
+## Hintergrund
 
-Ich bin noch ziemlich am Anfang vom Programmieren. Dieses Tool ist mein erstes größeres Projekt und ich lerne dabei noch eine Menge. Meistens sitze ich alleine vor VS Code, schaue YouTube-Videos und google mich durch Probleme.
+Ich bin Autodidakt. Das Hellion Power Tool ist mein erstes größeres Softwareprojekt — PowerShell und Batch-Scripting habe ich mir im Laufe der Entwicklung selbst beigebracht. Die meiste Zeit arbeite ich alleine, lese Dokumentation und löse Probleme durch Recherche.
 
-Manchmal stoße ich aber auf Bugs, die ich einfach nicht hinkriege - und dann hole ich mir Hilfe von AI-Tools wie Claude Code.
-
----
-
-## 🛠️ Womit ich arbeite
-
-Ich benutze **VS Code** - das hat mir jemand empfohlen und es funktioniert gut für mich. Dazu hab ich ein paar Extensions installiert die mir helfen:
-
-- **Markdownlint** - damit meine Dokumentation nicht komplett chaotisch aussieht
-- **PSScriptAnalyzer** - zeigt mir wenn mein PowerShell-Code Müll ist
-- **Git** - für backups und Versionskontrolle
-
-Ich versuche meinen Code **sauber zu halten**, auch wenn das nicht immer klappt:
-
-- Ordentliche Einrückung (meistens)
-- Variablen die für mich Sinn machen
-- Kommentare wenn ich weiß dass ich's später vergesse
-- Aufräumen wenn's zu chaotisch wird
+Wenn ich an einem Bug oder einer technischen Frage nicht weiterkomme, setze ich AI-Tools wie Claude Code als Hilfsmittel ein. Ich dokumentiere das hier, weil mir Transparenz wichtig ist.
 
 ---
 
-## 📺 Wo ich lerne
+## Entwicklungsumgebung
 
-Hauptsächlich **YouTube** - da gibt's Videos zu allem. Wenn ich stuck bin:
+Mein Setup:
 
-- **Stack Overflow** - zum nachschlagen von Fehlern
-- **Microsoft Docs** - gerade bei PowerShell sehr hilfreich
-- **Reddit** - r/PowerShell für Fragen und Inspiration
-- **AI-Tools** wie Claude Code - wenn ich nicht weiterkomme
-- **Andere GitHub-Projekte** angucken und inspirieren lassen
-
----
-
-## 🤖 Wann ich Claude Code benutze
-
-Manchmal programmiere ich stundenlang an einem Problem und komm einfach nicht weiter. Besonders wenn fehler anfangen unlogisch zu erscheinen oder ich mich selber verschachtel.
-
-**Dann frage ich Claude Code um Hilfe** bei:
-
-- Bugs die ich nicht finde (wie der Update-Checker der nicht aufhören wollte Updates anzubieten oder sich selber zu löschen xD)
-- Wenn mir die Logik nicht klar ist
-- Code aufräumen und besser machen
-- Erklären warum was nicht funktioniert
-
-### Was ich NICHT mache
-
-Ich lasse nicht Claude mein ganzes Projekt schreiben. **Die Ideen kommen von mir**, die Grundstruktur auch, und die ganzen Features hab ich mir überlegt und sind Ideen sowie Anregungen von Freunden und oder deren aktuellen Problemstellungen. (Danke Loma und Carl ^^)
-
-AI hilft mir nur wenn ich stuck bin oder wenn ich lernen will wie man was besser macht.
+- **Editor**: VS Code mit Extensions (Error Lens, GitLens, Better Comments, indent-rainbow, Code Spell Checker, Batch Language Support, Markdownlint, PSScriptAnalyzer)
+- **Sprachen**: PowerShell 5.1/7.x, Batch (CMD)
+- **Versionskontrolle**: Git + GitHub
+- **AI-Unterstützung**: Claude Code (bei Bedarf)
+- **OS**: Windows 11 Pro
 
 ---
 
-## 🤷‍♂️ Warum erzähl ich das?
+## Lernquellen
 
-Weil ich ehrlich sein will. Wenn Leute meinen Code angucken sollen sie wissen dass ich:
-
-- Noch lerne und Fehler mache
-- Manchmal Hilfe brauche bei komplizierten Sachen  
-- Nicht vortäusche dass ich alles alleine kann
-- und wenn sie AI / Vibecodeing nicht leiden können, wissen sie dass ich's nur als Hilfsmittel benutze
-
-Außerdem hoffe ich dass andere Anfänger sehen: **Es ist okay Hilfe zu holen**. Niemand muss alles alleine können, auch wenn "Vibecoding" oder "AI" als hilfe zu nutzen keinen wirklich hohen stellenwert hat bei Professionellen Codern.
+- **Microsoft Docs** — insbesondere die PowerShell-Referenz
+- **Stack Overflow** — für spezifische Fehlermeldungen und Lösungsansätze
+- **YouTube** — Tutorials zu PowerShell, Batch-Scripting und allgemeiner Softwareentwicklung
+- **Reddit** — r/PowerShell für Fragen und Inspiration
+- **GitHub** — andere Open-Source-Projekte als Referenz
 
 ---
 
-## 💬 Falls du helfen willst
+## Einsatz von AI-Tools
 
-Ich freu mich über Feedback! Egal ob:
+Ich verwende Claude Code als Hilfsmittel — nicht als Ersatz für eigene Arbeit.
 
-- Du einen Bug findest → **GitHub Issue** aufmachen
-- Du denkst mein Code ist schlecht → **Sag mir wie's besser geht**
-- Du eine Idee hast → **Einfach schreiben**
-- Du Tipps für Anfänger hast → **Immer her damit!**
-- oder die das Tool vielleicht selber schon geholfen hat → **Erzähl mir davon!**
+**Wofür ich AI einsetze:**
 
-Als Anfänger kann ich jeden Tipp gebrauchen. Auch wenn du denkst es ist "zu offensichtlich" - für mich ist's das vielleicht nicht!
+- Debugging von Problemen, bei denen ich nach längerer Eigenrecherche nicht weiterkomme
+- Verständnisfragen zu komplexer Logik oder unerwarteten Fehlern
+- Code-Review und Strukturverbesserung
+- Erklärungen zu PowerShell-Konzepten, die mir noch nicht geläufig sind
 
----
+**Was ich selbst mache:**
 
-## 📞 Kontakt und Support
+- Architektur und Projektstruktur
+- Feature-Konzeption und -Implementierung
+- Alle Designentscheidungen
+- Testing und Qualitätssicherung
 
-- **GitHub Issues**: [Fehlerberichte und Feature-Requests](https://github.com/JonKazama-Hellion/hellion-power-tool/issues)
-- **Diskussionen**: GitHub Discussions für allgemeine Fragen
-
-**Vielen Dank für dein Interesse an diesem Projekt und deine Unterstützung beim Lernen!** 🙏
-
----
-
-*Diese Dokumentation wird regelmäßig aktualisiert, um meine Entwicklungsreise und Learnings zu reflektieren.*
+Die Feature-Ideen stammen von mir und meinen Testern (siehe [CONTRIBUTORS.md](CONTRIBUTORS.md)). AI hilft mir, diese Ideen sauber umzusetzen, wenn ich an technischen Grenzen stoße.
 
 ---
 
-## 💻 Falls es wen interessiert
+## Warum diese Transparenz
 
-Ich programmiere übrigens auf Windows 11 Pro mit VS Code, Notepad++, PowerShell 7 und Claude Code. Ein paar VS Code Extensions die mir beim Projekt richtig helfen: Error Lens (zeigt Fehler direkt), GitLens (macht Git verständlicher), Better Comments, indent-rainbow (macht Code übersichtlicher), Code Spell Checker (findet Tippfehler) und Batch Language Support (für .bat Dateien). Ist nicht das fancy Setup aber funktioniert für mich.
+Wer sich den Quellcode ansieht, soll wissen:
+
+- Ich bin kein professioneller Entwickler und lerne weiterhin dazu
+- AI-Unterstützung ist ein Werkzeug, kein Ghostwriter
+- Alle Ideen, Features und die Grundstruktur sind Eigenleistung
+- Ich versuche, meinen Code so sauber wie möglich zu halten
+
+Ich hoffe, dass andere Anfänger sehen: Es ist in Ordnung, sich Hilfe zu holen. Ob durch Dokumentation, Community oder AI — entscheidend ist, dass man versteht, was der eigene Code tut.
 
 ---
 
-**Letzte Aktualisierung**: 2025-09-13 - Hellion Power Tool v7.1.5.3 "Baldur"
+## Feedback und Kontakt
+
+Ich freue mich über jede Rückmeldung — ob Bug-Report, Feature-Vorschlag oder Tipp zur Verbesserung.
+
+- **GitHub Issues**: [Bug-Reports und Feature-Requests](https://github.com/JonKazama-Hellion/hellion-power-tool/issues)
+- **Website**: [hellion-media.de](https://hellion-media.de)
+- **Projekt**: [hellion-initiative.online](https://hellion-initiative.online)
+
+---
+
+Letzte Aktualisierung: v7.2.0.0 "Heimdall" — 2026-03-15

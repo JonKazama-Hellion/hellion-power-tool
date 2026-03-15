@@ -77,7 +77,7 @@ function Invoke-RestorePointManager {
 }
 
 function New-SystemRestorePoint {
-    param([string]$Description = "Hellion Tool v7.1.5.4 Baldur")
+    param([string]$Description = "Hellion Tool v7.2.0.0 Heimdall")
     
     Write-Log "`n[*] --- WIEDERHERSTELLUNGSPUNKT ---" -Color Cyan
     
@@ -89,7 +89,7 @@ function New-SystemRestorePoint {
     try {
         Write-Log "[*] Erstelle Wiederherstellungspunkt..." -Color Blue
         
-        # Pruefe ob System Restore verfuegbar ist
+        # Prüfe ob System Restore verfügbar ist
         if (Get-Command Get-ComputerRestorePoint -ErrorAction SilentlyContinue) {
             $restoreEnabled = Get-ComputerRestorePoint -ErrorAction SilentlyContinue
         } else {
@@ -157,7 +157,7 @@ function New-SystemRestorePoint {
         
         Add-Success "Wiederherstellungspunkt erstellt: $fullDescription"
         $script:RestorePointCreated = $true
-        Write-Log "[INFO] Bei Problemen kann das System auf diesen Punkt zurueckgesetzt werden" -Color Cyan
+        Write-Log "[INFO] Bei Problemen kann das System auf diesen Punkt zurückgesetzt werden" -Color Cyan
         
         return $true
         
@@ -243,7 +243,7 @@ function Restore-SystemToPoint {
     $restorePoints = Get-SystemRestorePoints
     
     if (-not $restorePoints -or $restorePoints.Count -eq 0) {
-        Write-Log "[ERROR] Keine Wiederherstellungspunkte verfuegbar!" -Color Red
+        Write-Log "[ERROR] Keine Wiederherstellungspunkte verfügbar!" -Color Red
         return $false
     }
     
@@ -272,12 +272,12 @@ function Restore-SystemToPoint {
         '1' {
             $latestRestore = $restorePoints | Sort-Object CreationTime -Descending | Select-Object -First 1
             
-            Write-Information "[INFO] `n[WARNUNG] Das System wird auf folgenden Punkt zurueckgesetzt:" -InformationAction Continue
+            Write-Information "[INFO] `n[WARNUNG] Das System wird auf folgenden Punkt zurückgesetzt:" -InformationAction Continue
             Write-Information "[INFO]   Beschreibung: $($latestRestore.Description)" -InformationAction Continue
             Write-Information "[INFO]   Erstellt: $($latestRestore.CreationTime)" -InformationAction Continue
-            Write-Information "[INFO] `n[WICHTIG] Alle Aenderungen seit diesem Zeitpunkt gehen verloren!" -InformationAction Continue
+            Write-Information "[INFO] `n[WICHTIG] Alle Änderungen seit diesem Zeitpunkt gehen verloren!" -InformationAction Continue
             
-            $confirm = Read-Host "`nWirklich fortfahren? [CONFIRM] (Tippe 'CONFIRM' zum Bestaetigen)"
+            $confirm = Read-Host "`nWirklich fortfahren? [CONFIRM] (Tippe 'CONFIRM' zum Bestätigen)"
             
             if ($confirm -eq 'CONFIRM') {
                 try {
@@ -305,21 +305,21 @@ function Restore-SystemToPoint {
             }
         }
         '2' {
-            Write-Information "[INFO] `nVerfuegbare Wiederherstellungspunkte:" -InformationAction Continue
+            Write-Information "[INFO] `nVerfügbare Wiederherstellungspunkte:" -InformationAction Continue
             
             for ($i = 0; $i -lt [Math]::Min(10, $restorePoints.Count); $i++) {
                 $rp = $restorePoints[$i]
                 Write-Information "[INFO]   [$($i+1)] $($rp.Description) - $($rp.CreationTime.ToString('yyyy-MM-dd HH:mm'))" -InformationAction Continue
             }
             
-            $selection = Read-Host "`nWiederherstellungspunkt waehlen [1-$([Math]::Min(10, $restorePoints.Count))]"
+            $selection = Read-Host "`nWiederherstellungspunkt wählen [1-$([Math]::Min(10, $restorePoints.Count))]"
             
             try {
                 $selectedIndex = [int]$selection - 1
                 if ($selectedIndex -ge 0 -and $selectedIndex -lt $restorePoints.Count) {
                     $selectedRestore = $restorePoints[$selectedIndex]
                     
-                    $confirm = Read-Host "`nAuf '$($selectedRestore.Description)' zuruecksetzen? [CONFIRM]"
+                    $confirm = Read-Host "`nAuf '$($selectedRestore.Description)' zurücksetzen? [CONFIRM]"
                     if ($confirm -eq 'CONFIRM') {
                         if (Get-Command Restore-Computer -ErrorAction SilentlyContinue) {
                             Restore-Computer -RestorePoint $selectedRestore.SequenceNumber -Confirm:$false
@@ -332,7 +332,7 @@ function Restore-SystemToPoint {
                     }
                 }
             } catch {
-                Write-Log "[ERROR] Ungueltige Auswahl" -Color Red
+                Write-Log "[ERROR] Ungültige Auswahl" -Color Red
             }
         }
         '3' {
@@ -354,7 +354,7 @@ function Restore-SystemToPoint {
             Write-Log "[SKIP] System-Wiederherstellung abgebrochen" -Color Gray
         }
         default {
-            Write-Log "[ERROR] Ungueltige Auswahl" -Color Red
+            Write-Log "[ERROR] Ungültige Auswahl" -Color Red
         }
     }
     
@@ -386,7 +386,7 @@ function Enable-SystemRestore {
         
         # Speicherplatz-Konfiguration (optional)
         Write-Host ""
-        Write-Host "Speicherplatz fuer System Restore konfigurieren?" -ForegroundColor Cyan
+        Write-Host "Speicherplatz für System Restore konfigurieren?" -ForegroundColor Cyan
         Write-Host ""
         Write-Host "   [1] " -ForegroundColor White -NoNewline
         Write-Host "Standard " -ForegroundColor Green -NoNewline
@@ -401,7 +401,7 @@ function Enable-SystemRestore {
         Write-Host "(10% der Festplatte)" -ForegroundColor DarkGray
         Write-Host ""
         Write-Host "   [s] " -ForegroundColor White -NoNewline
-        Write-Host "Ueberspringen" -ForegroundColor Gray
+        Write-Host "Überspringen" -ForegroundColor Gray
         Write-Host ""
         
         $spaceChoice = Read-Host "`nWahl [1-3/s]"

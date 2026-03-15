@@ -8,7 +8,7 @@ function Invoke-EnhancedAutoMode {
     Write-Host "=============================================================================" -ForegroundColor Cyan
     Write-Host "                    >>> ERWEITERTER AUTO-MODUS <<<" -ForegroundColor White
     Write-Host "=============================================================================" -ForegroundColor Cyan
-    Write-Host "Fuehrt alle empfohlenen Optimierungen automatisch durch" -ForegroundColor Yellow
+    Write-Host "Führt alle empfohlenen Optimierungen automatisch durch" -ForegroundColor Yellow
     Write-Host ""
     
     $script:AutoApproveCleanup = $true
@@ -36,7 +36,7 @@ function Invoke-EnhancedAutoMode {
     Write-Host "       ▶ Basis + CheckDisk + Netzwerk-Test + Bloatware-Check" -ForegroundColor Gray
     Write-Host ""
     Write-Host "   [3] " -ForegroundColor White -NoNewline
-    Write-Host "VOLLSTAENDIG " -ForegroundColor Red -NoNewline
+    Write-Host "VOLLSTÄNDIG " -ForegroundColor Red -NoNewline
     Write-Host "(20-30 Min)" -ForegroundColor DarkGray
     Write-Host "       ▶ Erweitert + RAM-Test + Registry-Optimierung + Treiber-Check" -ForegroundColor Gray
     Write-Host ""
@@ -100,7 +100,7 @@ function Invoke-EnhancedAutoMode {
     
     # System File Checker
     if (Get-Command Invoke-SystemFileChecker -ErrorAction SilentlyContinue) {
-        Write-Log "[*] Fuehre System File Checker aus..." -Color Blue
+        Write-Log "[*] Führe System File Checker aus..." -Color Blue
         try {
             # Automatischer SFC-Scan ohne Benutzerinteraktion
             $sfcProcess = Start-Process -FilePath "sfc.exe" -ArgumentList "/scannow" -Wait -PassThru -NoNewWindow
@@ -120,7 +120,7 @@ function Invoke-EnhancedAutoMode {
     
     # System-Bereinigung
     if (Get-Command Invoke-ComprehensiveCleanup -ErrorAction SilentlyContinue) {
-        Write-Log "[*] Fuehre System-Bereinigung aus..." -Color Blue
+        Write-Log "[*] Führe System-Bereinigung aus..." -Color Blue
         $script:TotalFreedSpace = 0
         $cleanupResult = Invoke-ComprehensiveCleanup
         if ($cleanupResult) {
@@ -140,7 +140,7 @@ function Invoke-EnhancedAutoMode {
         
         # Performance-Optimierung
         if (Get-Command Optimize-SystemPerformance -ErrorAction SilentlyContinue) {
-            Write-Log "[*] Fuehre Performance-Optimierung aus..." -Color Blue
+            Write-Log "[*] Führe Performance-Optimierung aus..." -Color Blue
             $perfResult = Optimize-SystemPerformance
             if ($perfResult) {
                 $autoResults.ActionsPerformed += "Performance-Optimierung"
@@ -154,7 +154,7 @@ function Invoke-EnhancedAutoMode {
         
         # DISM Health-Check
         if (Get-Command Invoke-DISMRepair -ErrorAction SilentlyContinue) {
-            Write-Log "[*] Fuehre DISM Health-Check aus..." -Color Blue
+            Write-Log "[*] Führe DISM Health-Check aus..." -Color Blue
             try {
                 $dismProcess = Start-Process -FilePath "dism.exe" -ArgumentList "/Online /Cleanup-Image /CheckHealth" -Wait -PassThru -NoNewWindow
                 if ($dismProcess.ExitCode -eq 0) {
@@ -173,26 +173,26 @@ function Invoke-EnhancedAutoMode {
         
         # DLL-Integrity Check
         if (Get-Command Test-DLLIntegrity -ErrorAction SilentlyContinue) {
-            Write-Log "[*] Fuehre DLL-Integritaets-Check aus..." -Color Blue
+            Write-Log "[*] Führe DLL-Integritäts-Check aus..." -Color Blue
             $dllResult = Test-DLLIntegrity
             if ($dllResult) {
-                $autoResults.ActionsPerformed += "DLL-Integritaets-Check erfolgreich"
+                $autoResults.ActionsPerformed += "DLL-Integritäts-Check erfolgreich"
                 $autoResults.SuccessfulActions++
             } else {
-                $autoResults.ActionsPerformed += "DLL-Integritaets-Check: Probleme gefunden"
+                $autoResults.ActionsPerformed += "DLL-Integritäts-Check: Probleme gefunden"
                 $autoResults.FailedActions++
             }
             $autoResults.TotalActions++
         }
     }
     
-    # Vollstaendige Optimierung (nur Modus 3)
+    # Vollständige Optimierung (nur Modus 3)
     if ($autoMode -eq 3) {
-        Write-Log "`n=== VOLLSTAENDIGE OPTIMIERUNG ===" -Color Red
+        Write-Log "`n=== VOLLSTÄNDIGE OPTIMIERUNG ===" -Color Red
         
         # Netzwerk-Test
         if (Get-Command Test-EnhancedInternetConnectivity -ErrorAction SilentlyContinue) {
-            Write-Log "[*] Fuehre Netzwerk-Test aus..." -Color Blue
+            Write-Log "[*] Führe Netzwerk-Test aus..." -Color Blue
             $networkResult = Test-EnhancedInternetConnectivity
             if ($networkResult.Overall) {
                 $autoResults.ActionsPerformed += "Netzwerk-Test erfolgreich"
@@ -250,10 +250,10 @@ function Invoke-EnhancedAutoMode {
         
         # Winget Updates prüfen
         if (Get-Command Get-WingetUpdates -ErrorAction SilentlyContinue) {
-            Write-Log "[*] Pruefe Winget Updates..." -Color Blue
+            Write-Log "[*] Prüfe Winget Updates..." -Color Blue
             $updates = Get-WingetUpdates
             if ($updates.Count -gt 0) {
-                $autoResults.ActionsPerformed += "Winget: $($updates.Count) Updates verfuegbar"
+                $autoResults.ActionsPerformed += "Winget: $($updates.Count) Updates verfügbar"
                 $autoResults.SuccessfulActions++
             } else {
                 $autoResults.ActionsPerformed += "Winget: Alle Programme aktuell"
@@ -276,7 +276,7 @@ function Invoke-EnhancedAutoMode {
         Write-Log "Freigegebener Speicher: $($autoResults.FreedSpaceMB) MB" -Color Cyan
     }
     
-    Write-Log "`nDurchgefuehrte Aktionen:" -Color Yellow
+    Write-Log "`nDurchgeführte Aktionen:" -Color Yellow
     foreach ($action in $autoResults.ActionsPerformed) {
         Write-Log "  - $action" -Color White
     }
@@ -289,7 +289,7 @@ function Invoke-EnhancedAutoMode {
     if ($autoResults.FreedSpaceMB -gt 500) {
         Write-Log "- Neustart empfohlen nach umfangreicher Bereinigung" -Color Yellow
     }
-    Write-Log "- Regelmaessige Ausfuehrung (1x Woche) empfohlen" -Color Green
+    Write-Log "- Regelmäßige Ausführung (1x Woche) empfohlen" -Color Green
     
     # Erfolgsrate berechnen
     $successRate = if ($autoResults.TotalActions -gt 0) { 
@@ -310,7 +310,7 @@ function Invoke-EnhancedAutoMode {
 
 function Invoke-QuickMode {
     Write-Log "`n[*] --- SCHNELL-MODUS ---" -Color Green
-    Write-Log "Fuehrt nur die wichtigsten Optimierungen durch (< 5 Minuten)" -Color Yellow
+    Write-Log "Führt nur die wichtigsten Optimierungen durch (< 5 Minuten)" -Color Yellow
     
     $quickStartTime = Get-Date
     $quickResults = @{
@@ -327,7 +327,7 @@ function Invoke-QuickMode {
         }
     }
     
-    Write-Log "`n[*] Fuehre Schnell-Optimierungen durch..." -Color Blue
+    Write-Log "`n[*] Führe Schnell-Optimierungen durch..." -Color Blue
     
     # 1. Temp-Dateien bereinigen (nur Basis)
     $quickResults.TotalCount++
@@ -403,7 +403,7 @@ function Invoke-QuickMode {
     Write-Log "Dauer: $quickDuration Minuten" -Color White
     Write-Log "Erfolgsrate: $quickSuccessRate% ($($quickResults.SuccessCount)/$($quickResults.TotalCount))" -Color Cyan
     
-    Write-Log "`nDurchgefuehrte Aktionen:" -Color Yellow
+    Write-Log "`nDurchgeführte Aktionen:" -Color Yellow
     foreach ($action in $quickResults.ActionsPerformed) {
         Write-Log "  - $action" -Color White
     }

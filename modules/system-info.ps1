@@ -130,7 +130,7 @@ function Test-SystemCompatibility {
     $issues = @()
     
     try {
-        # Windows-Version pruefen
+        # Windows-Version prüfen
         $osVersion = [System.Environment]::OSVersion.Version
         if ($osVersion.Major -lt 10) {
             $issues += "Windows 10/11 empfohlen (aktuell: Windows $($osVersion.Major).$($osVersion.Minor))"
@@ -139,7 +139,7 @@ function Test-SystemCompatibility {
             Write-Log "[OK] Windows-Version kompatibel" -Color Green
         }
         
-        # PowerShell-Version pruefen
+        # PowerShell-Version prüfen
         $psVersion = $PSVersionTable.PSVersion
         if ($psVersion.Major -lt 5) {
             $issues += "PowerShell 5.0+ erforderlich (aktuell: $($psVersion.Major).$($psVersion.Minor))"
@@ -148,43 +148,43 @@ function Test-SystemCompatibility {
             Write-Log "[OK] PowerShell-Version kompatibel" -Color Green
         }
         
-        # Admin-Rechte pruefen
+        # Admin-Rechte prüfen
         if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
             $issues += "Administrator-Rechte erforderlich"
             $compatible = $false
         } else {
-            Write-Log "[OK] Administrator-Rechte verfuegbar" -Color Green
+            Write-Log "[OK] Administrator-Rechte verfügbar" -Color Green
         }
         
-        # Speicherplatz pruefen
+        # Speicherplatz prüfen
         $systemDrive = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DeviceID -eq "$env:SystemDrive" }
         $freeSpaceGB = [math]::Round($systemDrive.FreeSpace / 1GB, 2)
         if ($freeSpaceGB -lt 5) {
-            $issues += "Mindestens 5 GB freier Speicher empfohlen (verfuegbar: $freeSpaceGB GB)"
+            $issues += "Mindestens 5 GB freier Speicher empfohlen (verfügbar: $freeSpaceGB GB)"
             $compatible = $false
         } else {
             Write-Log "[OK] Ausreichend freier Speicher ($freeSpaceGB GB)" -Color Green
         }
         
-        # Antivirus-Status pruefen
+        # Antivirus-Status prüfen
         try {
             $antivirusStatus = Test-AntivirusStatus
             if ($antivirusStatus.RealTimeProtectionEnabled) {
                 Write-Log "[INFO] Echtzeit-Antivirus aktiv - Langsamere Operationen moeglich" -Color Yellow
             }
         } catch {
-            Write-Log "[INFO] Antivirus-Status konnte nicht geprueft werden" -Color Gray
+            Write-Log "[INFO] Antivirus-Status konnte nicht geprüft werden" -Color Gray
         }
         
     } catch {
-        Add-Error "Kompatibilitaets-Pruefung fehlgeschlagen" $_.Exception.Message
+        Add-Error "Kompatibilitäts-Prüfung fehlgeschlagen" $_.Exception.Message
         return $false
     }
     
     if ($compatible) {
-        Write-Log "`n[OK] System ist vollstaendig kompatibel!" -Color Green
+        Write-Log "`n[OK] System ist vollständig kompatibel!" -Color Green
     } else {
-        Write-Log "`n[WARNING] Kompatibilitaets-Probleme gefunden:" -Color Red
+        Write-Log "`n[WARNING] Kompatibilitäts-Probleme gefunden:" -Color Red
         foreach ($issue in $issues) {
             Write-Log "  - $issue" -Color Yellow
         }
@@ -194,7 +194,7 @@ function Test-SystemCompatibility {
 }
 
 function Test-AntivirusStatus {
-    Write-Log "`n[*] --- ANTIVIRUS-STATUS PRUEFUNG ---" -Color Cyan
+    Write-Log "`n[*] --- ANTIVIRUS-STATUS PRÜFUNG ---" -Color Cyan
     
     $antivirusInfo = @{
         ProductName = "Unbekannt"
@@ -211,7 +211,7 @@ function Test-AntivirusStatus {
             foreach ($product in $antivirusProducts) {
                 $productState = $product.productState
                 
-                # Bit-Manipulation fuer Status-Interpretation
+                # Bit-Manipulation für Status-Interpretation
                 $realTimeProtection = ($productState -band 0x1000) -ne 0
                 $upToDate = ($productState -band 0x10) -eq 0
                 
@@ -244,7 +244,7 @@ function Test-AntivirusStatus {
             $antivirusInfo.ProductName = $antivirusProducts[0].displayName
             
         } else {
-            # Fallback: Windows Defender pruefen
+            # Fallback: Windows Defender prüfen
             try {
                 $defenderStatus = Get-MpPreference -ErrorAction SilentlyContinue
                 if ($defenderStatus) {
@@ -277,13 +277,13 @@ function Get-DetailedDriverStatus {
     $driverIssues = @()
     
     try {
-        # Problemgeraete aus Device Manager
+        # Problemgeräte aus Device Manager
         $problemDevices = Get-CimInstance -ClassName Win32_PnPEntity | Where-Object { 
             $_.ConfigManagerErrorCode -ne 0 -and $null -ne $_.ConfigManagerErrorCode 
         }
         
         if ($problemDevices -and $problemDevices.Count -gt 0) {
-            Write-Log "[WARNING] Problematische Geraete gefunden:" -Color Red
+            Write-Log "[WARNING] Problematische Geräte gefunden:" -Color Red
             
             foreach ($device in $problemDevices) {
                 $errorCode = $device.ConfigManagerErrorCode
@@ -305,7 +305,7 @@ function Get-DetailedDriverStatus {
                 }
             }
         } else {
-            Write-Log "[OK] Keine problematischen Geraete gefunden" -Color Green
+            Write-Log "[OK] Keine problematischen Geräte gefunden" -Color Green
         }
         
         # Veraltete Treiber suchen (vereinfacht)
@@ -316,7 +316,7 @@ function Get-DetailedDriverStatus {
             try {
                 $driverDate = $driver.InstallDate
                 if ($driverDate) {
-                    # CIM gibt DateTime direkt zurueck, WMI gibt String zurueck
+                    # CIM gibt DateTime direkt zurück, WMI gibt String zurück
                     $installDate = $null
                     if ($driverDate -is [DateTime]) {
                         $installDate = $driverDate

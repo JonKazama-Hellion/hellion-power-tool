@@ -1,5 +1,5 @@
 ﻿# ===================================================================
-# HELLION POWER TOOL - MODULAR VERSION v7.1.5.4 "Baldur"
+# HELLION POWER TOOL - MODULAR VERSION v7.2.0.0 "Heimdall"
 # Main Entry Point - Loads all modules and provides menu interface
 # ===================================================================
 <#
@@ -59,9 +59,9 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     Write-Information "`n================================================================" -InformationAction Continue
     Write-Error "ADMIN-RECHTE ERFORDERLICH" -ErrorAction Continue
     Write-Information "================================================================" -InformationAction Continue
-    Write-Information "`nDieses Tool benoetigt Administrator-Rechte fuer System-Aenderungen." -InformationAction Continue
+    Write-Information "`nDieses Tool benötigt Administrator-Rechte fuer System-Änderungen." -InformationAction Continue
     Write-Information "Es wird nun ein Neustart mit erhoehten Rechten angefordert." -InformationAction Continue
-    Write-Information "`nBitte bestaetigen Sie die folgende Windows-Sicherheitsabfrage (UAC)." -InformationAction Continue
+    Write-Information "`nBitte bestätigen Sie die folgende Windows-Sicherheitsabfrage (UAC)." -InformationAction Continue
     Write-Warning "Neues Admin-Fenster wird geoeffnet..."
     
     # Baue Argument-String mit allen ursprÃ¼nglichen Parametern
@@ -110,7 +110,7 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
         Write-Host "LOESUNG:" -ForegroundColor Green
         Write-Host "  1. Tool erneut starten" -ForegroundColor White
         Write-Host "  2. Bei der UAC-Abfrage auf 'Ja' klicken" -ForegroundColor White
-        Write-Host "  3. Oder: Rechtsklick auf START.bat -> Als Administrator ausfuehren" -ForegroundColor White
+        Write-Host "  3. Oder: Rechtsklick auf START.bat -> Als Administrator ausführen" -ForegroundColor White
         Write-Host ""
         Write-Host "[INFO] Tool wird beendet. Druecke eine beliebige Taste..." -ForegroundColor Yellow
         
@@ -157,7 +157,7 @@ $script:ModulesPath = Join-Path $script:RootPath "modules"
 
 Write-Host ""
 Write-Host "  ================================================================" -ForegroundColor Green
-Write-Host "         HELLION POWER TOOL v7.1.5.4 'Baldur'                    " -ForegroundColor White
+Write-Host "         HELLION POWER TOOL v7.2.0.0 'Heimdall'                    " -ForegroundColor White
 Write-Host "         Hellion Online Media                                    " -ForegroundColor DarkGray
 Write-Host "  ================================================================" -ForegroundColor Green
 Write-Host ""
@@ -185,7 +185,7 @@ if (Test-Path $script:ModulesPath) {
 # Initialize logging
 Initialize-Logging -LogDirectory "$env:TEMP\HellionPowerTool" -DetailedLogging
 
-Write-Log "Hellion Power Tool v7.1.5.4 'Baldur' started (Modular version)" -Color Cyan
+Write-Log "Hellion Power Tool v7.2.0.0 'Heimdall' started (Modular version)" -Color Cyan
 Write-Log "Modules loaded from: $script:ModulesPath" -Color Gray
 
 # Load configuration
@@ -248,11 +248,11 @@ if ($ForceDebugLevel -ge 0) {
     Clear-Host
     Write-Host ""
     Write-Host "  ================================================================" -ForegroundColor Green
-    Write-Host "         HELLION POWER TOOL v7.1.5.4 'Baldur'                    " -ForegroundColor White
+    Write-Host "         HELLION POWER TOOL v7.2.0.0 'Heimdall'                    " -ForegroundColor White
     Write-Host "         Hellion Online Media                                    " -ForegroundColor DarkGray
     Write-Host "  ================================================================" -ForegroundColor Green
     Write-Host ""
-    Write-Host "  Modus waehlen:" -ForegroundColor Green
+    Write-Host "  Modus wählen:" -ForegroundColor Green
     Write-Host "   [0] Normal-Modus    " -ForegroundColor White -NoNewline
     Write-Host "(Standard)" -ForegroundColor DarkGray
     Write-Host "   [1] Debug-Modus     " -ForegroundColor White -NoNewline
@@ -278,7 +278,7 @@ function Show-MainMenu {
     Clear-Host
     Write-Host ""
     Write-Host "  ================================================================" -ForegroundColor Green
-    Write-Host "         HELLION POWER TOOL v7.1.5.4 'Baldur'                    " -ForegroundColor White
+    Write-Host "         HELLION POWER TOOL v7.2.0.0 'Heimdall'                    " -ForegroundColor White
     Write-Host "         Hellion Online Media — System-Wartungstool              " -ForegroundColor DarkGray
     Write-Host "  ================================================================" -ForegroundColor Green
     Write-Host ""
@@ -331,7 +331,7 @@ function Show-MainMenu {
     Write-Host "(Unerwuenschte Software)" -ForegroundColor DarkGray
     Write-Host "   [W] Winget-Updates           " -ForegroundColor White -NoNewline
     Write-Host "(Software aktualisieren)" -ForegroundColor DarkGray
-    Write-Host "   [R] Netzwerk zuruecksetzen   " -ForegroundColor White -NoNewline
+    Write-Host "   [R] Netzwerk zurücksetzen   " -ForegroundColor White -NoNewline
     Write-Host "(Bei Verbindungsproblemen)" -ForegroundColor DarkGray
     Write-Host ""
 
@@ -341,8 +341,8 @@ function Show-MainMenu {
     Write-Host "(Detaillierte Analyse)" -ForegroundColor DarkGray
     Write-Host "   [S] Safe Adblock             " -ForegroundColor White -NoNewline
     Write-Host "(DNS-Werbeblocker)" -ForegroundColor DarkGray
-    Write-Host "   [D] DLL-Integritaets-Check   " -ForegroundColor White -NoNewline
-    Write-Host "(System-Dateien pruefen)" -ForegroundColor DarkGray
+    Write-Host "   [D] DLL-Integritäts-Check   " -ForegroundColor White -NoNewline
+    Write-Host "(System-Dateien prüfen)" -ForegroundColor DarkGray
     Write-Host ""
 
     Write-Host "  ----------------------------------------------------------------" -ForegroundColor DarkGray
@@ -1631,13 +1631,13 @@ do {
             if (Get-Command Get-WingetUpdates -ErrorAction SilentlyContinue) {
                 $updates = Get-WingetUpdates
                 if ($updates.Count -gt 0) {
-                    Write-Information "`n$($updates.Count) Updates verfuegbar. Alle installieren? [j/n]" -InformationAction Continue
+                    Write-Information "`n$($updates.Count) Updates verfügbar. Alle installieren? [j/n]" -InformationAction Continue
                     $installChoice = Read-Host
                     if ($installChoice -eq 'j' -or $installChoice -eq 'J') {
                         $null = Install-WingetUpdates  # Suppress return value output
                     }
                 } else {
-                    Write-Information "`nKeine Winget-Updates verfuegbar." -InformationAction Continue
+                    Write-Information "`nKeine Winget-Updates verfügbar." -InformationAction Continue
                 }
             } else {
                 Write-Error "ERROR: Winget functions not found." -ErrorAction Continue
@@ -1953,7 +1953,7 @@ do {
                     Write-Information "[INFO] Zurueck zum Hauptmenu..." -InformationAction Continue
                 }
                 default {
-                    Write-Error "[ERROR] Ungueltige Auswahl: $memChoice" -ErrorAction Continue
+                    Write-Error "[ERROR] Ungültige Auswahl: $memChoice" -ErrorAction Continue
                 }
             }
             if ($memChoice.ToLower() -ne 'x') {
@@ -1973,8 +1973,8 @@ do {
         '16' {
             Write-Information "`n[*] WIEDERHERSTELLUNGSPUNKT OPTIONEN:" -InformationAction Continue
             Write-Information "  [1] Neuen Wiederherstellungspunkt erstellen" -InformationAction Continue
-            Write-Information "  [2] Verfuegbare Wiederherstellungspunkte anzeigen" -InformationAction Continue
-            Write-Information "  [3] System auf Wiederherstellungspunkt zuruecksetzen" -InformationAction Continue
+            Write-Information "  [2] VerfÃ¼gbare Wiederherstellungspunkte anzeigen" -InformationAction Continue
+            Write-Information "  [3] System auf Wiederherstellungspunkt zurücksetzen" -InformationAction Continue
             Write-Information "  [4] System Restore aktivieren" -InformationAction Continue
             Write-Information "  [x] Zurueck zum Hauptmenu" -InformationAction Continue
             
@@ -2012,7 +2012,7 @@ do {
                     Write-Information "Zurueck zum Hauptmenu..." -InformationAction Continue
                 }
                 default {
-                    Write-Information "Ungueltige Auswahl." -InformationAction Continue
+                    Write-Information "Ungültige Auswahl." -InformationAction Continue
                 }
             }
             Write-Information "`nPress Enter to continue..." -InformationAction Continue
@@ -2029,10 +2029,10 @@ do {
         }
         '18' {
             Write-Information "`n[*] WINGET OPTIONEN:" -InformationAction Continue
-            Write-Information "  [1] Verfuegbare Updates anzeigen" -InformationAction Continue
+            Write-Information "  [1] VerfÃ¼gbare Updates anzeigen" -InformationAction Continue
             Write-Information "  [2] Alle Updates installieren" -InformationAction Continue
             Write-Information "  [3] Software suchen" -InformationAction Continue
-            Write-Information "  [4] Winget-Status pruefen" -InformationAction Continue
+            Write-Information "  [4] Winget-Status prüfen" -InformationAction Continue
             Write-Information "  [x] Zurueck zum Hauptmenu" -InformationAction Continue
             
             $wingetChoice = Read-Host "`nWahl [1-4/x]"
@@ -2070,7 +2070,7 @@ do {
                     Write-Information "Zurueck zum Hauptmenu..." -InformationAction Continue
                 }
                 default {
-                    Write-Information "Ungueltige Auswahl." -InformationAction Continue
+                    Write-Information "Ungültige Auswahl." -InformationAction Continue
                 }
             }
             Write-Information "`nPress Enter to continue..." -InformationAction Continue
@@ -2143,7 +2143,7 @@ do {
             Read-Host
         }
         default {
-            Write-Information "Ungueltige Auswahl. Bitte waehlen Sie eine gueltige Option." -InformationAction Continue
+            Write-Information "Ungültige Auswahl. Bitte wählen Sie eine gültige Option." -InformationAction Continue
             Start-Sleep -Seconds 2
         }
     }

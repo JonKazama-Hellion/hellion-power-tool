@@ -1,111 +1,102 @@
 # Security Policy
 
-## 🛡️ Security Information
+## Sicherheitsinformationen
 
-### Legitimate Software Declaration
+### Legitime Software-Deklaration
 
-**Hellion Power Tool** is a legitimate Windows system maintenance utility designed for:
+**Hellion Power Tool** ist ein legitimes Windows System-Wartungstool, entwickelt von [Hellion Online Media](https://hellion-media.de). Es dient ausschließlich der lokalen Systemwartung und -diagnose:
 
-- System cleanup and optimization
-- Performance diagnostics
-- Registry optimization (user-confirmed changes to UI/performance settings)
-- Network connectivity testing
-- Memory diagnostic scheduling
-- Self-update via GitHub (git clone)
+- System-Bereinigung und Performance-Optimierung
+- Hardware- und Software-Diagnose
+- Registry-Optimierung (nur nach Benutzerbestätigung)
+- Netzwerk-Konnektivitätstests (lokal)
+- Wiederherstellungspunkt-Verwaltung
+- Automatische Updates via GitHub (Git Clone)
 
-## ⚠️ False Positive Warnings
-
-### Windows Defender Detection
-
-This tool may trigger Windows Defender false positives as **"Trojan:Script/Wacatac.B!ml"** due to:
-
-- ✅ **PowerShell system administration functions** (legitimate)
-- ✅ **UAC elevation requests** (user-approved)
-- ✅ **Registry optimization** (user-confirmed UI/performance tweaks)
-- ✅ **Network connectivity testing** (local network only)
-
-**This is a FALSE POSITIVE.** The tool is open source and safe.
-
-### Mitigation Steps
-
-1. **Review the source code** - All code is available for inspection
-2. **Add to Defender exclusions** - See [DEFENDER-WHITELIST.md](DEFENDER-WHITELIST.md)
-3. **Use signed releases** when available
-4. **Report false positives** to Microsoft if needed
-
-## 🔒 Security Features
-
-### What this tool DOES
-
-- ✅ Performs standard Windows maintenance tasks
-- ✅ Requests explicit user confirmation for system changes
-- ✅ Uses only built-in Windows utilities
-- ✅ Operates locally (remote connections only for connectivity tests and GitHub update-checks)
-- ✅ Provides detailed logging of all operations
-
-### What this tool DOES NOT do
-
-- ❌ Download or execute remote code (updates are user-confirmed git clones from official repo)
-- ❌ Access personal data or credentials  
-- ❌ Modify system files without user consent
-- ❌ Communicate with external servers (except connectivity tests and GitHub update-checks)
-- ❌ Install additional software without explicit user action
-- ❌ Contain any malicious payload
-
-## 🐛 Reporting Security Vulnerabilities
-
-### For Security Issues
-
-- **Email**: [Create GitHub Issue with "Security" label]
-- **Response Time**: 48-72 hours
-- **Disclosure**: Coordinated disclosure preferred
-
-### For False Positive Reports
-
-- **GitHub Issues**: [Create issue with "false-positive" label]
-- **Microsoft**: Report to Windows Defender team
-- **Include**: Full error message and context
-
-## 🏆 Security Best Practices
-
-### For Users
-
-1. **Download only from official sources** (GitHub releases)
-2. **Verify file hashes** when provided
-3. **Use signed versions** when available
-4. **Read the code** before running (it's open source!)
-
-### For Developers
-
-1. **Code review** all contributions
-2. **Static analysis** on all commits  
-3. **Dependency scanning** for vulnerabilities
-4. **Regular security updates**
-
-## 📋 Security Audit Trail
-
-### v7.1.3 "Fenrir-Update" Security Improvements
-
-- **Anti-false-positive optimizations** (removed suspicious patterns)
-- **Enhanced documentation** for static analysis tools
-- **Code signing preparation** for trusted execution
-- **Improved error handling** and user confirmations
-
-### Ongoing Security Measures
-
-- **Regular dependency updates**
-- **Community code review**
-- **Automated security scanning** (GitHub CodeQL)
-- **Transparent development process**
+Der vollständige Quellcode ist Open Source und jederzeit einsehbar.
 
 ---
 
-## 📞 Contact
+## Windows Defender False Positive
 
-For security-related questions or concerns:
+### Das Problem
 
-- **GitHub Issues**: [Repository Issues Page]
-- **Security Label**: Tag issues with `security` label
-- **Response Policy**: Security issues prioritized within 48 hours
+Dieses Tool kann von Windows Defender als **"Trojan:Script/Wacatac.B!ml"** erkannt werden. Das ist ein **False Positive** — keine echte Bedrohung.
 
-Last Updated: 2026-03-15
+Die heuristische Erkennung reagiert auf Muster, die bei administrativen PowerShell-Tools unvermeidbar sind:
+
+- PowerShell-Systemverwaltungsfunktionen (legitim)
+- UAC-Elevation für Admin-Rechte (benutzerbestätigt)
+- Registry-Analyse (nur Lese-Zugriff + bestätigte Änderungen)
+- Netzwerk-Konnektivitätstests (nur lokal)
+
+### Gegenmaßnahmen
+
+1. **Quellcode prüfen** — Der gesamte Code ist öffentlich einsehbar
+2. **Defender-Ausnahme hinzufügen** — Anleitung in [DEFENDER-WHITELIST.md](docs/DEFENDER-WHITELIST.md)
+3. **Nur von offiziellen Quellen laden** — GitHub Repository oder [hellion-media.de](https://hellion-media.de/hellion-power-tool)
+
+---
+
+## Was dieses Tool tut
+
+- Führt Standard-Windows-Wartungsaufgaben aus
+- Fordert explizite Benutzerbestätigung vor Systemänderungen
+- Verwendet ausschließlich eingebaute Windows-Werkzeuge
+- Arbeitet lokal (Netzwerkzugriff nur für Konnektivitätstests und GitHub-Updates)
+- Protokolliert alle Operationen in Log-Dateien
+
+## Was dieses Tool nicht tut
+
+- Lädt keinen fremden Code herunter oder aus (Updates sind Git Clones vom offiziellen Repository)
+- Greift nicht auf persönliche Daten oder Anmeldeinformationen zu
+- Ändert keine Systemdateien ohne Benutzerbestätigung
+- Kommuniziert nicht mit externen Servern (außer Konnektivitätstests und GitHub-Updates)
+- Installiert keine zusätzliche Software ohne explizite Benutzeraktion
+- Enthält keinen schädlichen Code
+
+---
+
+## Sicherheitslücken melden
+
+Ich nehme Sicherheit ernst. Falls du eine Schwachstelle findest:
+
+- **GitHub Issues**: Issue mit dem Label `security` erstellen
+- **E-Mail**: [kontakt@hellion-media.de](mailto:kontakt@hellion-media.de)
+- **Reaktionszeit**: 48–72 Stunden
+- **Offenlegung**: Koordinierte Offenlegung bevorzugt
+
+### False-Positive melden
+
+- **GitHub Issues**: Issue mit dem Label `false-positive` erstellen
+- **Microsoft**: Direkt an das Windows Defender Team melden
+- **Bitte mitschicken**: Vollständige Fehlermeldung und Kontext
+
+---
+
+## Sicherheitsmaßnahmen
+
+### Für Benutzer
+
+1. Nur von offiziellen Quellen herunterladen — [GitHub](https://github.com/JonKazama-Hellion/hellion-power-tool) oder [hellion-media.de](https://hellion-media.de/hellion-power-tool)
+2. Bei Zweifeln den Quellcode vor der Ausführung prüfen
+3. Das Tool regelmäßig aktualisieren
+
+### Laufende Maßnahmen
+
+- PSScriptAnalyzer auf allen Commits
+- Defender-Kompatibilitätsprüfung in CI/CD
+- Transparenter Entwicklungsprozess auf GitHub
+- Regelmäßige Code-Reviews
+
+---
+
+## Kontakt
+
+Bei sicherheitsbezogenen Fragen:
+
+- **Website**: [hellion-media.de](https://hellion-media.de)
+- **GitHub**: [Repository Issues](https://github.com/JonKazama-Hellion/hellion-power-tool/issues)
+- **E-Mail**: [kontakt@hellion-media.de](mailto:kontakt@hellion-media.de)
+
+Letzte Aktualisierung: 2026-03-15 — Hellion Power Tool v7.2.0.0 "Heimdall"

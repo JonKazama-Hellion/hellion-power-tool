@@ -112,7 +112,7 @@ function Install-WingetIfMissing {
                 }
             } catch {
                 Write-Log "[ERROR] PowerShell-Installation fehlgeschlagen: $($_.Exception.Message)" -Color Red
-                Write-Log "[INFO] Verwende Option 1 oder 2 fuer manuelle Installation" -Color Yellow
+                Write-Log "[INFO] Verwende Option 1 oder 2 für manuelle Installation" -Color Yellow
                 return $false
             }
         }
@@ -121,31 +121,31 @@ function Install-WingetIfMissing {
             return $false
         }
         default {
-            Write-Log "[ERROR] Ungueltige Auswahl" -Color Red
+            Write-Log "[ERROR] Ungültige Auswahl" -Color Red
             return $false
         }
     }
 }
 
 function Get-WingetUpdates {
-    Write-Log "`n[*] --- WINGET UPDATE-PRUEFUNG ---" -Color Cyan
-    Write-Log "Suche nach verfuegbaren Software-Updates..." -Color Yellow
+    Write-Log "`n[*] --- WINGET UPDATE-PRÜFUNG ---" -Color Cyan
+    Write-Log "Suche nach verfügbaren Software-Updates..." -Color Yellow
     
     # Winget-Verfügbarkeits-Check
     try {
         $null = & winget --version 2>$null
         if ($LASTEXITCODE -ne 0) {
-            Write-Log "[WARNING] Winget nicht verfuegbar" -Color Yellow
+            Write-Log "[WARNING] Winget nicht verfügbar" -Color Yellow
             return @()
         }
-        Write-Log "[OK] Winget verfuegbar" -Color Green
+        Write-Log "[OK] Winget verfügbar" -Color Green
     } catch {
-        Write-Log "[WARNING] Winget nicht verfuegbar" -Color Yellow
+        Write-Log "[WARNING] Winget nicht verfügbar" -Color Yellow
         return @()
     }
     
     try {
-        Write-Log "[*] Fuehre winget upgrade aus..." -Color Blue
+        Write-Log "[*] Führe winget upgrade aus..." -Color Blue
         
         # Einfachster Ansatz - direkter winget upgrade Aufruf
         $wingetResult = & winget upgrade 2>&1 | Out-String
@@ -255,7 +255,7 @@ function Get-WingetUpdates {
         
         # Zeige Ergebnis
         if ($updateCount -gt 0) {
-            Write-Log "[INFO] $updateCount Updates verfuegbar:" -Color Yellow
+            Write-Log "[INFO] $updateCount Updates verfügbar:" -Color Yellow
             
             # Zeige alle gefundenen Update-Namen
             if ($foundUpdates.Count -gt 0) {
@@ -291,7 +291,7 @@ function Get-WingetUpdates {
         }
         
     } catch {
-        Write-Log "[ERROR] Winget-Update-Pruefung fehlgeschlagen: $($_.Exception.Message)" -Color Red
+        Write-Log "[ERROR] Winget-Update-Prüfung fehlgeschlagen: $($_.Exception.Message)" -Color Red
         return @()
     }
 }
@@ -301,17 +301,17 @@ function Install-WingetUpdates {
     
     # Einfacher Check: Get-WingetUpdates gibt jetzt nur Array mit Anzahl zurück
     if (-not $availableUpdates -or $availableUpdates.Count -eq 0) {
-        Write-Log "[INFO] Keine Updates verfuegbar oder Winget nicht verfuegbar" -Color Green
+        Write-Log "[INFO] Keine Updates verfügbar oder Winget nicht verfügbar" -Color Green
         return $true
     }
     
     $updateCount = $availableUpdates.Count
     Write-Host ""
-    Write-Host "[*] WINGET UPDATE-INSTALLATION ($updateCount verfuegbar):" -ForegroundColor Cyan
+    Write-Host "[*] WINGET UPDATE-INSTALLATION ($updateCount verfügbar):" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "   [1] " -ForegroundColor White -NoNewline
     Write-Host "Alle Updates installieren " -ForegroundColor Green -NoNewline
-    Write-Host "(Vollstaendig)" -ForegroundColor DarkGray
+    Write-Host "(Vollständig)" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [2] " -ForegroundColor White -NoNewline
     Write-Host "Nur wichtige Updates " -ForegroundColor Yellow -NoNewline
@@ -319,7 +319,7 @@ function Install-WingetUpdates {
     Write-Host ""
     Write-Host "   [3] " -ForegroundColor White -NoNewline
     Write-Host "Updates anzeigen " -ForegroundColor Cyan -NoNewline
-    Write-Host "(Manuell waehlen)" -ForegroundColor DarkGray
+    Write-Host "(Manuell wählen)" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [4] " -ForegroundColor White -NoNewline
     Write-Host "Einzelne Software " -ForegroundColor Magenta -NoNewline
@@ -343,7 +343,7 @@ function Install-WingetUpdates {
         
         switch ($choice) {
             '1' {
-                Write-Log "[*] Installiere alle verfuegbaren Updates..." -Color Blue
+                Write-Log "[*] Installiere alle verfügbaren Updates..." -Color Blue
                 Write-Log "[INFO] Dies kann mehrere Minuten dauern..." -Color Gray
                 
                 # Alle Updates mit einem Befehl installieren
@@ -431,7 +431,7 @@ function Install-WingetUpdates {
                                     $failed++
                                 }
                             } else {
-                                Write-Log "  [SKIP] Ungueltige Nummer: $num" -Color Yellow
+                                Write-Log "  [SKIP] Ungültige Nummer: $num" -Color Yellow
                                 $skipped++
                             }
                         } catch {
@@ -498,7 +498,7 @@ function Search-WingetSoftware {
     param([string]$SearchTerm = "")
     
     if (-not (Test-WingetAvailability)) {
-        Write-Log "[ERROR] Winget nicht verfuegbar" -Color Red
+        Write-Log "[ERROR] Winget nicht verfügbar" -Color Red
         return @()
     }
     

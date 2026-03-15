@@ -36,18 +36,15 @@ simple-launcher.bat 2        # Developer-Modus
 
 - ✅ **Git Auto-Installation** - Installiert Git automatisch via winget
 - ✅ **Shallow Clone** - Effizienter `--depth 1` Download von GitHub
-- ✅ **Codename-Whitelist** - Bekannte Releases (Alpha → Odin)
-- ✅ **Intelligente Update-Logik** - Datum + Version-basierte Entscheidungen
-- ✅ **Crash-Safe** - Robuste Behandlung für v7.1.0/7.1.1 → v7.1.4 Updates
-
-**Unterstützte Codenamen** (chronologisch):
-`Alpha` → `Beta` → `Gamma` → `Delta` → `Epsilon` → `Kazama` → `Beleandis` → `Monkey` → `Moon` → `Moon-Bugfix` → `Fenrir` → `Fenrir-Update` → `Odin`
+- ✅ **Timestamp-basierter Vergleich** - 14-stelliger Timestamp für präzise Versionierung
+- ✅ **Intelligente Update-Logik** - Timestamp + Version-basierte Entscheidungen
+- ✅ **Auto-Backup** - Automatisches Backup vor Update-Installation
 
 **Update-Entscheidung**:
 
-- **UPDATE**: Wenn GitHub-Datum neuer als lokales Datum
-- **SKIP**: Bei unbekannten Codenamen (Dev-Versionen)
-- **FALLBACK**: Version-basiert bei ungültigen Daten
+- **UPDATE**: Wenn GitHub-Version oder Timestamp neuer als lokal
+- **HOTFIX**: Gleiche Version aber neuerer Timestamp
+- **SKIP**: Lokale Version ist neuer als GitHub
 
 ---
 
@@ -158,4 +155,4 @@ Für Entwickler und Tester:
 
 ---
 
-Letzte Aktualisierung: 2025-09-09 - Hellion Power Tool v7.1.5.3 "Baldur"
+Letzte Aktualisierung: 2026-03-15 - Hellion Power Tool v7.2.0.0 "Heimdall"

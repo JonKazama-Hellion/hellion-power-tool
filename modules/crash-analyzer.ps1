@@ -78,7 +78,7 @@ function Get-SystemCrashAnalysis {
         "0x0000003D" = "INTERRUPT_EXCEPTION_NOT_HANDLED - Hardware"
         "0x00000050" = "PAGE_FAULT_IN_NONPAGED_AREA - RAM/Treiber"
         "0x0000007E" = "SYSTEM_THREAD_EXCEPTION_NOT_HANDLED - Treiberproblem"
-        "0x0000007F" = "UNEXPECTED_KERNEL_MODE_TRAP - Hardware/Uebertaktung"
+        "0x0000007F" = "UNEXPECTED_KERNEL_MODE_TRAP - Hardware/Übertaktung"
         "0x00000116" = "VIDEO_TDR_ERROR - Grafiktreiber-Problem"
         "0x00000124" = "WHEA_UNCORRECTABLE_ERROR - Hardware-Fehler"
         "0x0000009F" = "DRIVER_POWER_STATE_FAILURE - Energieverwaltung"
@@ -89,13 +89,13 @@ function Get-SystemCrashAnalysis {
     
     $Solutions = @{
         "0x0000000A" = "Treiber aktualisieren, RAM testen (MemTest86)"
-        "0x0000001A" = "RAM austauschen, Speicher-Diagnose ausfuehren"
+        "0x0000001A" = "RAM austauschen, Speicher-Diagnose ausführen"
         "0x0000003B" = "Grafik-/Netzwerktreiber aktualisieren"
-        "0x0000007E" = "Alle Treiber aktualisieren, Hardware pruefen"
-        "0x0000007F" = "Uebertaktung zuruecksetzen, Hardware testen"
+        "0x0000007E" = "Alle Treiber aktualisieren, Hardware prüfen"
+        "0x0000007F" = "Übertaktung zurücksetzen, Hardware testen"
         "0x00000116" = "Grafiktreiber neu installieren, GPU testen"
         "0x00000124" = "Hardware-Check: CPU, RAM, Mainboard, Netzteil"
-        "0x0000009F" = "Energieeinstellungen pruefen, Treiber aktualisieren"
+        "0x0000009F" = "Energieeinstellungen prüfen, Treiber aktualisieren"
     }
     
     try {
@@ -183,10 +183,10 @@ function Get-SystemCrashAnalysis {
                 Sort-Object TimeGenerated -Descending | Select-Object -First 5
                 
             if ($ReliabilityData) {
-                Write-Information "[INFO]     [OK] $($ReliabilityData.Count) Reliability-Eintraege gefunden" -InformationAction Continue
+                Write-Information "[INFO]     [OK] $($ReliabilityData.Count) Reliability-Einträge gefunden" -InformationAction Continue
             }
         } catch {
-            Write-Information "[INFO]     [INFO] Reliability-Daten nicht verfuegbar" -InformationAction Continue
+            Write-Information "[INFO]     [INFO] Reliability-Daten nicht verfügbar" -InformationAction Continue
         }
         
         # 4. Analyse-Ausgabe
@@ -260,7 +260,7 @@ function Get-SystemCrashAnalysis {
                             if ($cpuVendor -eq "Intel") {
                                 $enhancedSolution += " | Intel Processor Diagnostic Tool verwenden"
                             } elseif ($cpuVendor -eq "AMD") {
-                                $enhancedSolution += " | AMD Ryzen Master zuruecksetzen"
+                                $enhancedSolution += " | AMD Ryzen Master zurücksetzen"
                             }
                         }
                         
@@ -274,7 +274,7 @@ function Get-SystemCrashAnalysis {
                             }
                         }
                         
-                        Write-Information "[INFO]     Loesung: $enhancedSolution" -InformationAction Continue
+                        Write-Information "[INFO]     Lösung: $enhancedSolution" -InformationAction Continue
                     }
                 }
                 
@@ -333,7 +333,7 @@ function Get-SystemCrashAnalysis {
                 Write-Information "[INFO] 💡 Empfehlung: Computer bis zur Reparatur minimal nutzen" -InformationAction Continue
             } elseif ($RecentCrashes.Count -gt 2) {
                 Write-Information "[INFO] [WARNING] $($RecentCrashes.Count) von $TotalCrashes Crashes in den letzten 7 Tagen" -InformationAction Continue
-                Write-Information "[INFO] Empfehlung: Sofortige Hardware-/Treiber-Pruefung erforderlich" -InformationAction Continue
+                Write-Information "[INFO] Empfehlung: Sofortige Hardware-/Treiber-Prüfung erforderlich" -InformationAction Continue
             } else {
                 Write-Information "[INFO] $TotalCrashes historische Crashes, keine aktuellen Probleme" -InformationAction Continue
             }
@@ -345,8 +345,8 @@ function Get-SystemCrashAnalysis {
         Write-Information "[INFO] [1] Windows Updates installieren" -InformationAction Continue
         Write-Information "[INFO] [2] Alle Treiber aktualisieren (besonders Grafik/Netzwerk)" -InformationAction Continue
         Write-Information "[INFO] [3] RAM mit Windows Memory Diagnostic testen" -InformationAction Continue
-        Write-Information "[INFO] [4] Festplatte mit chkdsk /f pruefen" -InformationAction Continue
-        Write-Information "[INFO] [5] Uebertaktung zuruecksetzen (falls vorhanden)" -InformationAction Continue
+        Write-Information "[INFO] [4] Festplatte mit chkdsk /f prüfen" -InformationAction Continue
+        Write-Information "[INFO] [5] Übertaktung zurücksetzen (falls vorhanden)" -InformationAction Continue
         Write-Information "[INFO] [6] Energieeinstellungen auf 'Ausgewogen' setzen" -InformationAction Continue
         
         # Hardware-Zusammenfassung
@@ -395,7 +395,7 @@ function Get-SystemCrashAnalysis {
         # Erweiterte Diagnose-Hinweise
         Write-Host ""
         Write-Host "=== ERWEITERTE DIAGNOSE ===" -ForegroundColor Cyan
-        Write-Information "[INFO] Fuer detaillierte Minidump-Analyse:" -InformationAction Continue
+        Write-Information "[INFO] Für detaillierte Minidump-Analyse:" -InformationAction Continue
         Write-Information "[INFO] - BlueScreenView (nirsoft.net)" -InformationAction Continue
         Write-Information "[INFO] - WinDbg (Microsoft Debugging Tools)" -InformationAction Continue
         Write-Information "[INFO] - WhoCrashed (resplendence.com)" -InformationAction Continue
@@ -405,12 +405,12 @@ function Get-SystemCrashAnalysis {
             $RecentCrashes = $CrashEvents | Where-Object { $_.Time -gt (Get-Date).AddDays(-7) }
             if ($RecentCrashes.Count -gt 2) {
                 Write-Host ""
-                Write-Host "=== INTERAKTIVE PROBLEMLOESUNG ===" -ForegroundColor Cyan
+                Write-Host "=== INTERAKTIVE PROBLEMLÖSUNG ===" -ForegroundColor Cyan
                 Write-Host ""
-                Write-Host "Aufgrund haeufiger Crashes werden zusaetzliche Aktionen empfohlen:" -ForegroundColor Yellow
+                Write-Host "Aufgrund haeufiger Crashes werden zusätzliche Aktionen empfohlen:" -ForegroundColor Yellow
                 Write-Host ""
                 Write-Host "   [1] " -ForegroundColor White -NoNewline
-                Write-Host "Windows Memory Diagnostic jetzt ausfuehren " -ForegroundColor Green -NoNewline
+                Write-Host "Windows Memory Diagnostic jetzt ausführen " -ForegroundColor Green -NoNewline
                 Write-Host "(RAM-Test)" -ForegroundColor DarkGray
                 Write-Host ""
                 Write-Host "   [2] " -ForegroundColor White -NoNewline
@@ -418,7 +418,7 @@ function Get-SystemCrashAnalysis {
                 Write-Host "(Dateisystem)" -ForegroundColor DarkGray
                 Write-Host ""
                 Write-Host "   [3] " -ForegroundColor White -NoNewline
-                Write-Host "DISM Health Check durchfuehren " -ForegroundColor Magenta -NoNewline
+                Write-Host "DISM Health Check durchführen " -ForegroundColor Magenta -NoNewline
                 Write-Host "(System-Image)" -ForegroundColor DarkGray
                 Write-Host ""
                 Write-Host "   [4] " -ForegroundColor White -NoNewline
@@ -426,7 +426,7 @@ function Get-SystemCrashAnalysis {
                 Write-Host "(eventvwr.msc)" -ForegroundColor DarkGray
                 Write-Host ""
                 Write-Host "   [x] " -ForegroundColor White -NoNewline
-                Write-Host "Ueberspringe zusaetzliche Aktionen" -ForegroundColor Red
+                Write-Host "Überspringe zusätzliche Aktionen" -ForegroundColor Red
                 Write-Host ""
                 
                 $actionChoice = Read-Host "`nWahl [1-4/x]"
@@ -491,7 +491,7 @@ function Get-SystemCrashAnalysis {
                             Write-Error "Ereignisanzeige konnte nicht geoeffnet werden"
                         }
                     }
-                    default { Write-Information "[INFO] Zusaetzliche Aktionen uebersprungen" -InformationAction Continue }
+                    default { Write-Information "[INFO] Zusätzliche Aktionen übersprungen" -InformationAction Continue }
                 }
             }
         }

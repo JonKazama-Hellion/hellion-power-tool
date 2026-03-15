@@ -4,7 +4,7 @@
 # ===================================================================
 
 function Test-EnhancedInternetConnectivity {
-    Write-Log "`n[*] --- ERWEITERTE INTERNET-KONNEKTIVITAETS-PRUEFUNG ---" -Color Cyan
+    Write-Log "`n[*] --- ERWEITERTE INTERNET-KONNEKTIVITAETS-PRÜFUNG ---" -Color Cyan
     
     $testResults = @{
         DNS = $false
@@ -31,7 +31,7 @@ function Test-EnhancedInternetConnectivity {
     $httpsSites = @("https://www.microsoft.com", "https://www.google.com", "https://hellion-media.de")
     $cdnSites = @("https://www.cloudflare.com", "https://cdn.discordapp.com", "https://images-na.ssl-images-amazon.com")
     
-    Write-Log "[*] Pruefe DNS-Aufloesung..." -Color Blue
+    Write-Log "[*] Prüfe DNS-Auflösung..." -Color Blue
     
     # DNS-Test
     $dnsSuccess = 0
@@ -67,14 +67,14 @@ function Test-EnhancedInternetConnectivity {
     if ($dnsSuccess -gt 0) {
         $testResults.DNS = $true
         $totalServers = $dnsServers.Count + ($dnsSuccess -lt 3 ? $fallbackDnsServers.Count : 0)
-        Write-Log "[OK] DNS-Konnektivitaet verfuegbar ($dnsSuccess Server insgesamt)" -Color Green
+        Write-Log "[OK] DNS-Konnektivität verfügbar ($dnsSuccess Server insgesamt)" -Color Green
     } else {
         $testResults.Issues += "Keine DNS-Server erreichbar (inkl. Fallbacks)"
         Write-Log "[ERROR] Keine DNS-Server erreichbar (auch Fallbacks fehlgeschlagen)!" -Color Red
     }
     
     # HTTP-Test mit System.Net.NetworkInformation (Fallback für NetTCPIP Probleme)
-    Write-Log "`n[*] Pruefe HTTP-Verbindungen..." -Color Blue
+    Write-Log "`n[*] Prüfe HTTP-Verbindungen..." -Color Blue
     $httpSuccess = 0
     
     $httpResults = @()
@@ -152,13 +152,13 @@ function Test-EnhancedInternetConnectivity {
     
     if ($httpSuccess -gt 0) {
         $testResults.HTTP = $true
-        Write-Log "[OK] HTTP-Konnektivitaet verfuegbar" -Color Green
+        Write-Log "[OK] HTTP-Konnektivität verfügbar" -Color Green
     } else {
         $testResults.Issues += "HTTP-Verbindungen fehlgeschlagen"
     }
     
     # HTTPS-Test mit System.Net.Sockets (Fallback für NetTCPIP Probleme)
-    Write-Log "`n[*] Pruefe HTTPS-Verbindungen..." -Color Blue
+    Write-Log "`n[*] Prüfe HTTPS-Verbindungen..." -Color Blue
     $httpsSuccess = 0
     
     $httpsResults = @()
@@ -244,13 +244,13 @@ function Test-EnhancedInternetConnectivity {
     
     if ($httpsSuccess -gt 0) {
         $testResults.HTTPS = $true
-        Write-Log "[OK] HTTPS-Konnektivitaet verfuegbar" -Color Green
+        Write-Log "[OK] HTTPS-Konnektivität verfügbar" -Color Green
     } else {
         $testResults.Issues += "HTTPS-Verbindungen fehlgeschlagen"
     }
     
     # CDN-Test mit System.Net.Sockets (Fallback für NetTCPIP Probleme)
-    Write-Log "`n[*] Pruefe CDN-Erreichbarkeit..." -Color Blue
+    Write-Log "`n[*] Prüfe CDN-Erreichbarkeit..." -Color Blue
     $cdnSuccess = 0
     
     foreach ($site in $cdnSites) {
@@ -329,21 +329,21 @@ function Test-EnhancedInternetConnectivity {
     
     if ($successCount -ge 3) {
         $testResults.Overall = $true
-        Write-Log "`n[EXCELLENT] Internet-Konnektivitaet ist ausgezeichnet ($successCount/4 Tests erfolgreich)" -Color Green
-        Add-Success "Internet-Konnektivitaet erfolgreich getestet"
+        Write-Log "`n[EXCELLENT] Internet-Konnektivität ist ausgezeichnet ($successCount/4 Tests erfolgreich)" -Color Green
+        Add-Success "Internet-Konnektivität erfolgreich getestet"
     } elseif ($successCount -ge 2) {
         $testResults.Overall = $true
-        Write-Log "`n[GOOD] Internet-Konnektivitaet ist gut ($successCount/4 Tests erfolgreich)" -Color Yellow
-        Add-Warning "Einige Konnektivitaets-Tests fehlgeschlagen"
+        Write-Log "`n[GOOD] Internet-Konnektivität ist gut ($successCount/4 Tests erfolgreich)" -Color Yellow
+        Add-Warning "Einige Konnektivitäts-Tests fehlgeschlagen"
     } else {
-        Write-Log "`n[POOR] Internet-Konnektivitaet hat Probleme ($successCount/4 Tests erfolgreich)" -Color Red
-        Write-Log "`nEmpfohlene Loesungsschritte:" -Color Yellow
-        Write-Log "  1. Netzwerk-Verbindung pruefen" -Color White
+        Write-Log "`n[POOR] Internet-Konnektivität hat Probleme ($successCount/4 Tests erfolgreich)" -Color Red
+        Write-Log "`nEmpfohlene Lösungsschritte:" -Color Yellow
+        Write-Log "  1. Netzwerk-Verbindung prüfen" -Color White
         Write-Log "  2. Router/Modem neustarten" -Color White
-        Write-Log "  3. DNS-Einstellungen pruefen (Google, Cloudflare, Telekom, Quad9)" -Color White
-        Write-Log "  4. Firewall-/Antivirus-Einstellungen pruefen" -Color White
+        Write-Log "  3. DNS-Einstellungen prüfen (Google, Cloudflare, Telekom, Quad9)" -Color White
+        Write-Log "  4. Firewall-/Antivirus-Einstellungen prüfen" -Color White
         
-        Add-Error "Internet-Konnektivitaet: Probleme erkannt"
+        Add-Error "Internet-Konnektivität: Probleme erkannt"
     }
     
     Write-Log ""  # Abschließende Leerzeile für bessere Formatierung
@@ -354,14 +354,14 @@ function Test-EnhancedInternetConnectivity {
 
 function Reset-NetworkConfiguration {
     Write-Log "`n[*] --- NETZWERK-KONFIGURATION ZURUECKSETZEN ---" -Color Cyan
-    Write-Log "Setzt verschiedene Netzwerk-Komponenten zurueck" -Color Yellow
+    Write-Log "Setzt verschiedene Netzwerk-Komponenten zurück" -Color Yellow
     
-    Write-Information "[INFO] `n[WARNUNG] Dies wird folgende Aktionen durchfuehren:" -InformationAction Continue
-    Write-Information "[INFO]   - TCP/IP Stack zuruecksetzen" -InformationAction Continue
+    Write-Information "[INFO] `n[WARNUNG] Dies wird folgende Aktionen durchführen:" -InformationAction Continue
+    Write-Information "[INFO]   - TCP/IP Stack zurücksetzen" -InformationAction Continue
     Write-Information "[INFO]   - DNS Cache leeren" -InformationAction Continue
-    Write-Information "[INFO]   - Winsock Catalog zuruecksetzen" -InformationAction Continue
+    Write-Information "[INFO]   - Winsock Catalog zurücksetzen" -InformationAction Continue
     Write-Information "[INFO]   - IP-Konfiguration erneuern" -InformationAction Continue
-    Write-Information "[INFO]   - Netzwerkadapter zuruecksetzen" -InformationAction Continue
+    Write-Information "[INFO]   - Netzwerkadapter zurücksetzen" -InformationAction Continue
     
     $confirm = Read-Host "`nMoechten Sie fortfahren? [j/n]"
     if ($confirm.ToLower() -ne 'j') {
@@ -373,7 +373,7 @@ function Reset-NetworkConfiguration {
     $failed = 0
     
     # TCP/IP Stack zurücksetzen  
-    Write-Log "`n[*] Setze TCP/IP Stack zurueck..." -Color Blue
+    Write-Log "`n[*] Setze TCP/IP Stack zurück..." -Color Blue
     try {
         # Erst prüfen ob Admin-Rechte vorhanden sind
         $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -388,7 +388,7 @@ function Reset-NetworkConfiguration {
             $resetResult = $LASTEXITCODE
             
             if ($resetResult -eq 0 -or $resetOutput -like "*erfolgreich*" -or $resetOutput -like "*successfully*") {
-                Write-Log "[OK] TCP/IP Stack zurueckgesetzt" -Color Green
+                Write-Log "[OK] TCP/IP Stack zurückgesetzt" -Color Green
                 $success++
             } else {
                 Write-Log "[WARNING] TCP/IP Reset unvollständig (Exitcode: $resetResult)" -Color Yellow
@@ -419,11 +419,11 @@ function Reset-NetworkConfiguration {
     }
     
     # Winsock Catalog zurücksetzen
-    Write-Log "[*] Setze Winsock Catalog zurueck..." -Color Blue
+    Write-Log "[*] Setze Winsock Catalog zurück..." -Color Blue
     try {
         & netsh winsock reset 2>&1 | Out-Null
         if ($LASTEXITCODE -eq 0) {
-            Write-Log "[OK] Winsock Catalog zurueckgesetzt" -Color Green
+            Write-Log "[OK] Winsock Catalog zurückgesetzt" -Color Green
             $success++
         } else {
             Write-Log "[ERROR] Winsock Reset fehlgeschlagen" -Color Red
@@ -458,8 +458,8 @@ function Reset-NetworkConfiguration {
     Write-Log "Fehlgeschlagen: $failed" -Color Red
     
     if ($success -gt 0) {
-        Write-Information "[INFO] `n[INFO] Ein Neustart wird empfohlen, um alle Aenderungen zu uebernehmen." -InformationAction Continue
-        $script:ActionsPerformed += "Netzwerk-Konfiguration zurueckgesetzt ($success Aktionen)"
+        Write-Information "[INFO] `n[INFO] Ein Neustart wird empfohlen, um alle Änderungen zu übernehmen." -InformationAction Continue
+        $script:ActionsPerformed += "Netzwerk-Konfiguration zurückgesetzt ($success Aktionen)"
         $script:UpdateRecommendations += "Neustart nach Netzwerk-Reset empfohlen"
         Add-Success "Netzwerk-Reset abgeschlossen"
         return $true

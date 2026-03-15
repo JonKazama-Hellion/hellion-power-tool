@@ -14,11 +14,11 @@ function Invoke-SimpleSFC {
     Write-Host "[*] SFC OPTIONEN:" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "   [1] " -ForegroundColor White -NoNewline
-    Write-Host "Schnelle Pruefung " -ForegroundColor Green -NoNewline
+    Write-Host "Schnelle Prüfung " -ForegroundColor Green -NoNewline
     Write-Host "(sfc /verifyonly)" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [2] " -ForegroundColor White -NoNewline
-    Write-Host "Vollstaendige Reparatur " -ForegroundColor Yellow -NoNewline
+    Write-Host "Vollständige Reparatur " -ForegroundColor Yellow -NoNewline
     Write-Host "(sfc /scannow)" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [x] " -ForegroundColor White -NoNewline
@@ -44,12 +44,12 @@ function Invoke-SimpleSFC {
     
     if ($choice -eq '1') {
         $sfcCommand = "/verifyonly"
-        $description = "Schnelle Pruefung"
+        $description = "Schnelle Prüfung"
     } elseif ($choice -eq '2') {
         $sfcCommand = "/scannow"
-        $description = "Vollstaendige Reparatur"
+        $description = "Vollständige Reparatur"
     } else {
-        Write-Error "Ungueltige Auswahl: $choice"
+        Write-Error "Ungültige Auswahl: $choice"
         return $false
     }
     

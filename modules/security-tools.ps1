@@ -6,11 +6,11 @@
 function Invoke-SafeAdblock {
     <#
     .SYNOPSIS
-    Sichere Adblock-Funktion fuer Windows Host-Datei
+    Sichere Adblock-Funktion für Windows Host-Datei
     
     .DESCRIPTION
     Fuegt eine kleine Auswahl bekannter Werbung/Tracking-Domains zur Host-Datei hinzu.
-    Verwendet eine konservative Whitelist fuer maximale Sicherheit.
+    Verwendet eine konservative Whitelist für maximale Sicherheit.
     #>
     
     Write-Log ""
@@ -73,13 +73,13 @@ function Invoke-SafeAdblock {
         # Aktuelle Host-Datei lesen
         $hostsContent = Get-Content $hostsPath -ErrorAction Stop
         
-        # Intelligente Domain-Pruefung - nur fehlende Domains hinzufuegen
+        # Intelligente Domain-Prüfung - nur fehlende Domains hinzufügen
         $hellionMarker = "# Hellion Safe Adblock"
         $hasHellionSection = $hostsContent -contains $hellionMarker
         $addedDomainsCount = 0
         $newEntries = @()
         
-        # Pruefe welche Domains bereits blockiert sind
+        # Prüfe welche Domains bereits blockiert sind
         $missingDomains = @()
         foreach ($domain in $adblockDomains) {
             $domainBlocked = $hostsContent | Where-Object { $_ -match "127\.0\.0\.1\s+$([regex]::Escape($domain))" }
@@ -97,7 +97,7 @@ function Invoke-SafeAdblock {
         Write-Host ""
         Write-Host "   [2] " -ForegroundColor White -NoNewline
         Write-Host "Adblock-Status anzeigen " -ForegroundColor Yellow -NoNewline
-        Write-Host "(Uebersicht)" -ForegroundColor DarkGray
+        Write-Host "(Übersicht)" -ForegroundColor DarkGray
         Write-Host ""
         Write-Host "   [3] " -ForegroundColor White -NoNewline
         Write-Host "Adblock deaktivieren " -ForegroundColor Magenta -NoNewline
@@ -116,20 +116,20 @@ function Invoke-SafeAdblock {
         switch ($choice.ToLower()) {
             '1' {
                 if ($missingDomains.Count -gt 0) {
-                    Write-Log "[*] Fuege $($missingDomains.Count) neue Adblock-Eintraege hinzu..." -Color Blue
+                    Write-Log "[*] Füge $($missingDomains.Count) neue Adblock-Einträge hinzu..." -Color Blue
                     
-                    # Hellion-Sektion hinzufuegen falls nicht vorhanden
+                    # Hellion-Sektion hinzufügen falls nicht vorhanden
                     if (-not $hasHellionSection) {
                         $newEntries += ""
                         $newEntries += $hellionMarker
                         $newEntries += "# Generiert: $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
                         $newEntries += "# Domains: $($adblockDomains.Count) sichere Tracking/Werbung-Blocker"
                     } else {
-                        # Update-Kommentar hinzufuegen
+                        # Update-Kommentar hinzufügen
                         $newEntries += "# Updated: $(Get-Date -Format 'yyyy-MM-dd HH:mm') - $($missingDomains.Count) neue Domains"
                     }
                     
-                    # Nur fehlende Domains hinzufuegen
+                    # Nur fehlende Domains hinzufügen
                     foreach ($domain in $missingDomains) {
                         $newEntries += "127.0.0.1 $domain"
                         $addedDomainsCount++
@@ -138,14 +138,14 @@ function Invoke-SafeAdblock {
                     # Host-Datei erweitern
                     $newEntries | Add-Content -Path $hostsPath -Encoding UTF8
                     
-                    Write-Log "[SUCCESS] $addedDomainsCount Adblock-Eintraege hinzugefuegt!" -Color Green
+                    Write-Log "[SUCCESS] $addedDomainsCount Adblock-Einträge hinzugefügt!" -Color Green
                     Write-Log "[INFO] DNS-Cache wird geleert..." -Color Blue
                     
-                    # DNS-Cache leeren fuer sofortige Wirkung
+                    # DNS-Cache leeren für sofortige Wirkung
                     & ipconfig /flushdns | Out-Null
                     
                     Add-Success "Safe Adblock: $addedDomainsCount neue Domains blockiert"
-                    $script:ActionsPerformed += "Safe Adblock ($addedDomainsCount neue Eintraege)"
+                    $script:ActionsPerformed += "Safe Adblock ($addedDomainsCount neue Einträge)"
                 } else {
                     Write-Log "[OK] Alle Adblock-Domains sind bereits blockiert!" -Color Green
                 }
@@ -172,7 +172,7 @@ function Invoke-SafeAdblock {
                 Write-Log "  Unblockiert: $unblockedCount/$($adblockDomains.Count) Domains" -Color Red
                 
                 if (Test-Path $backupPath) {
-                    Write-Log "  Backup verfuegbar: $backupPath" -Color Blue
+                    Write-Log "  Backup verfügbar: $backupPath" -Color Blue
                 } else {
                     Write-Log "  [WARNING] Kein Backup gefunden!" -Color Yellow
                 }
@@ -180,7 +180,7 @@ function Invoke-SafeAdblock {
             '3' {
                 # Adblock deaktivieren
                 if (Test-Path $backupPath) {
-                    $confirm = Read-Host "`nHost-Datei auf Original zuruecksetzen? [j/n]"
+                    $confirm = Read-Host "`nHost-Datei auf Original zurücksetzen? [j/n]"
                     if ($confirm -eq 'j' -or $confirm -eq 'J') {
                         Copy-Item $backupPath $hostsPath -Force
                         & ipconfig /flushdns | Out-Null
@@ -213,7 +213,7 @@ function Invoke-SafeAdblock {
                 return $false
             }
             default {
-                Write-Log "[ERROR] Ungueltige Auswahl" -Color Red
+                Write-Log "[ERROR] Ungültige Auswahl" -Color Red
                 return $false
             }
         }
@@ -227,15 +227,15 @@ function Invoke-SafeAdblock {
 }
 
 function Test-SecurityStatus {
-    Write-Log "`n[*] --- SICHERHEITS-STATUS PRUEFUNG ---" -Color Cyan
+    Write-Log "`n[*] --- SICHERHEITS-STATUS PRÜFUNG ---" -Color Cyan
     
     $securityIssues = @()
     $securityScore = 0
     $maxScore = 5
     
     try {
-        # Windows Update-Status pruefen
-        Write-Log "[*] Pruefe Windows Update-Status..." -Color Blue
+        # Windows Update-Status prüfen
+        Write-Log "[*] Prüfe Windows Update-Status..." -Color Blue
         try {
             $updateSession = New-Object -ComObject Microsoft.Update.Session
             $updateSearcher = $updateSession.CreateupdateSearcher()
@@ -245,15 +245,15 @@ function Test-SecurityStatus {
                 Write-Log "  [OK] Windows Updates sind aktuell" -Color Green
                 $securityScore++
             } else {
-                Write-Log "  [WARNING] $($searchResult.Updates.Count) Windows Updates verfuegbar" -Color Yellow
-                $securityIssues += "Windows Updates verfuegbar"
+                Write-Log "  [WARNING] $($searchResult.Updates.Count) Windows Updates verfügbar" -Color Yellow
+                $securityIssues += "Windows Updates verfügbar"
             }
         } catch {
-            Write-Log "  [INFO] Windows Update-Status konnte nicht geprueft werden" -Color Gray
+            Write-Log "  [INFO] Windows Update-Status konnte nicht geprüft werden" -Color Gray
         }
         
-        # Firewall-Status pruefen
-        Write-Log "[*] Pruefe Windows Firewall..." -Color Blue
+        # Firewall-Status prüfen
+        Write-Log "[*] Prüfe Windows Firewall..." -Color Blue
         try {
             $firewallProfiles = Get-NetFirewallProfile
             $activeFirewalls = $firewallProfiles | Where-Object { $_.Enabled -eq $true }
@@ -266,11 +266,11 @@ function Test-SecurityStatus {
                 $securityIssues += "Windows Firewall deaktiviert"
             }
         } catch {
-            Write-Log "  [WARNING] Firewall-Status konnte nicht geprueft werden" -Color Yellow
+            Write-Log "  [WARNING] Firewall-Status konnte nicht geprüft werden" -Color Yellow
         }
         
-        # UAC-Status pruefen
-        Write-Log "[*] Pruefe User Account Control (UAC)..." -Color Blue
+        # UAC-Status prüfen
+        Write-Log "[*] Prüfe User Account Control (UAC)..." -Color Blue
         try {
             $uacKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
             $uacValue = Get-ItemProperty -Path $uacKey -Name "EnableLUA" -ErrorAction Stop
@@ -283,7 +283,7 @@ function Test-SecurityStatus {
                 $securityIssues += "UAC deaktiviert"
             }
         } catch {
-            Write-Log "  [WARNING] UAC-Status konnte nicht geprueft werden" -Color Yellow
+            Write-Log "  [WARNING] UAC-Status konnte nicht geprüft werden" -Color Yellow
         }
         
         # Antivirus-Status (bereits in system-info.ps1 implementiert)
@@ -296,8 +296,8 @@ function Test-SecurityStatus {
             }
         }
         
-        # Automatische Updates pruefen
-        Write-Log "[*] Pruefe automatische Updates..." -Color Blue
+        # Automatische Updates prüfen
+        Write-Log "[*] Prüfe automatische Updates..." -Color Blue
         try {
             $auKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update"
             if (Test-Path $auKey) {
@@ -310,7 +310,7 @@ function Test-SecurityStatus {
                 }
             }
         } catch {
-            Write-Log "  [INFO] Auto-Update-Status konnte nicht geprueft werden" -Color Gray
+            Write-Log "  [INFO] Auto-Update-Status konnte nicht geprüft werden" -Color Gray
         }
         
         # Sicherheits-Bewertung
@@ -342,7 +342,7 @@ function Test-SecurityStatus {
         }
         
     } catch {
-        Add-Error "Sicherheits-Pruefung fehlgeschlagen" $_.Exception.Message
+        Add-Error "Sicherheits-Prüfung fehlgeschlagen" $_.Exception.Message
         return $null
     }
 }

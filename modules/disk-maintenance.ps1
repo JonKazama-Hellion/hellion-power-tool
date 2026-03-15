@@ -11,7 +11,7 @@ function Invoke-CheckDisk {
     Write-Log "Prüft und repariert Dateisystem-Fehler auf Laufwerken" -Color Yellow
     Write-Log ""
     
-    # Verfuegbare Laufwerke anzeigen
+    # Verfügbare Laufwerke anzeigen
     Write-Host "💿 VERFÜGBARE LAUFWERKE:" -ForegroundColor Cyan
     Write-Host ""
     $drives = Get-WmiObject -Class Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
@@ -40,7 +40,7 @@ function Invoke-CheckDisk {
     Write-Host "Tipp: " -ForegroundColor Blue -NoNewline
     Write-Host "Nur-Lesen-Modus wird zuerst versucht" -ForegroundColor Gray
     
-    $driveChoice = Read-Host "`nLaufwerk waehlen [1-$($drives.Count)] oder [x] zum Abbrechen"
+    $driveChoice = Read-Host "`nLaufwerk wählen [1-$($drives.Count)] oder [x] zum Abbrechen"
     
     if ($driveChoice -eq 'x' -or $driveChoice -eq 'X') {
         Write-Information "[INFO] [ABGEBROCHEN] CheckDisk nicht gestartet" -InformationAction Continue
@@ -78,19 +78,19 @@ function Invoke-CheckDisk {
         Write-Host "[*] CHECKDISK OPTIONEN:" -ForegroundColor Cyan
         Write-Host ""
         Write-Host "   [1] " -ForegroundColor White -NoNewline
-        Write-Host "Nur pruefen " -ForegroundColor Green -NoNewline
+        Write-Host "Nur prüfen " -ForegroundColor Green -NoNewline
         Write-Host "(Nur-Lesen, empfohlen)" -ForegroundColor DarkGray
         Write-Host ""
         Write-Host "   [2] " -ForegroundColor White -NoNewline
-        Write-Host "Pruefen und reparieren " -ForegroundColor Yellow -NoNewline
+        Write-Host "Prüfen und reparieren " -ForegroundColor Yellow -NoNewline
         Write-Host "(/f)" -ForegroundColor DarkGray
         Write-Host ""
         Write-Host "   [3] " -ForegroundColor White -NoNewline
-        Write-Host "Vollstaendige Pruefung " -ForegroundColor Red -NoNewline
+        Write-Host "Vollständige Prüfung " -ForegroundColor Red -NoNewline
         Write-Host "(/f /r)" -ForegroundColor DarkGray
         Write-Host ""
         
-        $modeChoice = Read-Host "`nModus waehlen [1-3]"
+        $modeChoice = Read-Host "`nModus wählen [1-3]"
         
         $chkdskArgs = ""
         $description = ""
@@ -98,7 +98,7 @@ function Invoke-CheckDisk {
         switch ($modeChoice) {
             '1' {
                 $chkdskArgs = "${driveLetter}:"
-                $description = "Nur-Lesen Pruefung"
+                $description = "Nur-Lesen Prüfung"
             }
             '2' {
                 $chkdskArgs = "${driveLetter}: /f"
@@ -130,7 +130,7 @@ function Invoke-CheckDisk {
                 }
             }
             default {
-                Write-Log "[ERROR] Ungueltige Auswahl" -Level "ERROR"
+                Write-Log "[ERROR] Ungültige Auswahl" -Level "ERROR"
                 return $false
             }
         }
@@ -161,7 +161,7 @@ function Invoke-CheckDisk {
             param($commandArgs)
             $argsList = $commandArgs.Split(' ')
             $output = & chkdsk $argsList 2>&1 | Out-String
-            # Exit-Code innerhalb des Jobs erfassen und mit Output zurueckgeben
+            # Exit-Code innerhalb des Jobs erfassen und mit Output zurückgeben
             return @{ Output = $output; ExitCode = $LASTEXITCODE }
         } -ArgumentList $chkdskArgs
         
@@ -225,7 +225,7 @@ function Invoke-CheckDisk {
                 Write-Log "   Fehler gefunden - Reparatur-Modus erforderlich" -Color Red
                 Write-Log "   💡 Empfehlung: CheckDisk mit Reparatur-Option ausführen" -Color Yellow
                 Add-Warning "Checkdisk: Fehler gefunden - Reparatur-Modus empfohlen"
-                $script:UpdateRecommendations += "Checkdisk mit Reparatur-Option ausfuehren"
+                $script:UpdateRecommendations += "Checkdisk mit Reparatur-Option ausführen"
             }
         } elseif ($chkdskResult -match "no problems found" -or $chkdskResult -match "keine Probleme" -or $chkdskExitCode -eq 0) {
             Write-Log "✅ Dateisystem: OK" -Color Green
@@ -236,8 +236,8 @@ function Invoke-CheckDisk {
             Write-Log "🔄 CheckDisk: FÜR NEUSTART GEPLANT" -Color Yellow
             Write-Log "   Prüfung wird beim nächsten Neustart ausgeführt" -Color Yellow
             Write-Log "   💡 Empfehlung: System neu starten" -Color Yellow
-            Add-Success "Checkdisk: Fuer naechsten Neustart geplant"
-            $script:UpdateRecommendations += "Neustart fuer geplante Checkdisk-Pruefung erforderlich"
+            Add-Success "Checkdisk: Für nächsten Neustart geplant"
+            $script:UpdateRecommendations += "Neustart für geplante Checkdisk-Prüfung erforderlich"
             $success = $true
         } else {
             Write-Log "❓ Unbekannter CheckDisk-Status" -Color Yellow
@@ -256,7 +256,7 @@ function Invoke-CheckDisk {
             }
             Write-Log "   Exit Code: $chkdskExitCode" -Level "DEBUG"
             
-            Add-Warning "Checkdisk abgeschlossen - Details im Event-Log pruefen"
+            Add-Warning "Checkdisk abgeschlossen - Details im Event-Log prüfen"
         }
         
         # Für Debug-Modus: Vollständige CheckDisk-Ausgabe
@@ -275,9 +275,9 @@ function Invoke-CheckDisk {
             }
         }
         
-        # Vollstaendige Ausgabe im Debug-Modus anzeigen
+        # Vollständige Ausgabe im Debug-Modus anzeigen
         if ($script:ExplainMode) {
-            Write-Log "`n[DEBUG] Vollstaendige Checkdisk-Ausgabe:" -Level "DEBUG"
+            Write-Log "`n[DEBUG] Vollständige Checkdisk-Ausgabe:" -Level "DEBUG"
             $chkdskResult.Split("`n") | Select-Object -First 20 | ForEach-Object {
                 Write-Log "  $_" -Level "DEBUG"
             }
@@ -298,11 +298,11 @@ function Invoke-CheckDisk {
 <#
 function Invoke-SystemFileChecker {
     Write-Log "`n[*] --- SYSTEM FILE CHECKER (SFC) ---" -Color Cyan
-    Write-Log "Prueft und repariert beschaedigte Windows-Systemdateien" -Color Yellow
+    Write-Log "Prüft und repariert beschädigte Windows-Systemdateien" -Color Yellow
     
     Write-Information "[INFO] `n[*] SFC OPTIONEN:" -InformationAction Continue
-    Write-Information "[INFO]   [1] Schnelle Pruefung (sfc /verifyonly)" -InformationAction Continue
-    Write-Information "[INFO]   [2] Pruefung und Reparatur (sfc /scannow)" -InformationAction Continue
+    Write-Information "[INFO]   [1] Schnelle Prüfung (sfc /verifyonly)" -InformationAction Continue
+    Write-Information "[INFO]   [2] Prüfung und Reparatur (sfc /scannow)" -InformationAction Continue
     Write-Information "[INFO]   [x] Abbrechen" -InformationAction Continue
     
     $choice = Read-Host "`nWahl [1-2/x]"
@@ -318,21 +318,21 @@ function Invoke-SystemFileChecker {
     switch ($choice) {
         '1' {
             $sfcArgs = "/verifyonly"
-            $description = "Schnelle Systemdatei-Pruefung"
+            $description = "Schnelle Systemdatei-Prüfung"
         }
         '2' {
             $sfcArgs = "/scannow"  
-            $description = "Vollstaendige Systemdatei-Reparatur"
+            $description = "Vollständige Systemdatei-Reparatur"
         }
         default {
-            Write-Log "[ERROR] Ungueltige Auswahl" -Level "ERROR"
+            Write-Log "[ERROR] Ungültige Auswahl" -Level "ERROR"
             return $false
         }
     }
     
     Write-Log "[*] Starte SFC: $description" -Color Blue
     Write-Log "[INFO] Dies kann mehrere Minuten dauern..." -Color Gray
-    Write-Information "[INFO] [*] SFC-Progress wird angezeigt sobald verfuegbar..." -InformationAction Continue
+    Write-Information "[INFO] [*] SFC-Progress wird angezeigt sobald verfügbar..." -InformationAction Continue
     
     try {
         # SFC mit Live-Progress starten - robustere Implementierung
@@ -415,16 +415,16 @@ function Invoke-SystemFileChecker {
         $exitCode = 0  # Default success
         
         if ($exitCode -eq 0) {
-            if ($sfcOutput -match "did not find any integrity violations" -or $sfcOutput -match "keine Integritaetsverletzungen") {
-                Add-Success "SFC: Keine beschaedigten Systemdateien gefunden"
+            if ($sfcOutput -match "did not find any integrity violations" -or $sfcOutput -match "keine Integritätsverletzungen") {
+                Add-Success "SFC: Keine beschädigten Systemdateien gefunden"
             } else {
                 Add-Success "SFC: Reparatur erfolgreich abgeschlossen"
             }
         } elseif ($exitCode -eq 1) {
-            Add-Warning "SFC: Beschaedigte Dateien gefunden und repariert"
+            Add-Warning "SFC: Beschädigte Dateien gefunden und repariert"
             $script:UpdateRecommendations += "Neustart nach SFC-Reparatur empfohlen"
         } elseif ($exitCode -eq 2) {
-            Add-Error "SFC: Beschaedigte Dateien gefunden - Reparatur fehlgeschlagen"
+            Add-Error "SFC: Beschädigte Dateien gefunden - Reparatur fehlgeschlagen"
             $script:UpdateRecommendations += "DISM-Reparatur vor erneutem SFC-Scan erforderlich"
         } else {
             Add-Warning "SFC abgeschlossen - Exit Code: $exitCode"
@@ -446,7 +446,7 @@ function Invoke-SystemFileChecker {
         return $exitCode -le 1
         
     } catch {
-        Add-Error "SFC-Ausfuehrung fehlgeschlagen" $_.Exception.Message
+        Add-Error "SFC-Ausführung fehlgeschlagen" $_.Exception.Message
         return $false
     }
 }
@@ -464,7 +464,7 @@ function Invoke-DISMRepair {
     Write-Host "(/CheckHealth)" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [2] " -ForegroundColor White -NoNewline
-    Write-Host "Erweiterte Pruefung " -ForegroundColor Yellow -NoNewline
+    Write-Host "Erweiterte Prüfung " -ForegroundColor Yellow -NoNewline
     Write-Host "(/ScanHealth)" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [3] " -ForegroundColor White -NoNewline
@@ -492,7 +492,7 @@ function Invoke-DISMRepair {
         }
         '2' {
             $dismArgs = "/Online /Cleanup-Image /ScanHealth"
-            $description = "DISM erweiterte Pruefung"
+            $description = "DISM erweiterte Prüfung"
         }
         '3' {
             $dismArgs = "/Online /Cleanup-Image /RestoreHealth"
@@ -500,7 +500,7 @@ function Invoke-DISMRepair {
             Write-Information "[INFO] Online-Reparatur kann 10-30 Minuten dauern!" -InformationAction Continue
         }
         default {
-            Write-Log "[ERROR] Ungueltige Auswahl" -Level "ERROR"
+            Write-Log "[ERROR] Ungültige Auswahl" -Level "ERROR"
             return $false
         }
     }
@@ -547,7 +547,7 @@ function Invoke-DISMRepair {
             }
         }
         
-        # Log-Datei aufbehalten oder loeschen
+        # Log-Datei aufbehalten oder löschen
         if ($script:DetailedLogging) {
             Write-Log "[INFO] DISM-Log gespeichert: $logPath" -Color Gray
         } else {
@@ -557,7 +557,7 @@ function Invoke-DISMRepair {
         return $exitCode -eq 0
         
     } catch {
-        Add-Error "DISM-Ausfuehrung fehlgeschlagen" $_.Exception.Message
+        Add-Error "DISM-Ausführung fehlgeschlagen" $_.Exception.Message
         return $false
     }
 }

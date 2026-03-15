@@ -1,76 +1,86 @@
-# 📋 Hellion Power Tool - Versionsnummern Erklärung
+# Hellion Power Tool — Versionsnummern-Schema
 
 Diese Datei erklärt das Versionierungs-System des Hellion Power Tools.
 
-## 📄 version.txt Format
+---
+
+## version.txt Format
 
 Die Datei `config/version.txt` enthält genau 4 Zeilen:
 
 ```text
-7.1.4.3
-Odin
-20250910
-71432509101245
+7.2.0.0
+Heimdall
+20260315
+72002603151430
 ```
 
 ---
 
-## 📊 Zeilen-Erklärung
+## Zeilen-Erklärung
 
-### ZEILE 1: VERSION (Semantic Versioning)
+### Zeile 1: Version (Semantic Versioning)
 
-**Format**: `MAJOR.MINOR.PATCH.BUILD`  
-**Beispiel**: `7.1.5.3`
+**Format**: `MAJOR.MINOR.PATCH.BUILD`
 
-- **MAJOR (7)**: Große Änderungen, Breaking Changes
-- **MINOR (1)**: Neue Features, abwärtskompatibel  
-- **PATCH (4)**: Bugfixes, kleine Verbesserungen
-- **BUILD (1)**: Build-System, Release-Korrekturen
+| Stelle | Bedeutung                          | Beispiel |
+| ------ | ---------------------------------- | -------- |
+| MAJOR  | Große Änderungen, Breaking Changes | 7        |
+| MINOR  | Neue Features, abwärtskompatibel   | 2        |
+| PATCH  | Bugfixes, kleine Verbesserungen    | 0        |
+| BUILD  | Build-System, Release-Korrekturen  | 0        |
 
-### ZEILE 2: CODENAME (Thematisch)
+### Zeile 2: Codename (thematisch)
 
-**Aktuelle Serie**: Nordische Mythologie  
-**Chronologie**: ... → Fenrir → Fenrir-Update → Odin → ...
+**Aktuelle Serie**: Nordische Mythologie
 
-### ZEILE 3: RELEASE-DATUM (Legacy-Format)
+Bisherige Codenamen (chronologisch):
+Alpha → Beta → Gamma → Delta → Epsilon → Kazama → Beleandis → Monkey → Moon → Moon-Bugfix → Fenrir → Fenrir-Update → Odin → Baldur → **Heimdall**
 
-**Format**: `YYYYMMDD`  
-**Beispiel**: `20250910`  
-**Verwendung**: Für Abwärtskompatibilität zu alten Patchern
+### Zeile 3: Release-Datum (Legacy-Format)
 
-### ZEILE 4: TIMESTAMP (Neue Versionierung ab v7.1.4)
+**Format**: `YYYYMMDD`
 
-**Format**: `VVVVYYYYMMDDHHNN`  
-**Beispiel**: `71432509101245`
+Ich verwende dieses Format weiterhin für Abwärtskompatibilität zu älteren Update-Checkern.
+
+### Zeile 4: Timestamp (präzise Versionierung ab v7.1.4)
+
+**Format**: `VVVVYYYYMMDDHHNN`
 
 **Aufbau**:
 
-- **VVVV**: Version (7153 = 7.1.5.3)
-- **YYYY**: Jahr (2025)
-- **MM**: Monat (09)  
-- **DD**: Tag (10)
-- **HH**: Stunde (11)
-- **NN**: Minute (42)
+| Segment | Bedeutung                            | Beispiel |
+| ------- | ------------------------------------ | -------- |
+| VVVV    | Version komprimiert (7200 = 7.2.0.0) | 7200     |
+| YYYY    | Jahr                                 | 2026     |
+| MM      | Monat                                | 03       |
+| DD      | Tag                                  | 15       |
+| HH      | Stunde                               | 14       |
+| NN      | Minute                               | 30       |
 
-**Erklärung**: `715325091314500` = v7.1.5.3 vom 13.09.2025 um 14:50  
-**Zweck**: Ermöglicht minutengenaue Updates am gleichen Tag
+Beispiel: `72002603151430` = v7.2.0.0 vom 15.03.2026 um 14:30
+
+Der Timestamp ermöglicht minutengenaue Update-Erkennung, sodass ich mehrere Updates am selben Tag veröffentlichen kann.
 
 ---
 
-## 🔄 Update-System
+## Update-System
 
 ### Hybrid-Vergleich
 
-1. **Neue Versionen (ab v7.1.4)**: Timestamp-basiert (präzise)
-2. **Alte Versionen (bis v7.1.3)**: Datum-basiert (kompatibel)
+Das Update-System vergleicht Versionen in zwei Modi:
 
-### Timestamp-Vorteile
+1. **Neue Versionen (ab v7.1.4)** — Timestamp-basiert (präzise, minutengenau)
+2. **Alte Versionen (bis v7.1.3)** — Datum-basiert (kompatibel)
 
-- ✅ Minutengenaue Update-Erkennung
-- ✅ Mehrere Updates pro Tag möglich  
-- ✅ Numerischer Vergleich (7142 > 714)
-- ✅ Abwärtskompatibilität erhalten
+### Vorteile des Timestamp-Systems
+
+- Minutengenaue Update-Erkennung
+- Mehrere Updates pro Tag möglich
+- Numerischer Vergleich (7200 > 7154)
+- Abwärtskompatibilität zu älteren Versionen bleibt erhalten
 
 ---
 
-**Letzte Aktualisierung**: 2025-09-13 - Hellion Power Tool v7.1.5.3 "Baldur"
+Letzte Aktualisierung: 2026-03-15 — Hellion Power Tool v7.2.0.0 "Heimdall"
+Entwickelt von [Hellion Online Media](https://hellion-media.de)

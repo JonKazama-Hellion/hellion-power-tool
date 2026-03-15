@@ -1,166 +1,124 @@
-# Contributors - Hellion Power Tool
+# Contributors — Hellion Power Tool
 
-Ein herzliches **DANKE** an alle, die mir bei der Entwicklung des Hellion Power Tools geholfen haben!
-
-Ehrlich gesagt - ohne diese Leute wäre das Tool nie so gut geworden. Jeder hat auf seine Art dazu beigetragen, dass aus meiner Idee was Brauchbares wurde.
-
----
-
-## 🚀 Entwicklung
-
-### **JonKazama** - *Der Typ der das alles angefangen hat*
-
-- **Das bin ich** - lerne noch programmieren und das Tool ist mein erstes größeres Projekt
-- **Was ich gemacht hab**:
-  - Das Tool von der ersten Idee bis v7.1.5.3 "Baldur" entwickelt
-  - Viel gegoogelt, YouTube geschaut und Fehler gemacht
-  - Langsam gelernt wie PowerShell und Batch-Scripting funktioniert
-- **Expertise**: **Quasi keine** - bin Anfänger und lerne noch, aber das Tool läuft trotzdem xD
+Dieses Projekt wäre ohne die folgenden Personen nicht das, was es heute ist.
+Jeder hat auf seine Weise dazu beigetragen — ob durch Bug-Reports, Feature-Ideen oder schlicht dadurch, dass er das Tool im Alltag getestet hat.
 
 ---
 
-## 🧪 Testing & Die Leute die meine Bugs finden
+## Entwicklung
 
-### **LomaChalit** - *Ungewollter Alpha Tester*
+### JonKazama — Projektleitung und Entwicklung
 
-LomaChalit ist der Grund warum das Tool überhaupt stabil läuft. Ernsthaft.
+Ich habe das Hellion Power Tool als mein erstes größeres Softwareprojekt gestartet und es von der ersten Idee bis zur aktuellen Version v7.2.0.0 "Heimdall" entwickelt. PowerShell und Batch-Scripting habe ich dabei größtenteils selbst beigebracht — durch Dokumentation, YouTube und viel Trial-and-Error.
 
-Er ist eher ungewollter Alpha-Tester - hat sich das Tool mal runtergeladen und gibt mir seitdem Bescheid wenn bei seinen Tests was nicht funktioniert.
-
-- **Was er macht**: Findet alle Bugs die ich übersehe (und das sind viele xD)
-- **Was er gefunden hat**:
-  - 6+ kritische Bugs in den frühen Versionen
-  - NetTCPIP Module Loading Error bevor es zum Problem wurde
-  - Winget Update Placeholder Problem (Update0, Update1, Update2)
-  - 24h Restore Point Limitation auf seinem System
-  - **Seine Ideen**: Treiber-Analyse und DLL-Analyzer waren ursprünglich seine Vorschläge
-  - Testet die ENE.SYS Probleme die sonst keiner hat
-- **Warum er wichtig ist**: Ohne ihn wären Alpha und Beta Versionen kompletter Schrott gewesen
-- **Dank**: Für das Testen von Features die speziell für ihn entwickelt wurden und die ganzen Feature-Ideen!
-
-### **Carl Beleandis** - *Ungewollter Beta Tester*
-
-Carl merkt an wenn was bei der Ausführung komisch aussieht und macht auf Schreibfehler aufmerksam.
-
-- **Was er macht**: Testet Beta-Versionen und sagt mir wenn was scheiße aussieht oder nicht funktioniert
-- **Seine Beiträge**:
-  - 4+ Bug-Reports aus der Zeit als ich noch nicht getrackt hab
-  - Feedback zu UI/UX - er hat mir gesagt dass meine Menüs unübersichtlich waren xD
-  - **SFC/DISM/CheckDisk Integration**: Basiert auf seinen Anforderungen für sichere System-Reparatur-Tools - seine Rückmeldungen führten zur Entwicklung benutzerfreundlicher Automatisierung für komplexe Windows-Befehle
-  - **Bluescreen-Analyzer**: Kam aus einem Geistesblitz von ihm als er's grad gebrauchen konnte
-  - Testet Crash-Analyzer und Hardware-Features
-- **Expertise**: Findet raus ob normale User das Tool verstehen würden (hat ja selbst keine Coding-Ahnung)
-- **Dank**: Für das Testen von Features die auf seine Bedürfnisse zugeschnitten sind und dafür dass er der Grund ist warum das Tool öffentlich wurde!
-
-### **Jingliu** - *Motivation & Encouragement*
-
-- **Was sie macht**: Gibt mir Zuspruch und Mut wenn ich mal wieder an meinen Coding-Fähigkeiten zweifle
-- **Warum wichtig**: Manchmal sitze ich stundenlang vor Bugs und will aufgeben - dann motiviert sie mich weiterzumachen
-- **Dank**: Für die mentale Unterstützung beim Lernen und dafür dass sie an mich glaubt auch wenn ich selbst nicht daran glaube xD
-
-### **Jacky** - *Moralischer Beistand*
-
-- **Wer das ist**: Mein Hund xD
-- **Seine Rolle**: Moralischer Beistand bei komplexen Windows-Problemen
-- **Was er macht**: Liegt neben mir wenn ich debugge und hört zu ohne zu urteilen
-- **Expertise**: Emotional support bei frustrierenden PowerShell-Fehlern
-- **Dank**: Für die bedingungslose Unterstützung auch bei den dümmsten Coding-Fehlern
+Das Tool ist Teil von [Hellion Online Media](https://hellion-media.de) und wird über [hellion-initiative.online](https://hellion-initiative.online) bereitgestellt.
 
 ---
 
-## 🤖 Development Support
+## Testing
 
-### **Claude Code** - *AI Development Assistant*
+### LomaChalit — Alpha-Tester
 
-- **Was das ist**: AI-Tool das mir hilft wenn ich komplett stuck bin
-- **Wann ich es benutze**:
-  - Bei Bugs die ich einfach nicht hinkriege (wie der Update-Checker der sich selbst gelöscht hat)
-  - Wenn meine Logik keinen Sinn macht
-  - Code aufräumen und verständlicher machen
-  - Erklären warum mein Zeug nicht funktioniert
-- **Gut für**: PowerShell-Debugging, Batch-Scripting, UI/UX-Verbesserungen
+LomaChalit testet das Tool seit den frühen Versionen und hat maßgeblich zur Stabilität beigetragen. Er findet Probleme, bevor sie bei anderen Nutzern aufschlagen.
 
----
+**Bug-Reports:**
 
-## 📊 Wer hat was gemacht (Statistiken)
+- 6+ kritische Bugs in den Alpha-Versionen
+- NetTCPIP Module Loading Error — frühzeitig erkannt, bevor es produktionsrelevant wurde
+- Winget Update Placeholder-Problem (Update0, Update1, Update2)
+- 24h Restore Point Limitation — führte zur Entwicklung eines Registry-Workarounds
+- ENE.SYS Kompatibilitätsprobleme auf seinem System
 
-| Contributor          | Was sie machen       | Bugs gefunden | QOL Fixes | Was sie gebracht haben               |
-|----------------------|---------------------|---------------|-----------|--------------------------------------|
-| **LomaChalit**       | Alpha Testing       | 6             | 4+        | Stabilität & Feature-Ideen           |
-| **Carl Beleandis**   | Beta Testing        | 4+            | 5+        | User Experience & Core Features      |
-| **Jingliu**          | Motivation          | 0             | ∞         | Mentale Unterstützung                |
-| **Jacky**            | Moralischer Support | 0             | ∞         | Emotionale Unterstützung             |
-| **Claude Code**      | AI Debugging        | 0             | 10+       | Technische Lösungen                  |
+**Feature-Ideen:**
 
----
+- Treiber-Diagnose — entstanden aus seinem ENE.SYS-Problem
+- DLL-Analyzer — sein Vorschlag für System-Integritätsprüfung
 
-## 🎯 Hall of Fame - Die Helden
+### Carl Beleandis — Beta-Tester
 
-### 🔥 **Kritische Bug-Entdeckungen die mich gerettet haben**
+Carl testet das Tool aus der Perspektive eines normalen Anwenders. Seine Rückmeldungen zu Bedienung und Verständlichkeit haben die Benutzerführung deutlich verbessert.
 
-1. **NetTCPIP Module Error** *(LomaChalit)* - Hätte das ganze Tool zerstört ohne Fallback  
-2. **24h Restore Point Limit** *(LomaChalit)* - Sein System hatte diese Einschränkung, Registry-Hack entwickelt
-3. **Winget Update Placeholders** *(LomaChalit)* - Update0/Update1/Update2 hätten User verwirrt
+**Bug-Reports:**
 
-### 🎨 **Feature-Ideen die das Tool erst richtig gut gemacht haben**
+- 4+ Fehlerberichte aus der frühen Entwicklungsphase
+- UI/UX-Feedback — seine Rückmeldungen führten zur Überarbeitung der Menüstruktur
 
-1. **SFC/DISM/CheckDisk Integration** *(Carl Beleandis)* - Basiert auf seinen Anforderungen für sichere System-Reparatur-Automatisierung
-2. **Bluescreen-Analyzer** *(Carl Beleandis)* - Geistesblitz als er's grad brauchte, super nützlich
-3. **Treiber-Diagnose** *(LomaChalit)* - Wegen seinem ENE.SYS Problem entwickelt
-4. **DLL-Analyzer** *(LomaChalit)* - Sein Vorschlag für System-Integrität
+**Feature-Ideen:**
 
----
+- SFC/DISM/CheckDisk Integration — basiert auf seinen Anforderungen für sichere System-Reparatur-Automatisierung
+- Bluescreen-Analyzer — entstand aus einem konkreten Bedarf auf seinem System
 
-## 🤝 Willst du auch helfen?
+Er ist außerdem der Grund, warum das Tool überhaupt öffentlich veröffentlicht wurde.
 
-Das Tool wird nur durch Community-Feedback besser! Falls du Lust hast:
+### Jingliu — Motivation
 
-### 🐛 **Bug-Hunting**
+Manchmal sitze ich stundenlang vor einem Problem und komme nicht weiter. In diesen Momenten gibt mir Jingliu den nötigen Zuspruch, um weiterzumachen.
 
-- Teste das Tool auf deinem System
-- Melde wenn was nicht funktioniert (gerne mit Screenshots)
-- Sag mir welche Schritte zum Problem führen
+### Jacky — Moralischer Beistand
 
-### 💡 **Ideen für neue Features**
-
-- Vorschläge für Funktionen die fehlen
-- UI/UX Verbesserungen (besonders wenn was verwirrend ist)
-- Performance-Ideen
-
-### 🧪 **Alpha/Beta Testing**
-
-- Teste neue Versionen bevor sie live gehen
-- Feedback zur Benutzerfreundlichkeit
-- Hardware-Kompatibilitätstests
-
-### 📝 **Dokumentation**
-
-- Hilf bei der Doku (bin nicht so gut im Erklären)
-- Übersetzungen wären cool
-- Tutorials oder Anwendungsbeispiele
+Mein Hund. Liegt neben mir beim Debuggen und urteilt nicht.
 
 ---
 
-## 📞 Wo du mich findest
+## Development Support
 
-**Bugs gefunden? Ideen? Willst Alpha-Tester werden?**
+### Claude Code — AI Development Assistant
 
-- **GitHub**: [https://github.com/JonKazama-Hellion/hellion-power-tool](https://github.com/JonKazama-Hellion/hellion-power-tool)
-- **Issues**: Für Bug-Reports und Feature-Requests
-- **Discussions**: Für Feedback und Ideen
+AI-Tool, das ich als Hilfsmittel einsetze — nicht als Ersatz für eigene Arbeit. Die Architektur, Features und Ideen stammen von mir und meinen Testern. Claude Code hilft bei:
 
----
+- Debugging von komplexen PowerShell-Problemen
+- Code-Optimierung und Strukturverbesserung
+- Erklärungen, warum etwas nicht funktioniert
 
-## 🌟 Danke an alle
-
-Ehrlich - ohne diese Leute hier wäre das Tool kompletter Müll geworden. Jeder Bug-Report, jede Idee und jedes "das funktioniert nicht" hat geholfen, das Tool besser zu machen.
-
-**Ich suche immer Leute die Lust haben zu testen**  
-**Egal ob du Anfänger oder Profi bist - jedes Feedback hilft**
+Mehr dazu in [LEARNING-JOURNEY.md](LEARNING-JOURNEY.md).
 
 ---
 
-*Erstellt: 2025-09-09*  
-*Letzte Aktualisierung: v7.1.5.3 "Baldur" Release*
+## Übersicht
 
-## 🚀 Zusammen machen wir das Tool noch geiler
+| Contributor        | Rolle               | Bugs gefunden | Beitrag                           |
+| ------------------ | ------------------- | ------------- | --------------------------------- |
+| **LomaChalit**     | Alpha-Testing       | 6+            | Stabilität und Feature-Ideen      |
+| **Carl Beleandis** | Beta-Testing        | 4+            | User Experience und Core-Features |
+| **Jingliu**        | Motivation          | —             | Mentale Unterstützung             |
+| **Jacky**          | Moralischer Support | —             | Emotionale Unterstützung          |
+| **Claude Code**    | AI-Debugging        | —             | Technische Lösungsunterstützung   |
+
+---
+
+## Kritische Bug-Entdeckungen
+
+1. **NetTCPIP Module Error** *(LomaChalit)* — hätte ohne Fallback das gesamte Tool unbrauchbar gemacht
+2. **24h Restore Point Limit** *(LomaChalit)* — Registry-Workaround entwickelt
+3. **Winget Update Placeholders** *(LomaChalit)* — Update0/Update1/Update2 Anzeigefehler behoben
+
+## Feature-Ideen aus der Community
+
+1. **SFC/DISM/CheckDisk Integration** *(Carl Beleandis)* — sichere System-Reparatur-Automatisierung
+2. **Bluescreen-Analyzer** *(Carl Beleandis)* — Crash-Log-Analyse für Endanwender
+3. **Treiber-Diagnose** *(LomaChalit)* — ENE.SYS und allgemeine Treiberprobleme
+4. **DLL-Analyzer** *(LomaChalit)* — System-Integritätsprüfung
+
+---
+
+## Mitmachen
+
+Das Tool lebt von Community-Feedback. Wer Interesse hat:
+
+- **Bug-Reports** — Tool testen und Probleme melden (gerne mit Screenshots und Reproduktionsschritten)
+- **Feature-Ideen** — Vorschläge für neue Funktionen oder Verbesserungen
+- **Alpha/Beta-Testing** — Neue Versionen vor dem Release testen
+- **Dokumentation** — Übersetzungen, Tutorials oder Anwendungsbeispiele
+
+---
+
+## Kontakt
+
+- **GitHub**: [github.com/JonKazama-Hellion/hellion-power-tool](https://github.com/JonKazama-Hellion/hellion-power-tool)
+- **Website**: [hellion-media.de](https://hellion-media.de)
+- **Projekt**: [hellion-initiative.online](https://hellion-initiative.online)
+
+---
+
+*Erstellt: 2025-09-09*
+*Letzte Aktualisierung: v7.2.0.0 "Heimdall" — 2026-03-15*

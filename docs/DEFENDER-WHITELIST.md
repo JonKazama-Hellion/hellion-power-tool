@@ -1,98 +1,91 @@
-# 🛡️ Windows Defender Whitelist Anleitung
+# Windows Defender Whitelist Anleitung
 
-## Problem: False-Positive "Trojan:Script/Wacatac.B!ml"
+## Problem: False Positive "Trojan:Script/Wacatac.B!ml"
 
-Windows Defender kann bei PowerShell-Tools fälschlicherweise Malware-Warnungen ausgeben. Dies ist ein **bekanntes Problem** bei legitimen PowerShell-Scripts.
+Windows Defender erkennt PowerShell-basierte Systemtools gelegentlich als Bedrohung. Das ist ein **bekanntes Problem** bei legitimen PowerShell-Scripts und betrifft nicht nur das Hellion Power Tool.
 
-## ✅ Lösung: Hellion Tool zur Defender-Ausnahme hinzufügen
+Der heuristische Detector **Wacatac.B!ml** reagiert auf Verhaltensmuster wie PowerShell + Netzwerkzugriffe, Registry-Operationen, Systemdatei-Änderungen und administrative Rechte. Das Hellion Power Tool nutzt diese Funktionen — aber ausschließlich für **legitime Systemwartung**.
 
-### **Methode 1: Über Windows Security (Empfohlen)**
+Der vollständige Quellcode ist auf [GitHub](https://github.com/JonKazama-Hellion/hellion-power-tool) und über [hellion-media.de](https://hellion-media.de/hellion-power-tool) einsehbar.
 
-1. **Windows Security öffnen**
-   - Windows-Taste drücken → "Windows Security" eingeben → Enter
+---
 
-2. **Viren- & Bedrohungsschutz**
-   - Auf "Viren- & Bedrohungsschutz" klicken
+## Lösung: Tool zur Defender-Ausnahme hinzufügen
 
-3. **Einstellungen verwalten**
-   - Unter "Einstellungen für Viren- & Bedrohungsschutz" → "Einstellungen verwalten"
+### Methode 1: Über Windows Security (empfohlen)
 
-4. **Ausnahme hinzufügen**
-   - Nach unten scrollen → "Ausnahmen hinzufügen oder entfernen"
-   - "Ausnahme hinzufügen" → "Ordner"
-   - **Hellion-Ordner auswählen**: `C:\Users\IhrUsername\Desktop\hellion-power-tool\`
+1. **Windows Security öffnen** — Windows-Taste drücken, "Windows Security" eingeben, Enter
+2. **Viren- & Bedrohungsschutz** — Auf "Viren- & Bedrohungsschutz" klicken
+3. **Einstellungen verwalten** — Unter "Einstellungen für Viren- & Bedrohungsschutz" auf "Einstellungen verwalten" klicken
+4. **Ausnahme hinzufügen** — Nach unten scrollen, "Ausnahmen hinzufügen oder entfernen", dann "Ausnahme hinzufügen" und "Ordner" wählen
+5. **Hellion-Ordner auswählen** — Den Ordner wählen, in dem das Tool liegt
 
-### **Methode 2: Über PowerShell (Schnell)**
+### Methode 2: Über PowerShell (schnell)
+
+Als Administrator ausführen:
 
 ```powershell
-# Als Administrator ausführen:
 Add-MpPreference -ExclusionPath "C:\Users\$env:USERNAME\Desktop\hellion-power-tool\"
 ```
 
-### **Methode 3: Über Gruppenrichtlinien (IT-Profis)**
+Den Pfad entsprechend anpassen, falls das Tool woanders liegt.
+
+### Methode 3: Über Gruppenrichtlinien (IT-Profis)
 
 1. `gpedit.msc` öffnen
 2. Computer Configuration → Administrative Templates → Windows Components → Windows Defender Antivirus → Exclusions
-3. "Path Exclusions" aktivieren → Hellion-Pfad hinzufügen
+3. "Path Exclusions" aktivieren und den Hellion-Pfad hinzufügen
 
-## 🔒 **Sicherheitshinweise**
+---
 
-### ✅ **Warum Hellion Tool sicher ist:**
+## Warum das Tool sicher ist
 
-- **Open Source**: Kompletter Quellcode einsehbar
-- **Keine Netzwerk-Downloads**: Nur lokale Windows-Tools
-- **Keine Obfuskierung**: Klarer, lesbarer PowerShell-Code
-- **Keine Admin-Rechte-Missbrauch**: Nur für legitime Systemwartung
-- **Defender-optimiert**: Kritische Befehle durch sichere Alternativen ersetzt
+- **Open Source** — Kompletter Quellcode jederzeit einsehbar
+- **Keine Obfuskierung** — Klarer, lesbarer PowerShell-Code
+- **Keine Datenexfiltration** — Netzwerkzugriff nur für Konnektivitätstests und GitHub-Updates
+- **Keine Admin-Rechte-Missbrauch** — Elevation nur für legitime Systemwartung
+- **Defender-optimiert** — Kritische Befehle durch sichere Alternativen ersetzt
 
-### ⚠️ **Vorsichtsmaßnahmen:**
+---
 
-- Nur von **vertrauenswürdigen Quellen** downloaden
-- Bei Zweifeln: **Code überprüfen** vor Ausführung
-- **Regelmäßige Updates** für neueste Sicherheitsverbesserungen
+## Bereits durchgeführte Optimierungen
 
-## 🐛 **Warum passiert das?**
+Ich habe zahlreiche Maßnahmen umgesetzt, um False Positives zu minimieren:
 
-**Wacatac.B!ml** ist ein **heuristischer Detector** von Defender, der auf **Verhaltensmuster** reagiert:
+### Anti-False-Positive Verbesserungen
 
-- ❌ PowerShell + Netzwerk-Zugriffe
-- ❌ Registry-Manipulationen  
-- ❌ System-Dateien ändern
-- ❌ Administrative Rechte
+- **Netzwerk**: `Invoke-WebRequest` durch `Test-NetConnection` ersetzt
+- **Downloads**: `Invoke-WebRequest` durch `.NET WebClient` ersetzt (Defender-sicher)
+- **Prozesse**: `Start-Process -Verb RunAs` durch `ProcessStartInfo.Verb` ersetzt
+- **Registry**: `Get-ItemProperty *` durch `Get-ChildItem + Get-ItemProperty` ersetzt
+- **Delays**: `Start-Sleep` durch `[Threading.Thread]::Sleep` ersetzt
 
-**Hellion Tool macht genau das** - aber für **legitime Systemwartung**!
+### Code-Qualitätsmaßnahmen
 
-## 🔄 **Bereits durchgeführte Optimierungen (v7.1.3):**
+- Anti-Heuristic Headers in allen Modulen
+- Detaillierte `.SYNOPSIS`-Dokumentation für statische Analyse
+- Explizite Legitimate-Software-Markierung
+- Keine Base64-Kodierung oder Verschlüsselung
+- PSScriptAnalyzer-Prüfung in CI/CD
 
-### ✅ **Anti-False-Positive Verbesserungen:**
+---
 
-- **Netzwerk**: `Invoke-WebRequest` → `Test-NetConnection` (3x ersetzt)
-- **Downloads**: `Invoke-WebRequest` → `.NET WebClient` (Defender-sicher)
-- **Prozesse**: `Start-Process -Verb RunAs` → `ProcessStartInfo.Verb` (5x ersetzt)
-- **Registry**: `Get-ItemProperty *` → `Get-ChildItem + Get-ItemProperty` (sicherer)
-- **Delays**: `Start-Sleep` → `[Threading.Thread]::Sleep` (weniger verdächtig)
+## Vorsichtsmaßnahmen
 
-### ✅ **Code-Qualitäts-Verbesserungen:**
+- Nur von **vertrauenswürdigen Quellen** herunterladen — [GitHub](https://github.com/JonKazama-Hellion/hellion-power-tool) oder [hellion-media.de](https://hellion-media.de/hellion-power-tool)
+- Bei Zweifeln den **Quellcode prüfen** vor der Ausführung
+- **Regelmäßige Updates** installieren für die neuesten Sicherheitsverbesserungen
 
-- **Metadata**: Anti-heuristic Headers in allen Modulen
-- **Dokumentation**: Detaillierte .SYNOPSIS für statische Analyse
-- **Sicherheitsdeklarationen**: Explizite Legitimate-Software-Markierung
-- **Keine Obfuskierung**: Klarer, lesbarer PowerShell-Code
-- **Keine Base64/Encryption**: Vermeidet verdächtige Encoding-Patterns
+---
 
-### 🆕 **Code Signing Vorbereitung:**
-
-- **Self-Signed Certificate**: `scripts/prepare-code-signing.ps1`
-- **Kommerzielle CA Anleitung**: DigiCert/Sectigo Integration
-- **Automatisches Signieren**: Alle .ps1 Dateien signierbar
-
-## 📞 **Support**
+## Support
 
 Bei Problemen mit Defender:
 
-1. **GitHub Issues**: Melde False-Positives
-2. **Lokale IT**: Bei Firmen-PCs Admin kontaktieren
-3. **Microsoft**: Defender-Team über False-Positive informieren
+1. **GitHub Issues** — False Positive melden: [Issues](https://github.com/JonKazama-Hellion/hellion-power-tool/issues)
+2. **Website** — [hellion-media.de/kontakt](https://hellion-media.de/kontakt)
+3. **Microsoft** — Defender-Team über das False Positive informieren
 
 ---
-Hellion Power Tool v7.1.3 - Defender-optimiert für maximale Kompatibilität
+
+Hellion Power Tool v7.2.0.0 "Heimdall" — Entwickelt von [Hellion Online Media](https://hellion-media.de)

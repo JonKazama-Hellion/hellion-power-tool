@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., v7.1.5.4)'
+        description: 'Release version (e.g., v7.2.0.0)'
         required: true
-        default: 'v7.1.5.4'
+        default: 'v7.2.0.0'
 
 permissions:
   contents: write
@@ -155,7 +155,7 @@ jobs:
         $version = "${{ steps.version.outputs.version }}"
         
         # Create release notes content
-        $content = "# Hellion Power Tool $version - `"Baldur`"`n`n"
+        $content = "# Hellion Power Tool $version - `"Heimdall`"`n`n"
         $content += "## WARNING: Windows Defender Warnung`n"
         $content += "Dieses Tool kann False-Positive Warnungen ausloesen (**Trojan:Script/Wacatac.B!ml**).`n"
         $content += "**LOESUNG**: Siehe [DEFENDER-WHITELIST.md](https://github.com/${{ github.repository }}/blob/main/DEFENDER-WHITELIST.md)`n`n"
@@ -172,13 +172,13 @@ jobs:
         $content += "- **``hellion-certificate.cer``** - Zertifikat fuer Signatur-Verifikation`n"
         $content += "- **``checksums.txt``** - SHA256 Hashes zur Verifikation`n`n"
         
-        $content += "## Kritische Bugfixes in v7.1.5.3`n"
-        $content += "- **Get-WinEvent Modul-Fehler behoben** - PowerShell Diagnostics Import mit Fallback-Handling`n"
-        $content += "- **Doppelte Enter-Bestätigung entfernt** - Wiederherstellungspunkt-Modul UI bereinigt`n"
-        $content += "- **TCP/IP Reset repariert** - Admin-Rechte-Prüfung und robuste Fehlerbehandlung`n"
-        $content += "- **Unicode-Batch-Probleme gelöst** - Versteckte Zeichen verursachten 'etzt', 'omatisches', 'nd' Befehlsfehler`n"
-        $content += "- **Update-Installer Escaping korrigiert** - Batch-Escaping-Sequenzen für dynamische Scripts repariert`n"
-        $content += "- **System-Stabilität verbessert** - Graceful Degradation bei Modul-Fehlern implementiert`n`n"
+        $content += "## Aenderungen in v7.2.0.0 Heimdall`n"
+        $content += "- **Hellion Online Media Branding** - Einheitliches Branding in allen Launcher-Dateien und Menues`n"
+        $content += "- **Launcher-Restyling** - Neue Farbgebung (Hellion Green), ueberarbeitete Header und Menues`n"
+        $content += "- **Umlaut-Korrektur** - Alle PowerShell-Module auf ae/oe/ue umgestellt (Encoding-Kompatibilitaet)`n"
+        $content += "- **Dokumentation ueberarbeitet** - SECURITY.md, DEFENDER-WHITELIST.md, VERSION-FORMAT.md professionell neugeschrieben`n"
+        $content += "- **Timestamp-basiertes Update-System** - Robuster Versionsvergleich mit 14-stelligem Timestamp`n"
+        $content += "- **Bugfixes aus v7.1.5.x** - Get-WinEvent, TCP/IP Reset, Unicode-Batch-Probleme und mehr`n`n"
         
         $content += "## Sicherheit & Verifikation`n"
         $content += "- **Quellcode** - Vollstaendig auf GitHub verfuegbar`n"
@@ -209,7 +209,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ steps.version.outputs.version }}
-        name: Hellion Power Tool ${{ steps.version.outputs.version }} "Baldur"
+        name: Hellion Power Tool ${{ steps.version.outputs.version }} "Heimdall"
         body_path: release-notes.md
         draft: false
         prerelease: false
