@@ -79,55 +79,63 @@ function Start-DriverDiagnostic {
 }
 
 function Invoke-FullDriverAnalysis {
-    Write-Log "[*] Starte vollständige Treiber-Analyse..." -Color Yellow
+    Write-Log "[*] Starte vollstaendige Treiber-Analyse..." -Color Yellow
     Write-Host ""
-    
-    # Schritt 1: Problematische Treiber suchen (nur ENE-spezifisch für diese Analyse)
+
+    # Schritt 1: Problematische Treiber suchen
     Write-Host "[1/4] Suche nach bekannten problematischen Treibern..." -ForegroundColor Cyan
-    # Überspringe Find-ProblematicDrivers hier - das verwirrt nur
-    $problematicDrivers = @()
-    
+    $problematicDrivers = Find-ProblematicDrivers -Silent
+
     # Schritt 2: Event Logs analysieren
-    Write-Host "[2/4] Analysiere Event Logs für Treiber-Fehler..." -ForegroundColor Cyan
+    Write-Host "[2/4] Analysiere Event Logs fuer Treiber-Fehler..." -ForegroundColor Cyan
     $eventErrors = Analyze-DriverEventLogs -Silent
-    
+
     # Schritt 3: Nicht signierte Treiber finden
     Write-Host "[3/4] Suche nach nicht signierten Treibern..." -ForegroundColor Cyan
     $unsignedDrivers = Get-UnsignedDrivers
-    
-    # Schritt 4: Veraltete Treiber identifizieren
-    Write-Host "[4/4] Identifiziere veraltete Treiber..." -ForegroundColor Cyan
+
+    # Schritt 4: Veraltete/fehlerhafte Treiber identifizieren
+    Write-Host "[4/4] Identifiziere fehlerhafte Treiber..." -ForegroundColor Cyan
     $outdatedDrivers = Get-OutdatedDrivers
-    
+
     # Zusammenfassung
     Write-Host ""
     Write-Log "=== TREIBER-ANALYSE ZUSAMMENFASSUNG ===" -Color Green
     Write-Host ""
-    
+
     if ($problematicDrivers.Count -gt 0) {
-        Write-Host "⚠️  PROBLEMATISCHE TREIBER GEFUNDEN:" -ForegroundColor Red
-        $problematicDrivers | ForEach-Object {
-            Write-Host "   • $($_.Name) - $($_.Problem)" -ForegroundColor Yellow
+        Write-Host "PROBLEMATISCHE TREIBER GEFUNDEN:" -ForegroundColor Red
+        foreach ($driver in $problematicDrivers) {
+            Write-Host "   - $($driver.Name) - $($driver.Problem)" -ForegroundColor Yellow
         }
         Write-Host ""
     }
-    
+
     if ($eventErrors.Count -gt 0) {
-        Write-Host "🔥 TREIBER-FEHLER IM EVENT LOG:" -ForegroundColor Red
+        Write-Host "TREIBER-FEHLER IM EVENT LOG:" -ForegroundColor Red
         Write-Host "   Anzahl kritischer Fehler: $($eventErrors.Count)" -ForegroundColor Yellow
         Write-Host ""
     }
-    
+
     if ($unsignedDrivers.Count -gt 0) {
-        Write-Host "⚠️  NICHT SIGNIERTE TREIBER:" -ForegroundColor DarkYellow
+        Write-Host "NICHT SIGNIERTE TREIBER:" -ForegroundColor DarkYellow
         Write-Host "   Anzahl: $($unsignedDrivers.Count)" -ForegroundColor Yellow
         Write-Host ""
     }
-    
-    if ($problematicDrivers.Count -eq 0 -and $eventErrors.Count -eq 0 -and $unsignedDrivers.Count -eq 0) {
-        Write-Host "✅ Keine kritischen Treiber-Probleme erkannt!" -ForegroundColor Green
+
+    if ($outdatedDrivers.Count -gt 0) {
+        Write-Host "FEHLERHAFTE GERAETE:" -ForegroundColor Red
+        foreach ($device in $outdatedDrivers) {
+            Write-Host "   - $($device.Name) - Fehlercode: $($device.ErrorCode)" -ForegroundColor Yellow
+        }
+        Write-Host ""
+    }
+
+    $totalIssues = $problematicDrivers.Count + $eventErrors.Count + $unsignedDrivers.Count + $outdatedDrivers.Count
+    if ($totalIssues -eq 0) {
+        Write-Host "Keine kritischen Treiber-Probleme erkannt!" -ForegroundColor Green
     } else {
-        Write-Host "💡 EMPFEHLUNG: Führe spezifische Diagnosen für gefundene Probleme aus." -ForegroundColor Cyan
+        Write-Host "$totalIssues Probleme gefunden. Fuehre spezifische Diagnosen fuer Details aus." -ForegroundColor Cyan
     }
 }
 
@@ -236,7 +244,7 @@ function Find-ProblematicDrivers {
         $eneDrivers += $systemDrivers | Where-Object { 
             $_.Name -eq "ene" -or $_.PathName -like "*\ene.sys" -or $_.PathName -like "*\enecir.sys"
         }
-        $eneDrivers += $pnpDevices | Where-Object { 
+        $eneDrivers += $pnpDrivers | Where-Object {
             $_.HardwareID -like "ENE\*" -or $_.HardwareID -like "*VID_1524*"
         } | Select-Object -First 5
         
@@ -763,18 +771,19 @@ function Analyze-ENEDriverProblem {
                 & pnputil /scan-devices
                 Write-Host "✅ Geräte-Scan abgeschlossen" -ForegroundColor Green
                 
-                # Versuche problematische Geräte neu zu installieren
-                $eneSystemDriver | ForEach-Object {
-                    Write-Host "[*] Repariere: $($_.Name)" -ForegroundColor Yellow
+                # Versuche problematische Geraete neu zu installieren
+                foreach ($eneDriver in $eneSystemDriver) {
+                    Write-Host "[*] Repariere: $($eneDriver.Name)" -ForegroundColor Yellow
                     try {
-                        # Neuinstallation über pnputil versuchen
-                        $deviceInstanceId = (Get-CimInstance -ClassName Win32_PnPEntity | Where-Object { $_.Name -like "*$($_.Name)*" } | Select-Object -First 1).PNPDeviceID
+                        # Neuinstallation ueber pnputil versuchen
+                        $driverName = $eneDriver.Name
+                        $deviceInstanceId = (Get-CimInstance -ClassName Win32_PnPEntity | Where-Object { $_.Name -like "*$driverName*" } | Select-Object -First 1).PNPDeviceID
                         if ($deviceInstanceId) {
                             & pnputil /restart-device "$deviceInstanceId" 2>$null
-                            Write-Host "   → Gerät neugestartet" -ForegroundColor Green
+                            Write-Host "   -> Geraet neugestartet" -ForegroundColor Green
                         }
                     } catch {
-                        Write-Host "   → Automatische Reparatur fehlgeschlagen" -ForegroundColor Red
+                        Write-Host "   -> Automatische Reparatur fehlgeschlagen" -ForegroundColor Red
                     }
                 }
                 Write-Host ""
@@ -862,35 +871,53 @@ function Remove-ENEDriverForce {
     try {
         Write-Host "   📝 Versuche Wiederherstellungspunkt..." -ForegroundColor Yellow
         
-        # Prüfe ob SystemRestore aktiviert ist
+        # Pruefe ob SystemRestore aktiviert ist
         $restoreEnabled = Get-CimInstance -ClassName Win32_SystemRestore -ErrorAction SilentlyContinue
         if ($restoreEnabled) {
-            # Versuche zuerst normalen Wiederherstellungspunkt
-            try {
-                Checkpoint-Computer -Description "ENE-Treiber Reparatur Backup" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
-                Write-Host "   ✅ Wiederherstellungspunkt erstellt" -ForegroundColor Green
-            } catch {
-                # Falls 24h-Limit, versuche Registry-Hack
-                Write-Host "   ⚠️  24h-Limit aktiv, versuche Registry-Override..." -ForegroundColor Yellow
+            # PS7-kompatible Wiederherstellungspunkt-Erstellung
+            # Checkpoint-Computer existiert nur in PS5, daher WMI-Fallback fuer PS7
+            $restorePointCreated = $false
+
+            if (Get-Command Checkpoint-Computer -ErrorAction SilentlyContinue) {
+                # PS5: Checkpoint-Computer verfuegbar
                 try {
-                    # Registry-Hack: Zeitlimit umgehen
-                    $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore"
-                    Set-ItemProperty -Path $regPath -Name "SystemRestorePointCreationFrequency" -Value 0 -ErrorAction Stop
-                    
-                    # Nochmal versuchen
-                    Start-Sleep -Seconds 2
-                    Checkpoint-Computer -Description "ENE-Treiber Reparatur Backup (Forced)" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
-                    Write-Host "   ✅ Wiederherstellungspunkt erstellt (Registry-Override)" -ForegroundColor Green
-                    
-                    # Registry-Wert zurücksetzen (24h Standard)
-                    Set-ItemProperty -Path $regPath -Name "SystemRestorePointCreationFrequency" -Value 1440 -ErrorAction SilentlyContinue
+                    Checkpoint-Computer -Description "ENE-Treiber Reparatur Backup" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
+                    Write-Host "   -> Wiederherstellungspunkt erstellt" -ForegroundColor Green
+                    $restorePointCreated = $true
                 } catch {
-                    Write-Host "   ❌ Auch Registry-Override fehlgeschlagen" -ForegroundColor Red
+                    Write-Host "   -> 24h-Limit aktiv, versuche Registry-Override..." -ForegroundColor Yellow
+                    try {
+                        $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore"
+                        Set-ItemProperty -Path $regPath -Name "SystemRestorePointCreationFrequency" -Value 0 -ErrorAction Stop
+                        Start-Sleep -Seconds 2
+                        Checkpoint-Computer -Description "ENE-Treiber Reparatur Backup (Forced)" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
+                        Write-Host "   -> Wiederherstellungspunkt erstellt (Registry-Override)" -ForegroundColor Green
+                        $restorePointCreated = $true
+                        Set-ItemProperty -Path $regPath -Name "SystemRestorePointCreationFrequency" -Value 1440 -ErrorAction SilentlyContinue
+                    } catch {
+                        Write-Host "   -> Auch Registry-Override fehlgeschlagen" -ForegroundColor Red
+                    }
+                }
+            }
+
+            if (-not $restorePointCreated) {
+                # PS7 Fallback: WMI-Methode fuer Wiederherstellungspunkt
+                try {
+                    $srClass = [wmiclass]"\\.\root\default:SystemRestore"
+                    $result = $srClass.CreateRestorePoint("ENE-Treiber Reparatur Backup", 12, 100)
+                    if ($result.ReturnValue -eq 0) {
+                        Write-Host "   -> Wiederherstellungspunkt erstellt (WMI-Methode)" -ForegroundColor Green
+                        $restorePointCreated = $true
+                    } else {
+                        throw "WMI ReturnValue: $($result.ReturnValue)"
+                    }
+                } catch {
+                    Write-Host "   -> WMI-Fallback fehlgeschlagen: $($_.Exception.Message)" -ForegroundColor Red
                     throw $_
                 }
             }
         } else {
-            Write-Host "   ⚠️  Systemwiederherstellung nicht aktiviert" -ForegroundColor Yellow
+            Write-Host "   -> Systemwiederherstellung nicht aktiviert" -ForegroundColor Yellow
         }
     } catch {
         Write-Host "   ⚠️  Wiederherstellungspunkt konnte nicht erstellt werden" -ForegroundColor Yellow
