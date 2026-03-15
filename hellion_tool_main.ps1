@@ -155,10 +155,13 @@ $script:ActionsPerformed = @()
 $script:RootPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $script:ModulesPath = Join-Path $script:RootPath "modules"
 
-Write-Information "================================================================" -InformationAction Continue
-Write-Information "        HELLION POWER TOOL v7.1.5.4 'Baldur' (MODULAR)        " -InformationAction Continue
-Write-Information "================================================================" -InformationAction Continue
-Write-Information "Loading modules..." -InformationAction Continue
+Write-Host ""
+Write-Host "  ================================================================" -ForegroundColor Green
+Write-Host "         HELLION POWER TOOL v7.1.5.4 'Baldur'                    " -ForegroundColor White
+Write-Host "         Hellion Online Media                                    " -ForegroundColor DarkGray
+Write-Host "  ================================================================" -ForegroundColor Green
+Write-Host ""
+Write-Host "  Module werden geladen..." -ForegroundColor DarkGray
 
 # Load all modules from modules directory
 if (Test-Path $script:ModulesPath) {
@@ -243,24 +246,26 @@ if ($ForceDebugLevel -ge 0) {
 } else {
     Write-Information "[NO-PARAM] Keine Parameter erkannt - falle in manuelle Auswahl" -InformationAction Continue
     Clear-Host
-    Write-Information "================================================================" -InformationAction Continue
-    Write-Information "        HELLION POWER TOOL v7.1.5.4 'Baldur' (MODULAR)        " -InformationAction Continue
-    Write-Information "================================================================" -InformationAction Continue
-    Write-Information "" -InformationAction Continue
-    Write-Information "[*] DEBUG-MODUS WAEHLEN:" -InformationAction Continue
-    Write-Information "  [0] Normal-Modus (Standard)" -InformationAction Continue
-    Write-Information "  [1] Debug-Modus (Erweiterte Infos)" -InformationAction Continue  
-    Write-Information "  [2] Developer-Modus (Alle Debug-Infos)" -InformationAction Continue
-    Write-Information "" -InformationAction Continue
+    Write-Host ""
+    Write-Host "  ================================================================" -ForegroundColor Green
+    Write-Host "         HELLION POWER TOOL v7.1.5.4 'Baldur'                    " -ForegroundColor White
+    Write-Host "         Hellion Online Media                                    " -ForegroundColor DarkGray
+    Write-Host "  ================================================================" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "  Modus waehlen:" -ForegroundColor Green
+    Write-Host "   [0] Normal-Modus    " -ForegroundColor White -NoNewline
+    Write-Host "(Standard)" -ForegroundColor DarkGray
+    Write-Host "   [1] Debug-Modus     " -ForegroundColor White -NoNewline
+    Write-Host "(Erweiterte Infos)" -ForegroundColor DarkGray
+    Write-Host "   [2] Developer-Modus " -ForegroundColor White -NoNewline
+    Write-Host "(Alle Debug-Infos)" -ForegroundColor DarkGray
+    Write-Host ""
 
-    $debugChoice = Read-Host "Modus waehlen [0-2]"
+    $debugChoice = Read-Host "  Auswahl [0-2]"
     switch ($debugChoice) {
-        '1' { $script:DebugLevel = 1; Write-Information "Debug-Modus aktiviert" -InformationAction Continue
-        }
-        '2' { $script:DebugLevel = 2; Write-Information "Developer-Modus aktiviert" -InformationAction Continue
-        }
-        default { $script:DebugLevel = 0; Write-Information "Normal-Modus aktiviert" -InformationAction Continue
-        }
+        '1' { $script:DebugLevel = 1; Write-Host "  Debug-Modus aktiviert" -ForegroundColor Green }
+        '2' { $script:DebugLevel = 2; Write-Host "  Developer-Modus aktiviert" -ForegroundColor Green }
+        default { $script:DebugLevel = 0; Write-Host "  Normal-Modus aktiviert" -ForegroundColor Green }
     }
 
     Start-Sleep -Seconds 1
@@ -271,58 +276,78 @@ if ($ForceDebugLevel -ge 0) {
 # Main Menu Function
 function Show-MainMenu {
     Clear-Host
-    Write-Host "================================================================" -ForegroundColor Cyan
-    Write-Host "        HELLION POWER TOOL v7.1.5.4 'Baldur' (MODULAR)        " -ForegroundColor White
-    Write-Host "================================================================" -ForegroundColor Cyan
-    
+    Write-Host ""
+    Write-Host "  ================================================================" -ForegroundColor Green
+    Write-Host "         HELLION POWER TOOL v7.1.5.4 'Baldur'                    " -ForegroundColor White
+    Write-Host "         Hellion Online Media — System-Wartungstool              " -ForegroundColor DarkGray
+    Write-Host "  ================================================================" -ForegroundColor Green
+    Write-Host ""
+
     # Show current debug mode (nur in Debug-Modi)
     if ($script:DebugLevel -ge 1) {
         Write-Information "[DEBUG-STATUS] script:DebugLevel = $($script:DebugLevel)" -InformationAction Continue
     }
-    
+
     $modeText = switch ($script:DebugLevel) {
-        0 { "Normal-Modus" }
-        1 { "Debug-Modus" }
-        2 { "Developer-Modus" }
-        default { "Unknown (Wert: $($script:DebugLevel))" }
+        0 { "Normal" }
+        1 { "Debug" }
+        2 { "Developer" }
+        default { "Unknown ($($script:DebugLevel))" }
     }
-    Write-Information "Aktueller Modus: $modeText" -InformationAction Continue
-    Write-Information "" -InformationAction Continue
-    
-    # 🚀 HAUPT-AKTIONEN (Empfohlen für alle User)
-    Write-UIOutput "🚀 HAUPT-AKTIONEN" -ForegroundColor Cyan
-    Write-Information "   [A] Auto-Modus Erweitert     (Empfohlen - Alles automatisch)" -InformationAction Continue
-    Write-Information "   [Q] Schnell-Bereinigung      (5 Min - Grundreinigung)" -InformationAction Continue
-    Write-Information "   [1] System-Reparatur         (SFC + DISM + CheckDisk)" -InformationAction Continue
-    Write-Information "   [2] Performance-Boost        (Bereinigung + Optimierung)" -InformationAction Continue
-    Write-Information "" -InformationAction Continue
-    
-    # 🔧 DIAGNOSE & PROBLEMLÖSUNG
-    Write-UIOutput "🔧 DIAGNOSE & PROBLEMLÖSUNG" -ForegroundColor Yellow  
-    Write-Information "   [3] System-Information        (Hardware + Software Überblick)" -InformationAction Continue
-    Write-Information "   [4] Netzwerk-Test             (Internet + DNS + Speed)" -InformationAction Continue
-    Write-Information "   [5] Treiber-Diagnose          (ENE.SYS + Hardware-Probleme)" -InformationAction Continue
-    Write-Information "   [6] Bluescreen-Analyse        (Crash-Logs + Ursachen)" -InformationAction Continue
-    Write-Information "   [7] RAM-Test                  (Memory Diagnostic)" -InformationAction Continue
-    Write-Information "" -InformationAction Continue
-    
-    # 🛡️ SICHERHEIT & VERWALTUNG  
-    Write-UIOutput "🛡️ SICHERHEIT & VERWALTUNG" -ForegroundColor Green
-    Write-Information "   [8] Wiederherstellungspunkte  (Backup + Restore)" -InformationAction Continue
-    Write-Information "   [9] Bloatware-Erkennung       (Unnötige Software finden)" -InformationAction Continue
-    Write-Information "   [W] Winget-Updates            (Software aktualisieren)" -InformationAction Continue
-    Write-Information "   [R] Netzwerk zurücksetzen     (Bei Internet-Problemen)" -InformationAction Continue
-    Write-Information "" -InformationAction Continue
-    
-    # 📊 ERWEITERTE FUNKTIONEN
-    Write-UIOutput "📊 ERWEITERTE FUNKTIONEN" -ForegroundColor Magenta
-    Write-Information "   [E] System-Bericht erstellen  (Detaillierte Analyse)" -InformationAction Continue
-    Write-Information "   [S] Safe Adblock verwalten    (Werbeblocker-Tools)" -InformationAction Continue
-    Write-Information "   [D] DLL-Integritäts-Check     (System-Dateien prüfen)" -InformationAction Continue
-    Write-Information "" -InformationAction Continue
-    
-    Write-UIOutput "[X] BEENDEN" -ForegroundColor Red
-    Write-Information "" -InformationAction Continue
+    Write-Host "  Modus: $modeText" -ForegroundColor DarkGray
+    Write-Host ""
+
+    # HAUPT-AKTIONEN
+    Write-Host "  --- HAUPT-AKTIONEN ---" -ForegroundColor Green
+    Write-Host "   [A] Auto-Modus Erweitert     " -ForegroundColor White -NoNewline
+    Write-Host "(Empfohlen)" -ForegroundColor DarkGreen
+    Write-Host "   [Q] Schnell-Bereinigung      " -ForegroundColor White -NoNewline
+    Write-Host "(5 Min)" -ForegroundColor DarkGray
+    Write-Host "   [1] System-Reparatur         " -ForegroundColor White -NoNewline
+    Write-Host "(SFC + DISM + CheckDisk)" -ForegroundColor DarkGray
+    Write-Host "   [2] Performance-Boost        " -ForegroundColor White -NoNewline
+    Write-Host "(Bereinigung + Optimierung)" -ForegroundColor DarkGray
+    Write-Host ""
+
+    # DIAGNOSE & PROBLEMLOESUNG
+    Write-Host "  --- DIAGNOSE ---" -ForegroundColor DarkCyan
+    Write-Host "   [3] System-Information       " -ForegroundColor White -NoNewline
+    Write-Host "(Hardware + Software)" -ForegroundColor DarkGray
+    Write-Host "   [4] Netzwerk-Test            " -ForegroundColor White -NoNewline
+    Write-Host "(Internet + DNS + Speed)" -ForegroundColor DarkGray
+    Write-Host "   [5] Treiber-Diagnose         " -ForegroundColor White -NoNewline
+    Write-Host "(ENE.SYS + Probleme)" -ForegroundColor DarkGray
+    Write-Host "   [6] Bluescreen-Analyse       " -ForegroundColor White -NoNewline
+    Write-Host "(Crash-Logs + Ursachen)" -ForegroundColor DarkGray
+    Write-Host "   [7] RAM-Test                 " -ForegroundColor White -NoNewline
+    Write-Host "(Memory Diagnostic)" -ForegroundColor DarkGray
+    Write-Host ""
+
+    # SICHERHEIT & VERWALTUNG
+    Write-Host "  --- SICHERHEIT & VERWALTUNG ---" -ForegroundColor DarkGreen
+    Write-Host "   [8] Wiederherstellungspunkte " -ForegroundColor White -NoNewline
+    Write-Host "(Backup + Restore)" -ForegroundColor DarkGray
+    Write-Host "   [9] Bloatware-Erkennung      " -ForegroundColor White -NoNewline
+    Write-Host "(Unerwuenschte Software)" -ForegroundColor DarkGray
+    Write-Host "   [W] Winget-Updates           " -ForegroundColor White -NoNewline
+    Write-Host "(Software aktualisieren)" -ForegroundColor DarkGray
+    Write-Host "   [R] Netzwerk zuruecksetzen   " -ForegroundColor White -NoNewline
+    Write-Host "(Bei Verbindungsproblemen)" -ForegroundColor DarkGray
+    Write-Host ""
+
+    # ERWEITERTE FUNKTIONEN
+    Write-Host "  --- ERWEITERT ---" -ForegroundColor DarkCyan
+    Write-Host "   [E] System-Bericht          " -ForegroundColor White -NoNewline
+    Write-Host "(Detaillierte Analyse)" -ForegroundColor DarkGray
+    Write-Host "   [S] Safe Adblock             " -ForegroundColor White -NoNewline
+    Write-Host "(DNS-Werbeblocker)" -ForegroundColor DarkGray
+    Write-Host "   [D] DLL-Integritaets-Check   " -ForegroundColor White -NoNewline
+    Write-Host "(System-Dateien pruefen)" -ForegroundColor DarkGray
+    Write-Host ""
+
+    Write-Host "  ----------------------------------------------------------------" -ForegroundColor DarkGray
+    Write-Host "   [X] Beenden" -ForegroundColor Red
+    Write-Host ""
 }
 
 
