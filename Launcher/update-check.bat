@@ -39,16 +39,22 @@ set "VERSION_FILE_ALT2=!LAUNCHER_DIR!\..\config\version.txt"
 
 if exist "!VERSION_FILE!" (
     echo   [OK] version.txt gefunden
-) else if exist "!VERSION_FILE_ALT1!" (
+    goto :VERSION_FILE_FOUND
+)
+if exist "!VERSION_FILE_ALT1!" (
     set "VERSION_FILE=!VERSION_FILE_ALT1!"
     echo   [OK] version.txt gefunden (Fallback 1)
-) else if exist "!VERSION_FILE_ALT2!" (
+    goto :VERSION_FILE_FOUND
+)
+if exist "!VERSION_FILE_ALT2!" (
     set "VERSION_FILE=!VERSION_FILE_ALT2!"
     echo   [OK] version.txt gefunden (Fallback 2)
-) else (
-    echo   [ERROR] version.txt nicht gefunden!
-    goto :ERROR_END
+    goto :VERSION_FILE_FOUND
 )
+echo   [ERROR] version.txt nicht gefunden!
+goto :ERROR_END
+
+:VERSION_FILE_FOUND
 
 REM Lese alle 4 Zeilen der version.txt (usebackq fuer Pfade mit Leerzeichen)
 set "LINE_COUNT=0"
