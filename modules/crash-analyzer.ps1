@@ -29,7 +29,7 @@ function Get-SystemCrashAnalysis {
     $HardwareInfo = @{}
     try {
         # GPU-Erkennung
-        $GPU = Get-WmiObject -Class Win32_VideoController -ErrorAction SilentlyContinue | 
+        $GPU = Get-CimInstance -ClassName Win32_VideoController -ErrorAction SilentlyContinue |
                Where-Object { $_.Name -notlike "*Microsoft*" } | Select-Object -First 1
         if ($GPU) {
             $HardwareInfo.GPU = @{
@@ -43,7 +43,7 @@ function Get-SystemCrashAnalysis {
         }
         
         # CPU-Erkennung
-        $CPU = Get-WmiObject -Class Win32_Processor -ErrorAction SilentlyContinue | Select-Object -First 1
+        $CPU = Get-CimInstance -ClassName Win32_Processor -ErrorAction SilentlyContinue | Select-Object -First 1
         if ($CPU) {
             $HardwareInfo.CPU = @{
                 Name = $CPU.Name
@@ -54,7 +54,7 @@ function Get-SystemCrashAnalysis {
         }
         
         # RAM-Info
-        $RAM = Get-WmiObject -Class Win32_PhysicalMemory -ErrorAction SilentlyContinue
+        $RAM = Get-CimInstance -ClassName Win32_PhysicalMemory -ErrorAction SilentlyContinue
         if ($RAM) {
             $TotalRAM = ($RAM | Measure-Object -Property Capacity -Sum).Sum / 1GB
             $HardwareInfo.RAM = @{
@@ -178,7 +178,7 @@ function Get-SystemCrashAnalysis {
         Write-Information "[INFO] `n[*] Analysiere Windows Reliability History..." -InformationAction Continue
         
         try {
-            $ReliabilityData = Get-WmiObject -Class Win32_ReliabilityRecords -ErrorAction SilentlyContinue |
+            $ReliabilityData = Get-CimInstance -ClassName Win32_ReliabilityRecords -Namespace "root\cimv2" -ErrorAction SilentlyContinue |
                 Where-Object { $_.SourceName -like "*Bugcheck*" -or $_.EventIdentifier -eq 1001 } |
                 Sort-Object TimeGenerated -Descending | Select-Object -First 5
                 

@@ -72,9 +72,22 @@ function Start-WindowsMemoryDiagnostic {
                 Write-Warning "Systemwiederherstellung scheint deaktiviert zu sein"
                 Write-Information "[INFO] Wiederherstellungspunkt kann nicht erstellt werden" -InformationAction Continue
             } else {
-                # Erstelle Wiederherstellungspunkt
+                # Erstelle Wiederherstellungspunkt (PS5 + PS7 kompatibel)
                 $restoreDescription = "Hellion Tool - Vor RAM-Test $(Get-Date -Format 'dd.MM.yyyy HH:mm')"
-                Checkpoint-Computer -Description $restoreDescription -RestorePointType "MODIFY_SETTINGS"
+                $restorePointCreated = $false
+
+                if (Get-Command Checkpoint-Computer -ErrorAction SilentlyContinue) {
+                    Checkpoint-Computer -Description $restoreDescription -RestorePointType "MODIFY_SETTINGS"
+                    $restorePointCreated = $true
+                }
+
+                if (-not $restorePointCreated) {
+                    # PS7 Fallback: WMI-Klasse direkt verwenden
+                    $srClass = [wmiclass]"\\.\root\default:SystemRestore"
+                    $srClass.CreateRestorePoint($restoreDescription, 12, 100) | Out-Null
+                    $restorePointCreated = $true
+                }
+
                 Write-Information "[OK] Wiederherstellungspunkt erstellt: $restoreDescription" -InformationAction Continue
             }
         } catch {

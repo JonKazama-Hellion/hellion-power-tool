@@ -1,6 +1,6 @@
 # ===================================================================
 # CONFIG UTILITIES MODULE
-# Hellion Power Tool v7.1.5.3 "Baldur" - Modular Version
+# Hellion Power Tool v7.1.5.4 "Baldur" - Modular Version
 # ===================================================================
 
 function Import-Configuration {
@@ -54,7 +54,7 @@ function Get-DefaultConfiguration {
     #>
     
     return @{
-        version = "7.1.5.3"
+        version = "7.1.5.4"
         codename = "Baldur"
         debug_mode = $false
         auto_update = $true
@@ -131,7 +131,7 @@ function Set-ConfigurationVariables {
     # Feature Flags setzen
     if ($Config.features) {
         $script:ConfigFeatures = $Config.features
-        Write-Log "[CONFIG] Feature-Flags geladen: $($Config.features.Keys -join ', ')" -Level "DEBUG"
+        Write-Log "[CONFIG] Feature-Flags geladen: $($Config.features.PSObject.Properties.Name -join ', ')" -Level "DEBUG"
     }
     
     # Modul-Konfiguration

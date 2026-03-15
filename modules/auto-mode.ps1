@@ -73,8 +73,8 @@ function Invoke-EnhancedAutoMode {
             $autoResults.TotalActions++
             
             # Rückgabe der Ergebnisse mit Abbruch-Info
-            $autoResults.Duration = [math]::Round((Get-Date).Subtract($startTime).TotalMinutes, 2)
-            
+            $autoResults.Duration = [math]::Round((Get-Date).Subtract($autoStartTime).TotalMinutes, 2)
+
             Write-Log "\n=== AUTO-MODUS SICHERHEITS-ABBRUCH ===" -Color Red
             Write-Log "Dauer: $($autoResults.Duration) Minuten" -Color White
             Write-Log "Status: ABGEBROCHEN (Sicherheit)" -Color Red
@@ -89,8 +89,8 @@ function Invoke-EnhancedAutoMode {
         $autoResults.ActionsPerformed += "Auto-Modus wegen fehlender Restore-Funktion abgebrochen"
         $autoResults.FailedActions++
         $autoResults.TotalActions++
-        $autoResults.Duration = [math]::Round((Get-Date).Subtract($startTime).TotalMinutes, 2)
-        
+        $autoResults.Duration = [math]::Round((Get-Date).Subtract($autoStartTime).TotalMinutes, 2)
+
         return $autoResults
     }
     

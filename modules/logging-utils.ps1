@@ -63,8 +63,8 @@ function Write-Log {
                 }
             }
             "TRACE" {
-                # Only show TRACE in Developer-Mode (2) 
-                if ($script:DebugMode -ge 2) {
+                # Only show TRACE in Developer-Mode (2)
+                if (($null -ne $script:DebugLevel) -and ([int]$script:DebugLevel -ge 2)) {
                     Write-Information "[INFO] [TRACE] $Message" -InformationAction Continue
                 }
             }

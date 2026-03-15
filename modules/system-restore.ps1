@@ -77,7 +77,7 @@ function Invoke-RestorePointManager {
 }
 
 function New-SystemRestorePoint {
-    param([string]$Description = "Hellion Tool v7.0.3 (Modular)")
+    param([string]$Description = "Hellion Tool v7.1.5.4 Baldur")
     
     Write-Log "`n[*] --- WIEDERHERSTELLUNGSPUNKT ---" -Color Cyan
     
@@ -90,18 +90,34 @@ function New-SystemRestorePoint {
         Write-Log "[*] Erstelle Wiederherstellungspunkt..." -Color Blue
         
         # Pruefe ob System Restore verfuegbar ist
-        $restoreEnabled = Get-ComputerRestorePoint -ErrorAction SilentlyContinue
+        if (Get-Command Get-ComputerRestorePoint -ErrorAction SilentlyContinue) {
+            $restoreEnabled = Get-ComputerRestorePoint -ErrorAction SilentlyContinue
+        } else {
+            # PS7 Fallback: WMI-Klasse direkt abfragen
+            $restoreEnabled = Get-CimInstance -ClassName SystemRestoreConfig -Namespace "root\default" -ErrorAction SilentlyContinue
+        }
         if ($null -eq $restoreEnabled) {
             Write-Log "[INFO] Aktiviere System Restore auf C:\..." -Color Yellow
-            Enable-ComputerRestore -Drive "C:\" -ErrorAction Stop
+            if (Get-Command Enable-ComputerRestore -ErrorAction SilentlyContinue) {
+                Enable-ComputerRestore -Drive "C:\" -ErrorAction Stop
+            } else {
+                # PS7 Fallback
+                & vssadmin resize shadowstorage /for=C: /on=C: /maxsize=5% 2>$null | Out-Null
+            }
         }
-        
+
         # Erstelle Restore Point mit 24h-Bypass
         $fullDescription = "$Description - $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
-        
+
         try {
             # Versuche zuerst normalen Wiederherstellungspunkt
-            Checkpoint-Computer -Description $fullDescription -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
+            if (Get-Command Checkpoint-Computer -ErrorAction SilentlyContinue) {
+                Checkpoint-Computer -Description $fullDescription -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
+            } else {
+                # PS7 Fallback: WMI-Klasse direkt verwenden
+                $srClass = [wmiclass]"\\.\root\default:SystemRestore"
+                $srClass.CreateRestorePoint($fullDescription, 12, 100) | Out-Null
+            }
         } catch {
             # Falls 24h-Limit, versuche Registry-Override
             if ($_.Exception.Message -like "*1440 Minuten*" -or $_.Exception.Message -like "*24*hour*") {
@@ -115,7 +131,12 @@ function New-SystemRestorePoint {
                     
                     # Nochmal versuchen
                     Start-Sleep -Seconds 2
-                    Checkpoint-Computer -Description "$fullDescription (Registry-Override)" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
+                    if (Get-Command Checkpoint-Computer -ErrorAction SilentlyContinue) {
+                        Checkpoint-Computer -Description "$fullDescription (Registry-Override)" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
+                    } else {
+                        $srClass = [wmiclass]"\\.\root\default:SystemRestore"
+                        $srClass.CreateRestorePoint("$fullDescription (Registry-Override)", 12, 100) | Out-Null
+                    }
                     
                     # Registry-Wert zurücksetzen (24h Standard)
                     if ($originalValue) {
@@ -171,7 +192,12 @@ function Get-SystemRestorePoints {
     Write-Log "`n[*] --- VERFUEGBARE WIEDERHERSTELLUNGSPUNKTE ---" -Color Cyan
     
     try {
-        $restorePoints = Get-ComputerRestorePoint -ErrorAction Stop
+        if (Get-Command Get-ComputerRestorePoint -ErrorAction SilentlyContinue) {
+            $restorePoints = Get-ComputerRestorePoint -ErrorAction Stop
+        } else {
+            # PS7 Fallback: WMI-Klasse direkt abfragen
+            $restorePoints = Get-CimInstance -ClassName SystemRestore -Namespace "root\default" -ErrorAction Stop
+        }
         
         if ($restorePoints -and $restorePoints.Count -gt 0) {
             Write-Log "Gefunden: $($restorePoints.Count) Wiederherstellungspunkte" -Color White
@@ -256,8 +282,14 @@ function Restore-SystemToPoint {
             if ($confirm -eq 'CONFIRM') {
                 try {
                     Write-Log "[*] Starte System-Wiederherstellung..." -Color Blue
-                    Restore-Computer -RestorePoint $latestRestore.SequenceNumber -Confirm:$false -ErrorAction Stop
-                    
+                    if (Get-Command Restore-Computer -ErrorAction SilentlyContinue) {
+                        Restore-Computer -RestorePoint $latestRestore.SequenceNumber -Confirm:$false -ErrorAction Stop
+                    } else {
+                        # PS7 Fallback: WMI-Klasse
+                        $srClass = [wmiclass]"\\.\root\default:SystemRestore"
+                        $srClass.Restore($latestRestore.SequenceNumber) | Out-Null
+                    }
+
                     Write-Log "[SUCCESS] System-Wiederherstellung gestartet!" -Color Green
                     Write-Log "[INFO] System wird neu gestartet..." -Color Yellow
                     
@@ -289,7 +321,12 @@ function Restore-SystemToPoint {
                     
                     $confirm = Read-Host "`nAuf '$($selectedRestore.Description)' zuruecksetzen? [CONFIRM]"
                     if ($confirm -eq 'CONFIRM') {
-                        Restore-Computer -RestorePoint $selectedRestore.SequenceNumber -Confirm:$false
+                        if (Get-Command Restore-Computer -ErrorAction SilentlyContinue) {
+                            Restore-Computer -RestorePoint $selectedRestore.SequenceNumber -Confirm:$false
+                        } else {
+                            $srClass = [wmiclass]"\\.\root\default:SystemRestore"
+                            $srClass.Restore($selectedRestore.SequenceNumber) | Out-Null
+                        }
                         Add-Success "System-Wiederherstellung: Manuell gestartet"
                         return $true
                     }
@@ -329,13 +366,18 @@ function Enable-SystemRestore {
     
     try {
         # System Restore auf allen Laufwerken aktivieren
-        $drives = Get-WmiObject -Class Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
-        
+        $drives = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
+
         foreach ($drive in $drives) {
             $driveLetter = $drive.DeviceID
-            
+
             try {
-                Enable-ComputerRestore -Drive $driveLetter -ErrorAction Stop
+                if (Get-Command Enable-ComputerRestore -ErrorAction SilentlyContinue) {
+                    Enable-ComputerRestore -Drive $driveLetter -ErrorAction Stop
+                } else {
+                    # PS7 Fallback: vssadmin
+                    & vssadmin resize shadowstorage /for=$driveLetter /on=$driveLetter /maxsize=5% 2>$null | Out-Null
+                }
                 Write-Log "[OK] System Restore aktiviert auf $driveLetter" -Color Green
             } catch {
                 Write-Log "[WARNING] System Restore auf $driveLetter nicht aktivierbar" -Color Yellow

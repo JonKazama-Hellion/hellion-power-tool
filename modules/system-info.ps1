@@ -316,8 +316,18 @@ function Get-DetailedDriverStatus {
             try {
                 $driverDate = $driver.InstallDate
                 if ($driverDate) {
-                    $installDate = [Management.ManagementDateTimeConverter]::ToDateTime($driverDate)
-                    if ($installDate -lt (Get-Date).AddYears(-3)) {
+                    # CIM gibt DateTime direkt zurueck, WMI gibt String zurueck
+                    $installDate = $null
+                    if ($driverDate -is [DateTime]) {
+                        $installDate = $driverDate
+                    } elseif ($driverDate -is [string]) {
+                        # WMI DateTime-String Format: yyyyMMddHHmmss.ffffff+zzz
+                        $wmidatePattern = '(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})'
+                        if ($driverDate -match $wmidatePattern) {
+                            $installDate = Get-Date -Year $matches[1] -Month $matches[2] -Day $matches[3] -Hour $matches[4] -Minute $matches[5] -Second $matches[6]
+                        }
+                    }
+                    if ($installDate -and $installDate -lt (Get-Date).AddYears(-3)) {
                         $outdatedDrivers += @{
                             Name = $driver.Name
                             InstallDate = $installDate

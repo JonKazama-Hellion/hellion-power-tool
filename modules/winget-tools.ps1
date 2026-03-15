@@ -305,7 +305,7 @@ function Install-WingetUpdates {
         return $true
     }
     
-    $updateCount = $availableUpdates[0]  # Erste Element ist die Anzahl
+    $updateCount = $availableUpdates.Count
     Write-Host ""
     Write-Host "[*] WINGET UPDATE-INSTALLATION ($updateCount verfuegbar):" -ForegroundColor Cyan
     Write-Host ""
@@ -376,25 +376,25 @@ function Install-WingetUpdates {
             }
             '2' {
                 Write-Log "[*] Installiere wichtige Updates..." -Color Blue
-                
-                # Filtere wichtige Updates
-                $importantUpdates = $availableUpdates | Where-Object { 
-                    $_.Name -match "Microsoft|Windows|Chrome|Firefox|Edge|Visual Studio" -or
-                    $_.Id -match "Microsoft|Google|Mozilla"
+
+                # Filtere wichtige Updates (availableUpdates sind Strings mit Update-Namen)
+                $importantUpdates = $availableUpdates | Where-Object {
+                    $_ -match "Microsoft|Windows|Chrome|Firefox|Edge|Visual|Google|Mozilla"
                 }
-                
-                if ($importantUpdates.Count -gt 0) {
-                    Write-Log "[INFO] $($importantUpdates.Count) wichtige Updates gefunden" -Color Yellow
-                    
-                    foreach ($update in $importantUpdates) {
-                        Write-Log "[*] Installiere: $($update.Name)..." -Color Blue
-                        & winget upgrade --id $update.Id --silent --accept-source-agreements --accept-package-agreements 2>&1 | Out-Null
-                        
+
+                if ($importantUpdates -and @($importantUpdates).Count -gt 0) {
+                    $importantList = @($importantUpdates)
+                    Write-Log "[INFO] $($importantList.Count) wichtige Updates gefunden" -Color Yellow
+
+                    foreach ($updateName in $importantList) {
+                        Write-Log "[*] Installiere: $updateName..." -Color Blue
+                        & winget upgrade --name $updateName --silent --accept-source-agreements --accept-package-agreements 2>&1 | Out-Null
+
                         if ($LASTEXITCODE -eq 0) {
-                            Write-Log "  [OK] $($update.Name) erfolgreich" -Color Green
+                            Write-Log "  [OK] $updateName erfolgreich" -Color Green
                             $success++
                         } else {
-                            Write-Log "  [ERROR] $($update.Name) fehlgeschlagen" -Color Red
+                            Write-Log "  [ERROR] $updateName fehlgeschlagen" -Color Red
                             $failed++
                         }
                     }
@@ -405,30 +405,29 @@ function Install-WingetUpdates {
             '3' {
                 Write-Information "[INFO] `n[*] VERFUEGBARE UPDATES:" -InformationAction Continue
                 for ($i = 0; $i -lt $availableUpdates.Count; $i++) {
-                    $update = $availableUpdates[$i]
-                    Write-Information "[INFO]   [$($i+1)] $($update.Name) ($($update.CurrentVersion) -> $($update.AvailableVersion))" -InformationAction Continue
+                    Write-Information "[INFO]   [$($i+1)] $($availableUpdates[$i])" -InformationAction Continue
                 }
-                
+
                 Write-Information "[INFO] `nGeben Sie die Nummern der zu installierenden Updates ein (z.B. 1,3,5):" -InformationAction Continue
                 $selection = Read-Host "Auswahl"
-                
+
                 if ($selection) {
                     $selectedNumbers = $selection -split ',' | ForEach-Object { $_.Trim() }
-                    
+
                     foreach ($num in $selectedNumbers) {
                         try {
                             $index = [int]$num - 1
                             if ($index -ge 0 -and $index -lt $availableUpdates.Count) {
-                                $update = $availableUpdates[$index]
-                                Write-Log "[*] Installiere: $($update.Name)..." -Color Blue
-                                
-                                & winget upgrade --id $update.Id --silent --accept-source-agreements --accept-package-agreements | Out-Null
-                                
+                                $updateName = $availableUpdates[$index]
+                                Write-Log "[*] Installiere: $updateName..." -Color Blue
+
+                                & winget upgrade --name $updateName --silent --accept-source-agreements --accept-package-agreements | Out-Null
+
                                 if ($LASTEXITCODE -eq 0) {
-                                    Write-Log "  [OK] $($update.Name) erfolgreich" -Color Green
+                                    Write-Log "  [OK] $updateName erfolgreich" -Color Green
                                     $success++
                                 } else {
-                                    Write-Log "  [ERROR] $($update.Name) fehlgeschlagen" -Color Red
+                                    Write-Log "  [ERROR] $updateName fehlgeschlagen" -Color Red
                                     $failed++
                                 }
                             } else {
