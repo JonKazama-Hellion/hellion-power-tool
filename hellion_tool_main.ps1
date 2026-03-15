@@ -1,5 +1,5 @@
 ﻿# ===================================================================
-# HELLION POWER TOOL - MODULAR VERSION v7.1.5.3 "Baldur"
+# HELLION POWER TOOL - MODULAR VERSION v7.1.5.4 "Baldur"
 # Main Entry Point - Loads all modules and provides menu interface
 # ===================================================================
 <#
@@ -156,7 +156,7 @@ $script:RootPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $script:ModulesPath = Join-Path $script:RootPath "modules"
 
 Write-Information "================================================================" -InformationAction Continue
-Write-Information "        HELLION POWER TOOL v7.1.5.3 'Baldur' (MODULAR)        " -InformationAction Continue
+Write-Information "        HELLION POWER TOOL v7.1.5.4 'Baldur' (MODULAR)        " -InformationAction Continue
 Write-Information "================================================================" -InformationAction Continue
 Write-Information "Loading modules..." -InformationAction Continue
 
@@ -182,7 +182,7 @@ if (Test-Path $script:ModulesPath) {
 # Initialize logging
 Initialize-Logging -LogDirectory "$env:TEMP\HellionPowerTool" -DetailedLogging
 
-Write-Log "Hellion Power Tool v7.1.5.3 'Baldur' started (Modular version)" -Color Cyan
+Write-Log "Hellion Power Tool v7.1.5.4 'Baldur' started (Modular version)" -Color Cyan
 Write-Log "Modules loaded from: $script:ModulesPath" -Color Gray
 
 # Load configuration
@@ -272,7 +272,7 @@ if ($ForceDebugLevel -ge 0) {
 function Show-MainMenu {
     Clear-Host
     Write-Host "================================================================" -ForegroundColor Cyan
-    Write-Host "        HELLION POWER TOOL v7.1.5.3 'Baldur' (MODULAR)        " -ForegroundColor White
+    Write-Host "        HELLION POWER TOOL v7.1.5.4 'Baldur' (MODULAR)        " -ForegroundColor White
     Write-Host "================================================================" -ForegroundColor Cyan
     
     # Show current debug mode (nur in Debug-Modi)
@@ -788,11 +788,7 @@ if (($null -ne $script:DebugLevel) -and ([int]$script:DebugLevel -ge 1)) {
                             Write-Host ""
                         }
                         
-                        # Defender-Risiken anzeigen (für Kompatibilität)
-                        if ($defenderRisks.Count -gt 0) {
-                            Write-Host "    🛡️ Legacy Defender-Risiko: " -ForegroundColor Red -NoNewline
-                            Write-Host "$($defenderRisks.Count) Pattern gefunden" -ForegroundColor Red
-                        }
+                        # Defender-Risiken werden jetzt ueber $deepValidation.AVRisks abgedeckt (oben)
                         
                         # Issues anzeigen (mit Severity-Farben)
                         foreach ($issue in $deepValidation.Issues) {
@@ -1184,7 +1180,7 @@ if (($null -ne $script:DebugLevel) -and ([int]$script:DebugLevel -ge 1)) {
                 } catch {
                     # Fallback: WMI-basierte CPU-Last (langsamer aber zuverlässiger)
                     try {
-                        $cpuLoad = Get-WmiObject -Class Win32_Processor -ErrorAction SilentlyContinue | Measure-Object -Property LoadPercentage -Average
+                        $cpuLoad = Get-CimInstance -ClassName Win32_Processor -ErrorAction SilentlyContinue | Measure-Object -Property LoadPercentage -Average
                         if ($cpuLoad.Average) {
                             $resourceProfile.CPU.Usage = [math]::Round($cpuLoad.Average, 1)
                         }
@@ -1358,7 +1354,7 @@ if (($null -ne $script:DebugLevel) -and ([int]$script:DebugLevel -ge 1)) {
         }
         
         # Critical System Dependencies
-        $criticalCmdlets = @('Get-WmiObject', 'Get-CimInstance', 'Start-Job', 'Invoke-WebRequest')
+        $criticalCmdlets = @('Get-CimInstance', 'Start-Job', 'Invoke-WebRequest')
         $missingCmdlets = @()
         foreach ($cmdlet in $criticalCmdlets) {
             if (-not (Get-Command $cmdlet -ErrorAction SilentlyContinue)) {

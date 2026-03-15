@@ -114,8 +114,9 @@ if %errorlevel%==0 (
                 timeout /t 3 /nobreak >nul
                 
                 REM Multi-Level PS7 Detection (robust)
+                REM WICHTIG: !errorlevel! statt %errorlevel% weil wir in einem else()-Block sind
                 where pwsh >nul 2>&1
-                if %errorlevel%==0 (
+                if !errorlevel!==0 (
                     echo [SUCCESS] PowerShell 7 gefunden ueber PATH
                     set "USE_PS=pwsh"
                     set "PS_VERSION=7"
@@ -127,9 +128,9 @@ if %errorlevel%==0 (
                         set "PS_VERSION=7"
                         goto :PS_DETECTION_DONE
                     ) else (
-                        if exist "%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe" (
+                        if exist "!LOCALAPPDATA!\Microsoft\WindowsApps\pwsh.exe" (
                             echo [SUCCESS] PowerShell 7 ueber Store-App gefunden
-                            set "USE_PS=%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe"
+                            set "USE_PS=!LOCALAPPDATA!\Microsoft\WindowsApps\pwsh.exe"
                             set "PS_VERSION=7"
                             goto :PS_DETECTION_DONE
                         ) else (
@@ -169,64 +170,72 @@ echo   [0] Beenden
 echo.
 choice /c 123450 /n /m "Waehle Option [1/2/3/4/5/0]: "
 
-if errorlevel 6 (
-    echo [INFO] Launcher beendet
-    exit /b 0
-)
-if errorlevel 5 (
-    echo.
-    echo [EMERGENCY] Starte Emergency-Updater...
-    call "!LAUNCHER_DIR!\emergency-update.bat"
-    echo.
-    echo [*] Zurueck zum Launcher...
-    timeout /t 2 /nobreak >nul
-    echo.
-)
-if errorlevel 4 (
-    echo.
-    echo [GIT-INSTALL] Starte Git Installation...
-    call "!LAUNCHER_DIR!\install-git.bat"
-    echo.
-    echo [*] Zurueck zum Launcher...
-    timeout /t 2 /nobreak >nul
-    echo.
-)
-if errorlevel 3 (
-    echo.
-    echo [PS7-INSTALL] Starte PowerShell 7 Installation...
-    call "!LAUNCHER_DIR!\install-ps7.bat"
-    echo.
-    echo [*] Zurueck zum Launcher...
-    timeout /t 2 /nobreak >nul
-    echo.
+if errorlevel 6 goto :OPT_EXIT
+if errorlevel 5 goto :OPT_EMERGENCY
+if errorlevel 4 goto :OPT_GIT
+if errorlevel 3 goto :OPT_PS7
+if errorlevel 2 goto :OPT_UPDATE
+goto :OPTION_1
 
-    REM Nach PS7 Installation: Neuprüfung der PowerShell-Version
-    echo [RECHECK] Pruefe PowerShell nach Installation...
-    where pwsh >nul 2>&1
-    if %errorlevel%==0 (
-        echo [SUCCESS] PowerShell 7 jetzt verfuegbar - verwende PS7
-        set "USE_PS=pwsh"
+:OPT_EXIT
+echo [INFO] Launcher beendet
+exit /b 0
+
+:OPT_EMERGENCY
+echo.
+echo [EMERGENCY] Starte Emergency-Updater...
+call "!LAUNCHER_DIR!\emergency-update.bat"
+echo.
+echo [*] Zurueck zum Launcher...
+timeout /t 2 /nobreak >nul
+echo.
+goto :OPTION_1
+
+:OPT_GIT
+echo.
+echo [GIT-INSTALL] Starte Git Installation...
+call "!LAUNCHER_DIR!\install-git.bat"
+echo.
+echo [*] Zurueck zum Launcher...
+timeout /t 2 /nobreak >nul
+echo.
+goto :OPTION_1
+
+:OPT_PS7
+echo.
+echo [PS7-INSTALL] Starte PowerShell 7 Installation...
+call "!LAUNCHER_DIR!\install-ps7.bat"
+echo.
+echo [*] Zurueck zum Launcher...
+timeout /t 2 /nobreak >nul
+echo.
+REM Nach PS7 Installation: Neupruefung der PowerShell-Version
+echo [RECHECK] Pruefe PowerShell nach Installation...
+where pwsh >nul 2>&1
+if %errorlevel%==0 (
+    echo [SUCCESS] PowerShell 7 jetzt verfuegbar - verwende PS7
+    set "USE_PS=pwsh"
+    set "PS_VERSION=7"
+) else (
+    if exist "C:\Program Files\PowerShell\7\pwsh.exe" (
+        echo [SUCCESS] PowerShell 7 installiert - verwende direkten Pfad
+        set "USE_PS=C:\Program Files\PowerShell\7\pwsh.exe"
         set "PS_VERSION=7"
     ) else (
-        if exist "C:\Program Files\PowerShell\7\pwsh.exe" (
-            echo [SUCCESS] PowerShell 7 installiert - verwende direkten Pfad
-            set "USE_PS=C:\Program Files\PowerShell\7\pwsh.exe"
-            set "PS_VERSION=7"
-        ) else (
-            echo [INFO] PowerShell 7 Installation beendet - verwende PS5
-        )
+        echo [INFO] PowerShell 7 Installation beendet - verwende PS5
     )
-    echo.
 )
-if errorlevel 2 (
-    echo.
-    echo [UPDATE-CHECK] Starte Update-Pruefung...
-    call "!LAUNCHER_DIR!\update-check.bat"
-    echo.
-    echo [*] Zurueck zum Launcher...
-    timeout /t 2 /nobreak >nul
-    echo.
-)
+echo.
+goto :OPTION_1
+
+:OPT_UPDATE
+echo.
+echo [UPDATE-CHECK] Starte Update-Pruefung...
+call "!LAUNCHER_DIR!\update-check.bat"
+echo.
+echo [*] Zurueck zum Launcher...
+timeout /t 2 /nobreak >nul
+echo.
 
 REM Option 1 (oder Fallback): Hellion Tool starten
 :OPTION_1

@@ -358,7 +358,8 @@ echo [SAFETY] Installer-Pfad: !INSTALLER_SCRIPT!
 echo @echo off > "!INSTALLER_SCRIPT!"
 echo title Hellion Update Installer >> "!INSTALLER_SCRIPT!"
 echo echo [UPDATE] Installiere neue Version... >> "!INSTALLER_SCRIPT!"
-echo timeout /t 3 /nobreak ^>nul >> "!INSTALLER_SCRIPT!"
+echo echo [WAIT] Warte bis Parent-Prozesse beendet sind (10 Sekunden)... >> "!INSTALLER_SCRIPT!"
+echo timeout /t 10 /nobreak ^>nul >> "!INSTALLER_SCRIPT!"
 echo. >> "!INSTALLER_SCRIPT!"
 
 echo REM Wechsle in sicheres Root-Verzeichnis >> "!INSTALLER_SCRIPT!"
