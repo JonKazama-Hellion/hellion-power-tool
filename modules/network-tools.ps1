@@ -28,7 +28,7 @@ function Test-EnhancedInternetConnectivity {
         @{IP="84.200.70.40"; Name="DNS.WATCH-2"}
     )
     $httpSites = @("http://www.google.com", "http://www.bing.com", "http://example.org")
-    $httpsSites = @("https://www.microsoft.com", "https://www.google.com", "https://hellion-initiative.de")
+    $httpsSites = @("https://www.microsoft.com", "https://www.google.com", "https://hellion-media.de")
     $cdnSites = @("https://www.cloudflare.com", "https://cdn.discordapp.com", "https://images-na.ssl-images-amazon.com")
     
     Write-Log "[*] Pruefe DNS-Aufloesung..." -Color Blue

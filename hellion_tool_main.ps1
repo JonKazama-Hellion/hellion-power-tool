@@ -200,7 +200,7 @@ $script:AVSafeMode = $true
 $script:AVDelayMs = 50
 $script:UpdateRecommendations = @()
 $script:ExplainMode = $false
-$script:DebugLevel = 0  # 0=Normal, 1=Debug, 2=Verbose
+# DebugLevel wird unten durch Parameter/Launcher/manuelle Auswahl gesetzt (nicht hier resetten!)
 
 # Debug: Zeige detaillierte Parameter-Info (nur in Developer-Modus)
 if ($DevMode.IsPresent -or $ForceDebugLevel -ge 2) {
@@ -244,7 +244,7 @@ if ($ForceDebugLevel -ge 0) {
     Write-Information "[NO-PARAM] Keine Parameter erkannt - falle in manuelle Auswahl" -InformationAction Continue
     Clear-Host
     Write-Information "================================================================" -InformationAction Continue
-    Write-Information "        HELLION POWER TOOL v7.1.5.3 'Baldur' (MODULAR)        " -InformationAction Continue
+    Write-Information "        HELLION POWER TOOL v7.1.5.4 'Baldur' (MODULAR)        " -InformationAction Continue
     Write-Information "================================================================" -InformationAction Continue
     Write-Information "" -InformationAction Continue
     Write-Information "[*] DEBUG-MODUS WAEHLEN:" -InformationAction Continue

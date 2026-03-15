@@ -31,7 +31,7 @@ echo [OK] Launcher-Verzeichnis: !LAUNCHER_DIR!
 REM ===== SCHRITT 1: LOKALE VERSION LESEN =====
 echo [*] Lade lokale Version...
 
-REM Mehrere Fallback-Pfade für version.txt
+REM Mehrere Fallback-Pfade fuer version.txt
 set "VERSION_FILE=!ROOT_DIR!\config\version.txt"
 set "VERSION_FILE_ALT1=%~dp0..\config\version.txt"
 set "VERSION_FILE_ALT2=!LAUNCHER_DIR!\..\config\version.txt"
@@ -52,9 +52,9 @@ if exist "!VERSION_FILE!" (
     goto :ERROR_END
 )
 
-REM Lese alle 4 Zeilen der version.txt
+REM Lese alle 4 Zeilen der version.txt (usebackq fuer Pfade mit Leerzeichen)
 set "LINE_COUNT=0"
-for /f "delims=" %%a in (!VERSION_FILE!) do (
+for /f "usebackq delims=" %%a in ("!VERSION_FILE!") do (
     set /a LINE_COUNT+=1
     if !LINE_COUNT!==1 set "LOCAL_VERSION=%%a"
     if !LINE_COUNT!==2 set "LOCAL_CODENAME=%%a"
@@ -65,11 +65,14 @@ for /f "delims=" %%a in (!VERSION_FILE!) do (
 REM Validiere dass alle Daten vorhanden sind
 if "!LOCAL_VERSION!"=="" (
     echo [ERROR] Lokale Version konnte nicht gelesen werden
+    echo [DEBUG] Gelesene Zeilen: !LINE_COUNT!
     goto :ERROR_END
 )
 if "!LOCAL_TIMESTAMP!"=="" (
     echo [ERROR] Lokaler Timestamp fehlt - inkompatible Version
     echo [INFO] Nur v7.1.4+ Versionen werden unterstuetzt
+    echo [DEBUG] Gelesene Zeilen: !LINE_COUNT!
+    echo [DEBUG] Version: "!LOCAL_VERSION!" Codename: "!LOCAL_CODENAME!"
     goto :ERROR_END
 )
 
@@ -77,7 +80,7 @@ echo [OK] Lokale Version: !LOCAL_VERSION! "!LOCAL_CODENAME!" (!LOCAL_DATE!)
 echo [OK] Lokaler Timestamp: !LOCAL_TIMESTAMP!
 echo.
 
-REM ===== SCHRITT 2: GIT VERFÜGBARKEIT PRÜFEN =====
+REM ===== SCHRITT 2: GIT VERFUEGBARKEIT PRUEFEN =====
 echo [*] Pruefe Git Verfuegbarkeit...
 git --version >nul 2>&1
 if errorlevel 1 (
@@ -91,30 +94,36 @@ echo.
 
 REM ===== SCHRITT 3: GITHUB VERSION LADEN =====
 echo [*] Lade GitHub Version...
+echo [INFO] Verbinde mit GitHub Repository...
 set "TEMP_DIR=%TEMP%\hellion_update_%RANDOM%"
 mkdir "!TEMP_DIR!" >nul 2>&1
 
 cd /d "!TEMP_DIR!"
-git clone --depth 1 https://github.com/JonKazama-Hellion/hellion-power-tool.git repo >nul 2>&1
 
-if errorlevel 1 (
-    echo [ERROR] GitHub Repository konnte nicht geladen werden
-    echo [INFO] Pruefe Internetverbindung
-    cd /d "%~dp0"
-    rmdir /s /q "!TEMP_DIR!" >nul 2>&1
-    goto :ERROR_END
-)
-
+REM Git clone mit sichtbarem Fehler-Output (nur stdout unterdrueckt, stderr sichtbar)
+git clone --depth 1 https://github.com/JonKazama-Hellion/hellion-power-tool.git repo 2>&1 | findstr /i "error fatal" >nul 2>&1
+REM Pruefe ob clone erfolgreich war anhand der Dateien (zuverlaessiger als errorlevel)
 if not exist "repo\config\version.txt" (
-    echo [ERROR] version.txt nicht im GitHub Repository gefunden
-    cd /d "%~dp0"
+    echo [ERROR] GitHub Repository konnte nicht geladen oder version.txt fehlt
+    echo [INFO] Pruefe Internetverbindung und Repository-URL
+    echo [DEBUG] Temp-Dir: !TEMP_DIR!
+    REM Zeige was tatsaechlich geklont wurde
+    if exist "repo" (
+        echo [DEBUG] repo-Ordner existiert, aber version.txt fehlt
+        dir /b "repo" 2>nul
+    ) else (
+        echo [DEBUG] repo-Ordner wurde nicht erstellt - Clone fehlgeschlagen
+    )
+    cd /d "!LAUNCHER_DIR!"
     rmdir /s /q "!TEMP_DIR!" >nul 2>&1
     goto :ERROR_END
 )
 
-REM Lese GitHub Version
+echo [OK] Repository erfolgreich geladen
+
+REM Lese GitHub Version (usebackq fuer sichere Pfad-Behandlung)
 set "GH_LINE_COUNT=0"
-for /f "delims=" %%a in (repo\config\version.txt) do (
+for /f "usebackq delims=" %%a in ("repo\config\version.txt") do (
     set /a GH_LINE_COUNT+=1
     if !GH_LINE_COUNT!==1 set "GITHUB_VERSION=%%a"
     if !GH_LINE_COUNT!==2 set "GITHUB_CODENAME=%%a"
@@ -122,17 +131,19 @@ for /f "delims=" %%a in (repo\config\version.txt) do (
     if !GH_LINE_COUNT!==4 set "GITHUB_TIMESTAMP=%%a"
 )
 
-REM Cleanup
-cd /d "%~dp0"
+REM Cleanup - zurueck zum Launcher-Verzeichnis (NICHT %~dp0 das kann sich aendern)
+cd /d "!LAUNCHER_DIR!"
 rmdir /s /q "!TEMP_DIR!" >nul 2>&1
 
 REM Validiere GitHub Daten
 if "!GITHUB_VERSION!"=="" (
     echo [ERROR] GitHub Version konnte nicht gelesen werden
+    echo [DEBUG] Gelesene Zeilen: !GH_LINE_COUNT!
     goto :ERROR_END
 )
 if "!GITHUB_TIMESTAMP!"=="" (
     echo [ERROR] GitHub Timestamp fehlt - inkompatible Version
+    echo [DEBUG] GitHub Version: "!GITHUB_VERSION!" Zeilen: !GH_LINE_COUNT!
     goto :ERROR_END
 )
 
@@ -140,19 +151,40 @@ echo [OK] GitHub Version: !GITHUB_VERSION! "!GITHUB_CODENAME!" (!GITHUB_DATE!)
 echo [OK] GitHub Timestamp: !GITHUB_TIMESTAMP!
 echo.
 
-REM ===== SCHRITT 4: TIMESTAMP VERGLEICH =====
+REM ===== SCHRITT 4: VERSIONS-VERGLEICH =====
 echo [*] Vergleiche Versionen...
+echo [DEBUG] Lokal:  "!LOCAL_VERSION!" / Timestamp: "!LOCAL_TIMESTAMP!"
+echo [DEBUG] GitHub: "!GITHUB_VERSION!" / Timestamp: "!GITHUB_TIMESTAMP!"
 
-if "!LOCAL_TIMESTAMP!"=="!GITHUB_TIMESTAMP!" (
-    echo [RESULT] Identische Timestamps - keine Aktualisierung erforderlich
-    echo.
-    echo ==============================================================================
-    echo [OK] Du hast bereits die neueste Version: !LOCAL_VERSION! "!LOCAL_CODENAME!"
-    echo ==============================================================================
-    goto :SUCCESS_END
+REM Erster Check: Versions-String direkt vergleichen
+if "!LOCAL_VERSION!"=="!GITHUB_VERSION!" (
+    if "!LOCAL_TIMESTAMP!"=="!GITHUB_TIMESTAMP!" (
+        echo [RESULT] Identische Version und Timestamp
+        echo.
+        echo ==============================================================================
+        echo [OK] Du hast bereits die neueste Version: !LOCAL_VERSION! "!LOCAL_CODENAME!"
+        echo ==============================================================================
+        goto :SUCCESS_END
+    )
+    REM Gleiche Version aber anderer Timestamp - Minor-Fix verfuegbar
+    echo [INFO] Gleiche Version aber anderer Build-Timestamp erkannt
 )
 
-REM Robuster String-basierter Timestamp-Vergleich
+REM Zweiter Check: Wenn Versionen unterschiedlich, ist ein Update da
+if NOT "!LOCAL_VERSION!"=="!GITHUB_VERSION!" (
+    echo [RESULT] Unterschiedliche Versionen erkannt!
+    echo.
+    echo ==============================================================================
+    echo                            UPDATE VERFUEGBAR
+    echo ==============================================================================
+    echo.
+    echo [AKTUELL]    !LOCAL_VERSION! "!LOCAL_CODENAME!" (!LOCAL_DATE!)
+    echo [VERFUEGBAR] !GITHUB_VERSION! "!GITHUB_CODENAME!" (!GITHUB_DATE!)
+    echo.
+    goto :OFFER_UPDATE
+)
+
+REM Dritter Check: Timestamp-Vergleich (gleiche Version, anderer Timestamp)
 call :COMPARE_TIMESTAMPS "!LOCAL_TIMESTAMP!" "!GITHUB_TIMESTAMP!" TIMESTAMP_RESULT
 
 if "!TIMESTAMP_RESULT!"=="NEWER" (
@@ -160,49 +192,65 @@ if "!TIMESTAMP_RESULT!"=="NEWER" (
     echo.
     echo ==============================================================================
     echo [OK] Du hast eine neuere Version als auf GitHub verfuegbar!
-    echo [LOKAL] !LOCAL_VERSION! "!LOCAL_CODENAME!" (!LOCAL_DATE!)
+    echo [LOKAL]  !LOCAL_VERSION! "!LOCAL_CODENAME!" (!LOCAL_DATE!)
     echo [GITHUB] !GITHUB_VERSION! "!GITHUB_CODENAME!" (!GITHUB_DATE!)
     echo ==============================================================================
     goto :SUCCESS_END
 )
 
 if "!TIMESTAMP_RESULT!"=="OLDER" (
-    echo [RESULT] GitHub Version ist neuer - Update verfuegbar
+    echo [RESULT] GitHub Build ist neuer - Update verfuegbar
     echo.
     echo ==============================================================================
-    echo                            UPDATE VERFUEGBAR
+    echo                         HOTFIX VERFUEGBAR
     echo ==============================================================================
     echo.
-    echo [AKTUELL] !LOCAL_VERSION! "!LOCAL_CODENAME!" (!LOCAL_DATE!)
+    echo [AKTUELL]    !LOCAL_VERSION! "!LOCAL_CODENAME!" (!LOCAL_DATE!)
     echo [VERFUEGBAR] !GITHUB_VERSION! "!GITHUB_CODENAME!" (!GITHUB_DATE!)
     echo.
-    echo [ANGEBOT] Automatisches Update durchfuehren?
-    echo   [J] Ja, automatisch updaten (empfohlen)
-    echo   [N] Nein, manuell herunterladen
-    echo   [A] Abbrechen
-    echo.
-    choice /c JNA /n /m "Automatisches Update starten? [J/N/A]: "
+    goto :OFFER_UPDATE
+)
 
-    if errorlevel 3 (
-        echo [INFO] Update abgebrochen
-        goto :SUCCESS_END
-    )
-    if errorlevel 2 (
-        echo.
-        echo [MANUAL] Lade die neueste Version manuell herunter:
-        echo https://github.com/JonKazama-Hellion/hellion-power-tool/releases/latest
-        goto :SUCCESS_END
-    )
-
+if "!TIMESTAMP_RESULT!"=="EQUAL" (
+    echo [RESULT] Identische Timestamps
     echo.
-    echo [AUTO-UPDATE] Starte automatisches Update...
-    call :PERFORM_AUTO_UPDATE
+    echo ==============================================================================
+    echo [OK] Du hast bereits die neueste Version: !LOCAL_VERSION! "!LOCAL_CODENAME!"
+    echo ==============================================================================
     goto :SUCCESS_END
 )
 
-REM Fallback - sollte nie erreicht werden
-echo [ERROR] Timestamp-Vergleich fehlgeschlagen
-goto :ERROR_END
+REM Fallback bei Vergleichsfehler
+echo [WARNING] Timestamp-Vergleich ergab: !TIMESTAMP_RESULT!
+echo [INFO] Versionen manuell pruefen:
+echo [LOKAL]  !LOCAL_VERSION! "!LOCAL_CODENAME!" Timestamp: !LOCAL_TIMESTAMP!
+echo [GITHUB] !GITHUB_VERSION! "!GITHUB_CODENAME!" Timestamp: !GITHUB_TIMESTAMP!
+goto :SUCCESS_END
+
+REM ===== UPDATE ANBIETEN =====
+:OFFER_UPDATE
+echo [ANGEBOT] Automatisches Update durchfuehren?
+echo   [J] Ja, automatisch updaten (empfohlen)
+echo   [N] Nein, manuell herunterladen
+echo   [A] Abbrechen
+echo.
+choice /c JNA /n /m "Automatisches Update starten? [J/N/A]: "
+
+if errorlevel 3 (
+    echo [INFO] Update abgebrochen
+    goto :SUCCESS_END
+)
+if errorlevel 2 (
+    echo.
+    echo [MANUAL] Lade die neueste Version manuell herunter:
+    echo https://github.com/JonKazama-Hellion/hellion-power-tool/releases/latest
+    goto :SUCCESS_END
+)
+
+echo.
+echo [AUTO-UPDATE] Starte automatisches Update...
+call :PERFORM_AUTO_UPDATE
+goto :SUCCESS_END
 
 REM ===== AUTO-UPDATE FUNKTION =====
 :PERFORM_AUTO_UPDATE
@@ -212,12 +260,12 @@ echo                         AUTOMATISCHES UPDATE
 echo ==============================================================================
 echo.
 
-REM Sichere Verzeichnis-Bestimmung (kein Self-Delete möglich)
+REM Sichere Verzeichnis-Bestimmung (kein Self-Delete moeglich)
 echo [SAFETY] Validiere Update-Verzeichnisse...
 set "UPDATE_ROOT_DIR=!ROOT_DIR!"
 if "!UPDATE_ROOT_DIR!"=="" (
-    echo [ERROR] Root-Verzeichnis nicht verfügbar - Update abgebrochen
-    return
+    echo [ERROR] Root-Verzeichnis nicht verfuegbar - Update abgebrochen
+    goto :EOF
 )
 
 REM Wechsle zum sicheren Root-Verzeichnis (nie Launcher-Dir)
@@ -243,14 +291,14 @@ if not exist "!BACKUP_BASE_DIR!" (
     mkdir "!BACKUP_BASE_DIR!" >nul 2>&1
     if errorlevel 1 (
         echo [ERROR] Backup-Basis-Verzeichnis kann nicht erstellt werden: !BACKUP_BASE_DIR!
-        return
+        goto :EOF
     )
 )
 
 mkdir "!BACKUP_DIR!" >nul 2>&1
 if errorlevel 1 (
     echo [ERROR] Backup-Verzeichnis kann nicht erstellt werden: !BACKUP_DIR!
-    return
+    goto :EOF
 )
 echo [OK] Backup-Verzeichnis erstellt
 
@@ -277,14 +325,15 @@ set "UPDATE_TEMP_DIR=%TEMP%\hellion_update_%RANDOM%"
 mkdir "!UPDATE_TEMP_DIR!" >nul 2>&1
 
 cd /d "!UPDATE_TEMP_DIR!"
-git clone --depth 1 https://github.com/JonKazama-Hellion/hellion-power-tool.git hellion-new >nul 2>&1
+echo [DOWNLOAD] Clone Repository...
+git clone --depth 1 https://github.com/JonKazama-Hellion/hellion-power-tool.git hellion-new
 
-if errorlevel 1 (
-    echo [ERROR] Download fehlgeschlagen!
-    cd /d "%~dp0\.."
+if not exist "hellion-new\hellion_tool_main.ps1" (
+    echo [ERROR] Download fehlgeschlagen oder unvollstaendig!
+    cd /d "!UPDATE_ROOT_DIR!"
     rmdir /s /q "!UPDATE_TEMP_DIR!" >nul 2>&1
     echo [ROLLBACK] Backup bleibt erhalten in: !BACKUP_DIR!
-    return
+    goto :EOF
 )
 
 echo [DOWNLOAD] Download erfolgreich!
@@ -374,59 +423,63 @@ REM Parameter: %1=LOCAL_TS %2=GITHUB_TS %3=RESULT_VAR
 :COMPARE_TIMESTAMPS
 set "TS1=%~1"
 set "TS2=%~2"
-set "RESULT_VAR=%~3"
+set "CT_RESULT_VAR=%~3"
 
 REM Entferne Anfuehrungszeichen falls vorhanden
 set "TS1=%TS1:"=%"
 set "TS2=%TS2:"=%"
 
-REM Laengen-Check - beide muessen gleiche Laenge haben (14 Zeichen)
+REM Laengen-Check - beide muessen gleiche Laenge haben
 call :STRING_LENGTH "!TS1!" LEN1
 call :STRING_LENGTH "!TS2!" LEN2
 
 if !LEN1! NEQ !LEN2! (
-    set "%RESULT_VAR%=ERROR"
+    echo [DEBUG] Timestamp-Laengen unterschiedlich: !LEN1! vs !LEN2!
+    set "%CT_RESULT_VAR%=ERROR"
     goto :EOF
 )
 
+REM Bestimme max Index (Laenge - 1)
+set /a MAX_IDX=!LEN1!-1
+
 REM Zeichen-fuer-Zeichen Vergleich von links nach rechts
-for /L %%i in (0,1,13) do (
+for /L %%i in (0,1,!MAX_IDX!) do (
     call set "CHAR1=%%TS1:~%%i,1%%"
     call set "CHAR2=%%TS2:~%%i,1%%"
 
     if !CHAR1! GTR !CHAR2! (
-        set "%RESULT_VAR%=NEWER"
+        set "%CT_RESULT_VAR%=NEWER"
         goto :EOF
     )
     if !CHAR1! LSS !CHAR2! (
-        set "%RESULT_VAR%=OLDER"
+        set "%CT_RESULT_VAR%=OLDER"
         goto :EOF
     )
 )
 
 REM Alle Zeichen identisch
-set "%RESULT_VAR%=EQUAL"
+set "%CT_RESULT_VAR%=EQUAL"
 goto :EOF
 
 REM Hilfsfunktion: String-Laenge bestimmen
 :STRING_LENGTH
 set "STR=%~1"
-set "LEN_VAR=%~2"
-set "LEN=0"
+set "SL_LEN_VAR=%~2"
+set "SL_LEN=0"
 :STRING_LENGTH_LOOP
 if defined STR (
     set "STR=!STR:~1!"
-    set /a LEN+=1
+    set /a SL_LEN+=1
     goto :STRING_LENGTH_LOOP
 )
-set "%LEN_VAR%=%LEN%"
+set "%SL_LEN_VAR%=%SL_LEN%"
 goto :EOF
 
 REM ===== ROOT-VERZEICHNIS FINDER (100% SICHER) =====
 REM Findet das Hellion Tool Root-Verzeichnis mit mehreren Fallback-Methoden
 REM Parameter: %1=RESULT_VAR
 :FIND_ROOT_DIRECTORY
-set "RESULT_VAR=%~1"
+set "FRD_RESULT_VAR=%~1"
 set "FOUND_ROOT="
 
 echo [DEBUG] Suche Root-Verzeichnis...
@@ -449,7 +502,7 @@ if "!IS_VALID_2!"=="YES" (
     goto :FOUND_ROOT_SUCCESS
 )
 
-REM Methode 3: Aufwärts-Suche vom aktuellen Verzeichnis
+REM Methode 3: Aufwaerts-Suche vom aktuellen Verzeichnis
 set "SEARCH_DIR=%CD%"
 for /L %%i in (1,1,5) do (
     call :VALIDATE_ROOT_DIR "!SEARCH_DIR!" IS_VALID_3
@@ -480,41 +533,41 @@ goto :FOUND_ROOT_FAILED
 :FOUND_ROOT_SUCCESS
 REM Bereinige Pfad (entferne doppelte Backslashes, etc.)
 for %%i in ("!FOUND_ROOT!") do set "FOUND_ROOT=%%~fi"
-set "%RESULT_VAR%=!FOUND_ROOT!"
+set "%FRD_RESULT_VAR%=!FOUND_ROOT!"
 goto :EOF
 
 :FOUND_ROOT_FAILED
-set "%RESULT_VAR%="
+set "%FRD_RESULT_VAR%="
 goto :EOF
 
 REM Validiert ob ein Verzeichnis das Hellion Root-Dir ist
 REM Parameter: %1=TEST_DIR %2=RESULT_VAR
 :VALIDATE_ROOT_DIR
-set "TEST_DIR=%~1"
-set "RESULT_VAR=%~2"
+set "VRD_TEST_DIR=%~1"
+set "VRD_RESULT_VAR=%~2"
 
-if not exist "!TEST_DIR!" (
-    set "%RESULT_VAR%=NO"
-    goto :EOF
-)
-
-REM Prüfe auf charakteristische Dateien/Ordner
-if not exist "!TEST_DIR!\config" (
-    set "%RESULT_VAR%=NO"
-    goto :EOF
-)
-if not exist "!TEST_DIR!\config\version.txt" (
-    set "%RESULT_VAR%=NO"
-    goto :EOF
-)
-if not exist "!TEST_DIR!\Launcher" (
-    set "%RESULT_VAR%=NO"
-    goto :EOF
-)
-if not exist "!TEST_DIR!\modules" (
-    set "%RESULT_VAR%=NO"
+if not exist "!VRD_TEST_DIR!" (
+    set "%VRD_RESULT_VAR%=NO"
     goto :EOF
 )
 
-set "%RESULT_VAR%=YES"
+REM Pruefe auf charakteristische Dateien/Ordner
+if not exist "!VRD_TEST_DIR!\config" (
+    set "%VRD_RESULT_VAR%=NO"
+    goto :EOF
+)
+if not exist "!VRD_TEST_DIR!\config\version.txt" (
+    set "%VRD_RESULT_VAR%=NO"
+    goto :EOF
+)
+if not exist "!VRD_TEST_DIR!\Launcher" (
+    set "%VRD_RESULT_VAR%=NO"
+    goto :EOF
+)
+if not exist "!VRD_TEST_DIR!\modules" (
+    set "%VRD_RESULT_VAR%=NO"
+    goto :EOF
+)
+
+set "%VRD_RESULT_VAR%=YES"
 goto :EOF

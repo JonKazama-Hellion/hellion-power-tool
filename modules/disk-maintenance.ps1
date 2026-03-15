@@ -156,11 +156,13 @@ function Invoke-CheckDisk {
         
         $startTime = Get-Date
         
-        # Starte chkdsk im Hintergrund
+        # Starte chkdsk im Hintergrund (Exit-Code wird im Job erfasst)
         $chkdskJob = Start-Job -ScriptBlock {
             param($commandArgs)
             $argsList = $commandArgs.Split(' ')
-            & chkdsk $argsList 2>&1 | Out-String
+            $output = & chkdsk $argsList 2>&1 | Out-String
+            # Exit-Code innerhalb des Jobs erfassen und mit Output zurueckgeben
+            return @{ Output = $output; ExitCode = $LASTEXITCODE }
         } -ArgumentList $chkdskArgs
         
         # Progress-Bar während chkdsk läuft
@@ -184,10 +186,11 @@ function Invoke-CheckDisk {
         Write-Host "`r   ✅ CheckDisk abgeschlossen! - $timeStr    " -ForegroundColor Green
         Write-Host ""
         
-        # Ergebnis vom Job abrufen
-        $chkdskResult = Receive-Job $chkdskJob
+        # Ergebnis vom Job abrufen (Exit-Code kommt aus dem Job, NICHT aus $LASTEXITCODE)
+        $jobResult = Receive-Job $chkdskJob
         Remove-Job $chkdskJob
-        $chkdskExitCode = $LASTEXITCODE
+        $chkdskResult = $jobResult.Output
+        $chkdskExitCode = $jobResult.ExitCode
         
         Write-Log "⏳ Warte auf CheckDisk-Abschluss und analysiere Ergebnisse..." -Level "DEBUG"
         Write-Log "✅ CheckDisk-Prozess beendet mit Exit-Code: $chkdskExitCode" -Level "DEBUG"

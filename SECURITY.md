@@ -8,9 +8,10 @@
 
 - System cleanup and optimization
 - Performance diagnostics
-- Registry analysis (read-only)
+- Registry optimization (user-confirmed changes to UI/performance settings)
 - Network connectivity testing
 - Memory diagnostic scheduling
+- Self-update via GitHub (git clone)
 
 ## ⚠️ False Positive Warnings
 
@@ -20,7 +21,7 @@ This tool may trigger Windows Defender false positives as **"Trojan:Script/Wacat
 
 - ✅ **PowerShell system administration functions** (legitimate)
 - ✅ **UAC elevation requests** (user-approved)
-- ✅ **Registry system analysis** (read-only, non-destructive)
+- ✅ **Registry optimization** (user-confirmed UI/performance tweaks)
 - ✅ **Network connectivity testing** (local network only)
 
 **This is a FALSE POSITIVE.** The tool is open source and safe.
@@ -39,15 +40,15 @@ This tool may trigger Windows Defender false positives as **"Trojan:Script/Wacat
 - ✅ Performs standard Windows maintenance tasks
 - ✅ Requests explicit user confirmation for system changes
 - ✅ Uses only built-in Windows utilities
-- ✅ Operates locally (no remote connections except connectivity tests)
+- ✅ Operates locally (remote connections only for connectivity tests and GitHub update-checks)
 - ✅ Provides detailed logging of all operations
 
 ### What this tool DOES NOT do
 
-- ❌ Download or execute remote code
+- ❌ Download or execute remote code (updates are user-confirmed git clones from official repo)
 - ❌ Access personal data or credentials  
 - ❌ Modify system files without user consent
-- ❌ Communicate with external servers (except connectivity tests)
+- ❌ Communicate with external servers (except connectivity tests and GitHub update-checks)
 - ❌ Install additional software without explicit user action
 - ❌ Contain any malicious payload
 
@@ -107,4 +108,4 @@ For security-related questions or concerns:
 - **Security Label**: Tag issues with `security` label
 - **Response Policy**: Security issues prioritized within 48 hours
 
-Last Updated: 2025-09-08
+Last Updated: 2026-03-15

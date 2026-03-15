@@ -1,6 +1,6 @@
 {
-  "version": "7.1.4",
-  "codename": "Odin",
+  "version": "7.1.5.4",
+  "codename": "Baldur",
   "debug_mode": false,
   "auto_update": true,
   "log_level": "INFO",
@@ -10,8 +10,8 @@
   "script_name": "hellion_tool_main.ps1",
   "last_update_check": "",
   "launcher": {
-    "version": "7.1.4",
-    "codename": "Odin",
+    "version": "7.1.5.4",
+    "codename": "Baldur",
     "auto_folder_creation": true,
     "log_cleanup_days": 30,
     "backup_cleanup_count": 10
