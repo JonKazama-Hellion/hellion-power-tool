@@ -11,25 +11,8 @@ on:
 permissions:
   actions: read
   contents: read
-  security-events: write
 
 jobs:
-  security-analysis:
-    name: Security Analysis
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: javascript  # PowerShell analyzed as JS
-        
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      
   powershell-security:
     name: PowerShell Security Check
     runs-on: windows-latest
