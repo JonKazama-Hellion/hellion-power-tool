@@ -14,9 +14,9 @@ function Invoke-CheckDisk {
     # Verfügbare Laufwerke anzeigen
     Write-Host "💿 VERFÜGBARE LAUFWERKE:" -ForegroundColor Cyan
     Write-Host ""
-    $drives = Get-WmiObject -Class Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
+    $drives = @(Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 })
     $driveIndex = 1
-    
+
     foreach ($drive in $drives) {
         $driveLetter = $drive.DeviceID
         $freeSpace = [math]::Round($drive.FreeSpace / 1GB, 2)
@@ -160,9 +160,10 @@ function Invoke-CheckDisk {
         $chkdskJob = Start-Job -ScriptBlock {
             param($commandArgs)
             $argsList = $commandArgs.Split(' ')
-            $output = & chkdsk $argsList 2>&1 | Out-String
-            # Exit-Code innerhalb des Jobs erfassen und mit Output zurückgeben
-            return @{ Output = $output; ExitCode = $LASTEXITCODE }
+            $output = & chkdsk $argsList 2>&1
+            $exitCode = $LASTEXITCODE
+            $outputText = $output | Out-String
+            return @{ Output = $outputText; ExitCode = $exitCode }
         } -ArgumentList $chkdskArgs
         
         # Progress-Bar während chkdsk läuft
@@ -592,7 +593,7 @@ function Get-EnhancedDriveInfo {
     Write-Log "`n[*] --- LAUFWERKS-INFORMATION ---" -Color Cyan
     
     try {
-        $drives = Get-WmiObject -Class Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
+        $drives = @(Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 })
         
         foreach ($drive in $drives) {
             $driveLetter = $drive.DeviceID

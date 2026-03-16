@@ -93,11 +93,12 @@ function Test-EnhancedInternetConnectivity {
             }
             
             # TCP-Test
+            $tcpClient = $null
             try {
                 $tcpClient = New-Object System.Net.Sockets.TcpClient
                 $result = $tcpClient.BeginConnect($siteName, 80, $null, $null)
                 $success = $result.AsyncWaitHandle.WaitOne(5000, $false)
-                
+
                 if ($success -and $tcpClient.Connected) {
                     Write-Log "     ✅ Verbindung erfolgreich" -Color Green
                     $httpSuccess++
@@ -113,36 +114,34 @@ function Test-EnhancedInternetConnectivity {
                         $httpResults += @{Site=$siteName; Status="FAIL"; Reason="Timeout"}
                     }
                 }
-                try { 
-                    $tcpClient.Close() 
-                } catch { 
-                    # TCP-Client Close fehlgeschlagen - Ressource könnte bereits freigegeben sein
-                    Write-Verbose "TCP-Client Close fehlgeschlagen: $($_.Exception.Message)"
-                }
-                
+
             } catch [System.Net.Sockets.SocketException] {
                 $errorCode = $_.Exception.ErrorCode
                 switch ($errorCode) {
-                    10060 { 
-                        Write-Log "     ❌ Verbindung blockiert (Firewall/Antivirus)" -Color Red 
+                    10060 {
+                        Write-Log "     ❌ Verbindung blockiert (Firewall/Antivirus)" -Color Red
                         $httpResults += @{Site=$siteName; Status="FAIL"; Reason="Firewall-Block"}
                     }
-                    10061 { 
-                        Write-Log "     ❌ Port 80 vom Server blockiert" -Color Red 
+                    10061 {
+                        Write-Log "     ❌ Port 80 vom Server blockiert" -Color Red
                         $httpResults += @{Site=$siteName; Status="FAIL"; Reason="Server-Block"}
                     }
-                    11001 { 
-                        Write-Log "     ❌ Server nicht gefunden" -Color Red 
+                    11001 {
+                        Write-Log "     ❌ Server nicht gefunden" -Color Red
                         $httpResults += @{Site=$siteName; Status="FAIL"; Reason="Host nicht gefunden"}
                     }
-                    default { 
-                        Write-Log "     ❌ Netzwerk-Fehler (Code: $errorCode)" -Color Red 
+                    default {
+                        Write-Log "     ❌ Netzwerk-Fehler (Code: $errorCode)" -Color Red
                         $httpResults += @{Site=$siteName; Status="FAIL"; Reason="Socket-Fehler"}
                     }
                 }
             } catch {
                 Write-Log "     ❌ Unbekannter Fehler" -Color Red
                 $httpResults += @{Site=$siteName; Status="FAIL"; Reason="Unbekannt"}
+            } finally {
+                if ($tcpClient) {
+                    try { $tcpClient.Close() } catch { }
+                }
             }
         } catch {
             Write-Log "     ❌ Test fehlgeschlagen" -Color Red
@@ -177,13 +176,14 @@ function Test-EnhancedInternetConnectivity {
             }
             
             # HTTPS TCP-Test
+            $tcpClient = $null
             try {
                 $tcpClient = New-Object System.Net.Sockets.TcpClient
                 $result = $tcpClient.BeginConnect($siteName, 443, $null, $null)
                 $success = $result.AsyncWaitHandle.WaitOne(5000, $false)
-                
+
                 if ($success -and $tcpClient.Connected) {
-                    # SSL-Test (optional - falls Zeit)
+                    # SSL-Test
                     try {
                         $sslStream = New-Object System.Net.Security.SslStream($tcpClient.GetStream())
                         $sslStream.AuthenticateAsClient($siteName)
@@ -205,13 +205,7 @@ function Test-EnhancedInternetConnectivity {
                         $httpsResults += @{Site=$siteName; Status="FAIL"; Reason="Timeout"}
                     }
                 }
-                try { 
-                    $tcpClient.Close() 
-                } catch { 
-                    # TCP-Client Close fehlgeschlagen - Ressource könnte bereits freigegeben sein
-                    Write-Verbose "TCP-Client Close fehlgeschlagen: $($_.Exception.Message)"
-                }
-                
+
             } catch [System.Net.Sockets.SocketException] {
                 $errorCode = $_.Exception.ErrorCode
                 switch ($errorCode) {
@@ -235,6 +229,10 @@ function Test-EnhancedInternetConnectivity {
             } catch {
                 Write-Log "     ❌ Unbekannter HTTPS-Fehler" -Color Red
                 $httpsResults += @{Site=$siteName; Status="FAIL"; Reason="Unbekannt"}
+            } finally {
+                if ($tcpClient) {
+                    try { $tcpClient.Close() } catch { }
+                }
             }
         } catch {
             Write-Log "     ❌ Test fehlgeschlagen" -Color Red

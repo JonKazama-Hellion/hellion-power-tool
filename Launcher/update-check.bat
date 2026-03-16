@@ -253,12 +253,11 @@ REM Wechsle zum sicheren Root-Verzeichnis
 cd /d "!UPDATE_ROOT_DIR!"
 echo   [OK] Arbeite in: !UPDATE_ROOT_DIR!
 
-REM Erstelle sicheren Backup-Pfad mit Validierung
-for /f "tokens=1-4 delims=/ " %%i in ("%date%") do (
-    for /f "tokens=1-3 delims=: " %%a in ("%time%") do (
-        set "BACKUP_TIMESTAMP=%%k%%j%%l_%%a-%%b"
-    )
+REM Erstelle sicheren Backup-Pfad mit Validierung (locale-unabhaengig)
+for /f "tokens=2 delims==" %%d in ('wmic os get localdatetime /value 2^>nul ^| findstr LocalDateTime') do (
+    set "BACKUP_TIMESTAMP=%%d"
 )
+set "BACKUP_TIMESTAMP=!BACKUP_TIMESTAMP:~0,8!_!BACKUP_TIMESTAMP:~8,4!"
 
 REM Sichere Backup-Pfad Bestimmung
 set "BACKUP_BASE_DIR=!UPDATE_ROOT_DIR!\backups"

@@ -1592,6 +1592,7 @@ do {
     Show-MainMenu
     $choice = Read-Host "Ihre Wahl"
     
+    if ([string]::IsNullOrEmpty($choice)) { continue }
     switch ($choice.ToUpper()) {
         # SCHNELL-AKTIONEN
         'A' {
@@ -1682,7 +1683,6 @@ do {
             switch ($repairChoice.ToLower()) {
                 '1' {
                     # SFC-Scan
-                    . "$PSScriptRoot\modules\sfc-simple.ps1"
                     if (Get-Command Invoke-SimpleSFC -ErrorAction SilentlyContinue) {
                         $null = Invoke-SimpleSFC
                     } else {
@@ -1691,7 +1691,6 @@ do {
                 }
                 '2' {
                     # CheckDisk
-                    . "$PSScriptRoot\modules\disk-maintenance.ps1"
                     if (Get-Command Invoke-CheckDisk -ErrorAction SilentlyContinue) {
                         $null = Invoke-CheckDisk
                     } else {
@@ -1700,7 +1699,6 @@ do {
                 }
                 '3' {
                     # DISM-Reparatur
-                    . "$PSScriptRoot\modules\disk-maintenance.ps1"
                     if (Get-Command Invoke-DISMRepair -ErrorAction SilentlyContinue) {
                         $null = Invoke-DISMRepair
                     } else {
@@ -1722,7 +1720,6 @@ do {
                     
                     # 1. SFC-Scan
                     Write-Host "🔧 SCHRITT 1/3: SFC-SCAN" -ForegroundColor Cyan
-                    . "$PSScriptRoot\modules\sfc-simple.ps1"
                     if (Get-Command Invoke-SimpleSFC -ErrorAction SilentlyContinue) {
                         $sfcResult = Invoke-SimpleSFC
                         if (-not $sfcResult) { $overallSuccess = $false }
@@ -1733,7 +1730,6 @@ do {
                     # 2. CheckDisk
                     Write-Host ""
                     Write-Host "🔧 SCHRITT 2/3: CHECKDISK" -ForegroundColor Cyan
-                    . "$PSScriptRoot\modules\disk-maintenance.ps1"
                     if (Get-Command Invoke-CheckDisk -ErrorAction SilentlyContinue) {
                         $chkResult = Invoke-CheckDisk
                         if (-not $chkResult) { $overallSuccess = $false }
@@ -1844,9 +1840,6 @@ do {
         '8' {
             # Wiederherstellungspunkte verwalten
             try {
-                # Lade das System-Restore Modul
-                . "$PSScriptRoot\modules\system-restore.ps1"
-                
                 # Starte Wiederherstellungspunkt-Verwaltung
                 Invoke-RestorePointManager
                 
@@ -1866,9 +1859,6 @@ do {
         '9' {
             # Simple Bloatware-Erkennung (robust und schnell)
             try {
-                # Lade das einfache Modul
-                . "$PSScriptRoot\modules\bloatware-detection-simple.ps1"
-                
                 # Starte einfache Bloatware-Erkennung
                 $bloatwareResults = Get-SimpleBloatwarePrograms
                 
@@ -1893,9 +1883,6 @@ do {
             Read-Host
         }
         '11' {
-            # Load driver diagnostic module
-            . "$PSScriptRoot\modules\driver-diagnostic.ps1"
-            
             if (Get-Command Start-DriverDiagnostic -ErrorAction SilentlyContinue) {
                 Start-DriverDiagnostic
             } else {
@@ -1927,7 +1914,6 @@ do {
         }
         '14' {
             # RAM-Test (Memory Diagnostic)
-            . "$PSScriptRoot\modules\memory-diagnostic.ps1"
             Write-Information "`n[*] RAM-TEST OPTIONEN:" -InformationAction Continue
             Write-Information "  [1] Windows Memory Diagnostic starten (System-Neustart)" -InformationAction Continue
             Write-Information "  [2] Vorherige RAM-Test Ergebnisse anzeigen" -InformationAction Continue
@@ -2147,7 +2133,7 @@ do {
             Start-Sleep -Seconds 2
         }
     }
-} while ($choice.ToLower() -ne 'x')
+} while (-not $choice -or $choice.ToLower() -ne 'x')
 
 # Display final summary
 $logSummary = Get-LogSummary

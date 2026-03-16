@@ -113,7 +113,7 @@ function Get-SystemCrashAnalysis {
             
             if ($BugCheckEvents) {
                 $CrashEvents += $BugCheckEvents | ForEach-Object {
-                    @{
+                    [PSCustomObject]@{
                         Time = $_.TimeCreated
                         Type = "Bluescreen/Bugcheck"
                         Message = $_.Message
@@ -135,7 +135,7 @@ function Get-SystemCrashAnalysis {
             
             if ($ShutdownEvents) {
                 $CrashEvents += $ShutdownEvents | ForEach-Object {
-                    @{
+                    [PSCustomObject]@{
                         Time = $_.TimeCreated
                         Type = "Unexpected Shutdown"
                         Message = $_.Message

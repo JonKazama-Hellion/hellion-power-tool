@@ -20,6 +20,14 @@ function Invoke-SafeAdblock {
     Write-Log "Blockiert bekannte Werbe- und Tracking-Domains sicher über Hosts-Datei" -Color Yellow
     Write-Log ""
     
+    # Admin-Rechte pruefen
+    $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    if (-not $isAdmin) {
+        Write-Log "[ERROR] Administrator-Rechte erforderlich fuer Hosts-Datei Aenderungen" -Color Red
+        Write-Log "[INFO] Bitte das Tool als Administrator starten" -Color Yellow
+        return
+    }
+
     # Host-Datei Pfad
     $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
     $backupPath = "$env:SystemRoot\System32\drivers\etc\hosts.hellion.backup"
@@ -43,7 +51,7 @@ function Invoke-SafeAdblock {
             "adsystem.google.com",
             
             # Facebook/Meta Tracking
-            "facebook.com/tr",
+            "pixel.facebook.com",
             "connect.facebook.net",
             "analytics.facebook.com",
             
@@ -113,6 +121,7 @@ function Invoke-SafeAdblock {
         
         $choice = Read-Host "`nWahl [1-4/x]"
         
+        if ([string]::IsNullOrEmpty($choice)) { return }
         switch ($choice.ToLower()) {
             '1' {
                 if ($missingDomains.Count -gt 0) {

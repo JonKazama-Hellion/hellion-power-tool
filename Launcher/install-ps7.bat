@@ -107,7 +107,7 @@ if %errorlevel%==0 (
 
     REM Test 1: PATH-Verfuegbarkeit nach Installation
     where pwsh >nul 2>&1
-    if %errorlevel%==0 (
+    if !errorlevel!==0 (
         echo   [OK] PowerShell 7 via PATH verfuegbar
         for /f "delims=" %%v in ('pwsh --version 2^>nul') do echo   Version: %%v
         set "INSTALL_SUCCESS=1"

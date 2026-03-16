@@ -37,7 +37,8 @@ function Import-Configuration {
         
         # Setze globale Variablen basierend auf Konfiguration
         Set-ConfigurationVariables $config
-        
+
+        $script:Config = $config
         return $config
         
     } catch {

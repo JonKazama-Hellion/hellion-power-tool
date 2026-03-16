@@ -173,14 +173,14 @@ if %INSTALL_RESULT%==0 (
 
     REM Test 1: PATH-Verfuegbarkeit nach Installation
     where git >nul 2>&1
-    if %errorlevel%==0 (
+    if !errorlevel!==0 (
         echo   [OK] Git via PATH verfuegbar
         for /f "delims=" %%v in ('git --version 2^>nul') do echo   Version: %%v
         set "INSTALL_SUCCESS=1"
 
         REM Teste Git-Funktionalitaet
         git config --global --get user.name >nul 2>&1
-        if %errorlevel%==0 (
+        if !errorlevel!==0 (
             for /f "delims=" %%u in ('git config --global --get user.name 2^>nul') do echo   Git User: %%u
         ) else (
             echo   Git noch nicht konfiguriert (normal nach Installation)
@@ -197,7 +197,7 @@ if %INSTALL_RESULT%==0 (
         REM Teste direkt ueber Pfad
         if "!INSTALL_SUCCESS!"=="0" (
             "C:\Program Files\Git\bin\git.exe" --version >nul 2>&1
-            if %errorlevel%==0 (
+            if !errorlevel!==0 (
                 for /f "delims=" %%v in ('"C:\Program Files\Git\bin\git.exe" --version 2^>nul') do echo   Direkt-Test: %%v
                 set "INSTALL_SUCCESS=1"
             )

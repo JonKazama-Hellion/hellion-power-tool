@@ -516,7 +516,7 @@ function Analyze-ENEDriverProblem {
         $_.PathName -like "*\ene.sys" -or 
         $_.PathName -like "*\enecir.sys" -or
         $_.PathName -like "*ENE Technology*" -or
-        $_.Name -like "ENE*" -and $_.Name -notlike "*generic*"
+        ($_.Name -like "ENE*" -and $_.Name -notlike "*generic*")
     }
     # Suche nur nach ECHTER ENE-Hardware (sehr spezifisch)  
     $eneDevices = $pnpDevices | Where-Object { 
@@ -601,6 +601,9 @@ function Analyze-ENEDriverProblem {
             Write-Host "   • Start-Typ: $($_.StartMode)" -ForegroundColor Gray
             Write-Host "   • Pfad: $($_.PathName)" -ForegroundColor Gray
             
+            # Variable initialisieren fuer Scope-Sicherheit
+            $deviceErrors = $null
+
             # DETAILLIERTE PROBLEM-ANALYSE
             Write-Host ""
             Write-Host "   🔍 PROBLEM-ANALYSE:" -ForegroundColor Yellow
@@ -1019,9 +1022,9 @@ function Remove-ENEDriverForce {
             if ($LASTEXITCODE -eq 0) {
                 Write-Host "      ✅ Mit pnputil entfernt" -ForegroundColor Green
             } else {
-                Write-Host "      → Versuche WMI-Methode..." -ForegroundColor Gray
-                $_.Delete()
-                Write-Host "      ✅ Mit WMI entfernt" -ForegroundColor Green
+                Write-Host "      → Versuche CIM-Methode..." -ForegroundColor Gray
+                Remove-CimInstance $_
+                Write-Host "      ✅ Mit CIM entfernt" -ForegroundColor Green
             }
         } catch {
             Write-Host "      ❌ Fehler: $($_.Exception.Message)" -ForegroundColor Red

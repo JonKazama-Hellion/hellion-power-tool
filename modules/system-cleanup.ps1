@@ -304,14 +304,19 @@ function Optimize-SystemPerformance {
         try {
             $svc = Get-Service -Name $service.Name -ErrorAction SilentlyContinue
             if ($svc -and $svc.Status -eq 'Running') {
-                if ($service.Name -eq "WSearch") {
-                    $choice = Read-Host "  Windows Search deaktivieren? (Suche wird langsamer) [j/n]"
-                    if ($choice -ne 'j') { continue }
+                $choice = Read-Host "  $($service.Description) ($($service.Name)) deaktivieren? [j/n]"
+                if ($choice -ne 'j') {
+                    Write-Log "  [SKIP] $($service.Description) uebersprungen" -Color Gray
+                    continue
                 }
-                
+
+                # Originalen StartupType sichern
+                $originalStartup = $svc.StartType
+                Write-Log "  [BACKUP] Urspruenglicher StartupType: $originalStartup" -Level "DEBUG"
+
                 Stop-Service -Name $service.Name -Force -ErrorAction Stop
                 Set-Service -Name $service.Name -StartupType Disabled -ErrorAction Stop
-                Write-Log "  [OK] $($service.Description) deaktiviert" -Color Green
+                Write-Log "  [OK] $($service.Description) deaktiviert (war: $originalStartup)" -Color Green
                 $optimizations++
             }
         } catch {
@@ -330,7 +335,14 @@ function Optimize-SystemPerformance {
     
     foreach ($reg in $regOptimizations) {
         try {
-            if (-not (Test-Path $reg.Path)) {
+            # Originalwert sichern
+            $originalValue = $null
+            if (Test-Path $reg.Path) {
+                $originalValue = Get-ItemProperty -Path $reg.Path -Name $reg.Name -ErrorAction SilentlyContinue
+            }
+            if ($originalValue) {
+                Write-Log "  [BACKUP] $($reg.Name) war: $($originalValue.$($reg.Name))" -Level "DEBUG"
+            } else {
                 New-Item -Path $reg.Path -Force | Out-Null
             }
             Set-ItemProperty -Path $reg.Path -Name $reg.Name -Value $reg.Value -ErrorAction Stop

@@ -211,9 +211,11 @@ function Test-AntivirusStatus {
             foreach ($product in $antivirusProducts) {
                 $productState = $product.productState
                 
-                # Bit-Manipulation für Status-Interpretation
-                $realTimeProtection = ($productState -band 0x1000) -ne 0
-                $upToDate = ($productState -band 0x10) -eq 0
+                # productState Byte-Interpretation (3 Bytes: Produkt, Status, Signaturen)
+                $stateFlags = ($productState -shr 8) -band 0xFF
+                $sigFlags = $productState -band 0xFF
+                $realTimeProtection = ($stateFlags -band 0x10) -ne 0
+                $upToDate = ($sigFlags -eq 0x00)
                 
                 $productInfo = @{
                     Name = $product.displayName
@@ -241,7 +243,7 @@ function Test-AntivirusStatus {
                 }
             }
             
-            $antivirusInfo.ProductName = $antivirusProducts[0].displayName
+            $antivirusInfo.ProductName = @($antivirusProducts)[0].displayName
             
         } else {
             # Fallback: Windows Defender prüfen

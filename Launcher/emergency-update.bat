@@ -98,7 +98,7 @@ if exist "Launcher\update-check.bat" (
 
     REM Kopiere die reparierte Datei zurueck
     copy "Launcher\update-check.bat" "%~dp0update-check.bat" >nul
-    if %errorlevel%==0 (
+    if !errorlevel!==0 (
         echo   [OK] update-check.bat erfolgreich repariert!
         echo.
         echo   Vollautomatisches Update-System ist jetzt verfuegbar:

@@ -34,7 +34,8 @@ function Invoke-RestorePointManager {
     Write-Host ""
     
     $choice = Read-Host "Wahl [1-4/x]"
-    
+
+    if ([string]::IsNullOrEmpty($choice)) { return }
     switch ($choice.ToLower()) {
         '1' {
             if (Get-Command New-SystemRestorePoint -ErrorAction SilentlyContinue) {
@@ -89,14 +90,11 @@ function New-SystemRestorePoint {
     try {
         Write-Log "[*] Erstelle Wiederherstellungspunkt..." -Color Blue
         
-        # Prüfe ob System Restore verfügbar ist
-        if (Get-Command Get-ComputerRestorePoint -ErrorAction SilentlyContinue) {
-            $restoreEnabled = Get-ComputerRestorePoint -ErrorAction SilentlyContinue
-        } else {
-            # PS7 Fallback: WMI-Klasse direkt abfragen
-            $restoreEnabled = Get-CimInstance -ClassName SystemRestoreConfig -Namespace "root\default" -ErrorAction SilentlyContinue
-        }
-        if ($null -eq $restoreEnabled) {
+        # Pruefe ob System Restore aktiviert ist (ueber Registry statt Restore-Point-Existenz)
+        $srConfig = Get-CimInstance -ClassName SystemRestoreConfig -Namespace "root\default" -ErrorAction SilentlyContinue
+        $restoreEnabled = $srConfig -and $srConfig.RPSessionInterval -ne 0
+
+        if (-not $restoreEnabled) {
             Write-Log "[INFO] Aktiviere System Restore auf C:\..." -Color Yellow
             if (Get-Command Enable-ComputerRestore -ErrorAction SilentlyContinue) {
                 Enable-ComputerRestore -Drive "C:\" -ErrorAction Stop
@@ -203,9 +201,13 @@ function Get-SystemRestorePoints {
             Write-Log "Gefunden: $($restorePoints.Count) Wiederherstellungspunkte" -Color White
             
             $restorePoints | Sort-Object CreationTime -Descending | Select-Object -First 10 | ForEach-Object {
-                $ageInDays = [math]::Round((Get-Date).Subtract($_.CreationTime).TotalDays, 1)
+                # CreationTime kann String (CIM) oder DateTime (PS5) sein
+                $creationTime = if ($_.CreationTime -is [string]) {
+                    [System.Management.ManagementDateTimeConverter]::ToDateTime($_.CreationTime)
+                } else { $_.CreationTime }
+                $ageInDays = [math]::Round((Get-Date).Subtract($creationTime).TotalDays, 1)
                 Write-Log "  [$($_.SequenceNumber)] $($_.Description)" -Color Blue
-                Write-Log "    Erstellt: $($_.CreationTime.ToString('yyyy-MM-dd HH:mm')) ($ageInDays Tage alt)" -Color Gray
+                Write-Log "    Erstellt: $($creationTime.ToString('yyyy-MM-dd HH:mm')) ($ageInDays Tage alt)" -Color Gray
                 Write-Log "    Typ: $($_.RestorePointType)" -Color Gray
                 Write-Log "" -Color White
             }
@@ -365,23 +367,20 @@ function Enable-SystemRestore {
     Write-Log "`n[*] --- SYSTEM RESTORE AKTIVIERUNG ---" -Color Cyan
     
     try {
-        # System Restore auf allen Laufwerken aktivieren
-        $drives = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
+        # System Restore nur auf dem System-Laufwerk aktivieren
+        $systemDrive = $env:SystemDrive
+        Write-Log "[*] Aktiviere System Restore auf $systemDrive..." -Color Blue
 
-        foreach ($drive in $drives) {
-            $driveLetter = $drive.DeviceID
-
-            try {
-                if (Get-Command Enable-ComputerRestore -ErrorAction SilentlyContinue) {
-                    Enable-ComputerRestore -Drive $driveLetter -ErrorAction Stop
-                } else {
-                    # PS7 Fallback: vssadmin
-                    & vssadmin resize shadowstorage /for=$driveLetter /on=$driveLetter /maxsize=5% 2>$null | Out-Null
-                }
-                Write-Log "[OK] System Restore aktiviert auf $driveLetter" -Color Green
-            } catch {
-                Write-Log "[WARNING] System Restore auf $driveLetter nicht aktivierbar" -Color Yellow
+        try {
+            if (Get-Command Enable-ComputerRestore -ErrorAction SilentlyContinue) {
+                Enable-ComputerRestore -Drive "$systemDrive\" -ErrorAction Stop
+            } else {
+                # PS7 Fallback: vssadmin
+                & vssadmin resize shadowstorage /for=$systemDrive /on=$systemDrive /maxsize=5% 2>$null | Out-Null
             }
+            Write-Log "[OK] System Restore aktiviert auf $systemDrive" -Color Green
+        } catch {
+            Write-Log "[WARNING] System Restore auf $systemDrive nicht aktivierbar" -Color Yellow
         }
         
         # Speicherplatz-Konfiguration (optional)

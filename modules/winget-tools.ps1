@@ -359,12 +359,17 @@ function Install-WingetUpdates {
                     $upgradeExitCode = $upgradeJob.State
                     
                     if ($upgradeExitCode -eq "Completed") {
-                        Write-Log "[SUCCESS] Winget Update-Installation abgeschlossen" -Color Green
-                        $success = $availableUpdates.Count
+                        $jobOutput = Receive-Job -Job $upgradeJob 2>&1 | Out-String
+                        # Zaehle tatsaechliche Ergebnisse aus winget-Output
+                        $successMatches = ([regex]::Matches($jobOutput, 'erfolgreich|Successfully')).Count
+                        $failMatches = ([regex]::Matches($jobOutput, 'fehlgeschlagen|failed')).Count
+                        $success = if ($successMatches -gt 0) { $successMatches } else { $availableUpdates.Count }
+                        $failed = $failMatches
+                        Write-Log "[SUCCESS] Winget Update-Installation abgeschlossen ($success OK, $failed Fehler)" -Color Green
                     } else {
-                        Write-Log "[WARNING] Winget Update mit Problemen abgeschlossen" -Color Yellow
-                        $failed = [math]::Floor($availableUpdates.Count / 2)
-                        $success = $availableUpdates.Count - $failed
+                        Write-Log "[WARNING] Winget Update mit Problemen abgeschlossen (Status: $upgradeExitCode)" -Color Yellow
+                        $success = 0
+                        $failed = $availableUpdates.Count
                     }
                 } else {
                     Stop-Job -Job $upgradeJob
