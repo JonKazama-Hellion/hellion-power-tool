@@ -135,7 +135,7 @@ Ich freue mich über jede Rückmeldung — ob Bug-Report, Feature-Vorschlag oder
 
 - **GitHub Issues**: [Bug-Reports und Feature-Requests](https://github.com/JonKazama-Hellion/hellion-power-tool/issues)
 - **Website**: [hellion-media.de](https://hellion-media.de)
-- **Projekt**: [hellion-initiative.online](https://hellion-initiative.online)
+- **Projekt**: [hellion-media.de/hellion-power-tool](https://hellion-media.de/hellion-power-tool)
 
 ---
 

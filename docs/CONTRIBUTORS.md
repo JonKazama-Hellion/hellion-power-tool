@@ -9,9 +9,11 @@ Jeder hat auf seine Weise dazu beigetragen — ob durch Bug-Reports, Feature-Ide
 
 ### JonKazama — Projektleitung und Entwicklung
 
-Ich habe das Hellion Power Tool als mein erstes größeres Softwareprojekt gestartet und es von der ersten Idee bis zur aktuellen Version v8.0.0.0 "Jörmungandr" entwickelt. PowerShell und Batch-Scripting habe ich dabei größtenteils selbst beigebracht — durch Dokumentation, YouTube und viel Trial-and-Error.
+Ich habe das Hellion Power Tool als persönliche Skriptsammlung gestartet, weil ich keine Lust hatte, bei jedem Windows-Problem die Befehle erneut nachzuschlagen. Was als Sammlung einzelner `.ps1` Dateien begann, ist über 7+ Monate zu einem modularen Wartungstool mit WPF-Oberfläche gewachsen.
 
-Das Tool ist Teil von [Hellion Online Media](https://hellion-media.de) und wird über [hellion-initiative.online](https://hellion-initiative.online) bereitgestellt.
+PowerShell, Batch-Scripting und WPF habe ich mir während der Entwicklung selbst beigebracht. Mein beruflicher Hintergrund ist Webentwicklung (Next.js, React, TypeScript) — Desktop-GUI-Programmierung war komplettes Neuland. Mehr zum Lernprozess in [LEARNING-JOURNEY.md](LEARNING-JOURNEY.md).
+
+Das Tool ist Teil von [Hellion Online Media](https://hellion-media.de) und wird über [hellion-media.de/hellion-power-tool](https://hellion-media.de/hellion-power-tool) bereitgestellt.
 
 ---
 
@@ -19,7 +21,7 @@ Das Tool ist Teil von [Hellion Online Media](https://hellion-media.de) und wird 
 
 ### LomaChalit — Alpha-Tester
 
-LomaChalit testet das Tool seit den frühen Versionen und hat maßgeblich zur Stabilität beigetragen. Er findet Probleme, bevor sie bei anderen Nutzern aufschlagen.
+LomaChalit testet das Tool seit den frühen Versionen und hat maßgeblich zur Stabilität beigetragen. Er findet Probleme, bevor sie bei anderen Nutzern aufschlagen — und hat keine Scheu, auch die unbequemen Bugs zu melden.
 
 **Bug-Reports:**
 
@@ -28,6 +30,7 @@ LomaChalit testet das Tool seit den frühen Versionen und hat maßgeblich zur St
 - Winget Update Placeholder-Problem (Update0, Update1, Update2)
 - 24h Restore Point Limitation — führte zur Entwicklung eines Registry-Workarounds
 - ENE.SYS Kompatibilitätsprobleme auf seinem System
+- Auto-Updater Fehler über mehrere Versionen hinweg — hat das Update-System durch konsequentes Testen stabil gemacht
 
 **Feature-Ideen:**
 
@@ -36,7 +39,9 @@ LomaChalit testet das Tool seit den frühen Versionen und hat maßgeblich zur St
 
 ### Carl Beleandis — Beta-Tester
 
-Carl testet das Tool aus der Perspektive eines normalen Anwenders. Seine Rückmeldungen zu Bedienung und Verständlichkeit haben die Benutzerführung deutlich verbessert.
+Carl testet das Tool aus der Perspektive eines normalen Anwenders — und genau das macht sein Feedback so wertvoll. Seine Rückmeldungen zu Bedienung und Verständlichkeit haben die Benutzerführung deutlich verbessert.
+
+Er ist außerdem der Grund, warum das Tool überhaupt öffentlich veröffentlicht wurde. Ohne seinen Zuspruch wäre es eine private Skriptsammlung geblieben.
 
 **Bug-Reports:**
 
@@ -46,9 +51,7 @@ Carl testet das Tool aus der Perspektive eines normalen Anwenders. Seine Rückme
 **Feature-Ideen:**
 
 - SFC/DISM/CheckDisk Integration — basiert auf seinen Anforderungen für sichere System-Reparatur-Automatisierung
-- Bluescreen-Analyzer — entstand aus einem konkreten Bedarf auf seinem System
-
-Er ist außerdem der Grund, warum das Tool überhaupt öffentlich veröffentlicht wurde.
+- Bluescreen-Analyzer — entstand aus konkreten Bluescreens auf seinem System, die analysiert werden mussten
 
 ### Jingliu — Motivation
 
@@ -64,25 +67,26 @@ Mein Hund. Liegt neben mir beim Debuggen und urteilt nicht.
 
 ### Claude Code — AI Development Assistant
 
-AI-Tool, das ich als Hilfsmittel einsetze — nicht als Ersatz für eigene Arbeit. Die Architektur, Features und Ideen stammen von mir und meinen Testern. Claude Code hilft bei:
+AI-Tool, das ich als Hilfsmittel einsetze — nicht als Ersatz für eigene Arbeit. Architektur, Features und alle Entscheidungen sind Eigenleistung. Claude Code hilft bei:
 
-- Debugging von komplexen PowerShell-Problemen
+- Debugging von komplexen PowerShell- und WPF-Problemen
+- Analyse von Encoding-Problemen (Umlaute in XAML, Batch, GitHub Actions)
 - Code-Optimierung und Strukturverbesserung
 - Erklärungen, warum etwas nicht funktioniert
 
-Mehr dazu in [LEARNING-JOURNEY.md](LEARNING-JOURNEY.md).
+AI ist ein Werkzeug — entscheidend ist, dass man versteht, was der eigene Code tut. Mehr dazu in [LEARNING-JOURNEY.md](LEARNING-JOURNEY.md).
 
 ---
 
 ## Übersicht
 
-| Contributor        | Rolle               | Bugs gefunden | Beitrag                           |
-| ------------------ | ------------------- | ------------- | --------------------------------- |
-| **LomaChalit**     | Alpha-Testing       | 6+            | Stabilität und Feature-Ideen      |
-| **Carl Beleandis** | Beta-Testing        | 4+            | User Experience und Core-Features |
-| **Jingliu**        | Motivation          | —             | Mentale Unterstützung             |
-| **Jacky**          | Moralischer Support | —             | Emotionale Unterstützung          |
-| **Claude Code**    | AI-Debugging        | —             | Technische Lösungsunterstützung   |
+| Contributor | Rolle | Bugs gefunden | Beitrag |
+| --- | --- | --- | --- |
+| **LomaChalit** | Alpha-Testing | 6+ | Stabilität und Feature-Ideen |
+| **Carl Beleandis** | Beta-Testing | 4+ | User Experience und Core-Features |
+| **Jingliu** | Motivation | — | Mentale Unterstützung |
+| **Jacky** | Moralischer Support | — | Emotionale Unterstützung |
+| **Claude Code** | AI-Debugging | — | Technische Lösungsunterstützung |
 
 ---
 
@@ -116,7 +120,7 @@ Das Tool lebt von Community-Feedback. Wer Interesse hat:
 
 - **GitHub**: [github.com/JonKazama-Hellion/hellion-power-tool](https://github.com/JonKazama-Hellion/hellion-power-tool)
 - **Website**: [hellion-media.de](https://hellion-media.de)
-- **Projekt**: [hellion-initiative.online](https://hellion-initiative.online)
+- **Projekt**: [hellion-media.de/hellion-power-tool](https://hellion-media.de/hellion-power-tool)
 
 ---
 
