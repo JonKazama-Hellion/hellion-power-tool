@@ -9,7 +9,7 @@ Jeder hat auf seine Weise dazu beigetragen — ob durch Bug-Reports, Feature-Ide
 
 ### JonKazama — Projektleitung und Entwicklung
 
-Ich habe das Hellion Power Tool als mein erstes größeres Softwareprojekt gestartet und es von der ersten Idee bis zur aktuellen Version v7.2.0.0 "Heimdall" entwickelt. PowerShell und Batch-Scripting habe ich dabei größtenteils selbst beigebracht — durch Dokumentation, YouTube und viel Trial-and-Error.
+Ich habe das Hellion Power Tool als mein erstes größeres Softwareprojekt gestartet und es von der ersten Idee bis zur aktuellen Version v8.0.0.0 "Jörmungandr" entwickelt. PowerShell und Batch-Scripting habe ich dabei größtenteils selbst beigebracht — durch Dokumentation, YouTube und viel Trial-and-Error.
 
 Das Tool ist Teil von [Hellion Online Media](https://hellion-media.de) und wird über [hellion-initiative.online](https://hellion-initiative.online) bereitgestellt.
 
@@ -121,4 +121,4 @@ Das Tool lebt von Community-Feedback. Wer Interesse hat:
 ---
 
 *Erstellt: 2025-09-09*
-*Letzte Aktualisierung: v7.2.0.0 "Heimdall" — 2026-03-15*
+*Letzte Aktualisierung: v8.0.0.0 "Jörmungandr" — 2026-03-20*

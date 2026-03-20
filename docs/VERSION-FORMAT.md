@@ -9,10 +9,10 @@ Diese Datei erklärt das Versionierungs-System des Hellion Power Tools.
 Die Datei `config/version.txt` enthält genau 4 Zeilen:
 
 ```text
-7.2.0.0
-Heimdall
-20260315
-72002603151430
+8.0.0.0
+Jörmungandr
+20260320
+80002603201800
 ```
 
 ---
@@ -25,8 +25,8 @@ Heimdall
 
 | Stelle | Bedeutung                          | Beispiel |
 | ------ | ---------------------------------- | -------- |
-| MAJOR  | Große Änderungen, Breaking Changes | 7        |
-| MINOR  | Neue Features, abwärtskompatibel   | 2        |
+| MAJOR  | Große Änderungen, Breaking Changes | 8        |
+| MINOR  | Neue Features, abwärtskompatibel   | 0        |
 | PATCH  | Bugfixes, kleine Verbesserungen    | 0        |
 | BUILD  | Build-System, Release-Korrekturen  | 0        |
 
@@ -35,7 +35,7 @@ Heimdall
 **Aktuelle Serie**: Nordische Mythologie
 
 Bisherige Codenamen (chronologisch):
-Alpha → Beta → Gamma → Delta → Epsilon → Kazama → Beleandis → Monkey → Moon → Moon-Bugfix → Fenrir → Fenrir-Update → Odin → Baldur → **Heimdall**
+Alpha → Beta → Gamma → Delta → Epsilon → Kazama → Beleandis → Monkey → Moon → Moon-Bugfix → Fenrir → Fenrir-Update → Odin → Baldur → Heimdall → **Jörmungandr**
 
 ### Zeile 3: Release-Datum (Legacy-Format)
 
@@ -51,14 +51,14 @@ Ich verwende dieses Format weiterhin für Abwärtskompatibilität zu älteren Up
 
 | Segment | Bedeutung                            | Beispiel |
 | ------- | ------------------------------------ | -------- |
-| VVVV    | Version komprimiert (7200 = 7.2.0.0) | 7200     |
+| VVVV    | Version komprimiert (8000 = 8.0.0.0) | 8000     |
 | YYYY    | Jahr                                 | 2026     |
 | MM      | Monat                                | 03       |
 | DD      | Tag                                  | 15       |
 | HH      | Stunde                               | 14       |
 | NN      | Minute                               | 30       |
 
-Beispiel: `72002603151430` = v7.2.0.0 vom 15.03.2026 um 14:30
+Beispiel: `80002603201800` = v8.0.0.0 vom 20.03.2026 um 18:00
 
 Der Timestamp ermöglicht minutengenaue Update-Erkennung, sodass ich mehrere Updates am selben Tag veröffentlichen kann.
 
@@ -82,5 +82,5 @@ Das Update-System vergleicht Versionen in zwei Modi:
 
 ---
 
-Letzte Aktualisierung: 2026-03-15 — Hellion Power Tool v7.2.0.0 "Heimdall"
+Letzte Aktualisierung: 2026-03-20 — Hellion Power Tool v8.0.0.0 "Jörmungandr"
 Entwickelt von [Hellion Online Media](https://hellion-media.de)

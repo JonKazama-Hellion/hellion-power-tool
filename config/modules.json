@@ -1,0 +1,230 @@
+[
+  {
+    "Id": "sfc",
+    "Title": "SFC Scan",
+    "Desc": "Systemdateien prüfen und reparieren",
+    "BgColor": "#182840",
+    "AccColor": "#4DA3FF",
+    "Func": "Invoke-SimpleSFC",
+    "GuiArgs": "-Mode 1",
+    "Group": "repair",
+    "Options": [
+      { "Label": "Schnelle Prüfung (Verify Only)",  "Args": "-Mode 1", "WarnText": "" },
+      { "Label": "Vollständige Reparatur (Scannow)", "Args": "-Mode 2", "WarnText": "Systemdateien werden repariert. Windows-Komponenten können verändert werden." }
+    ]
+  },
+  {
+    "Id": "dism",
+    "Title": "DISM Reparatur",
+    "Desc": "Component Store wiederherstellen",
+    "BgColor": "#182A1E",
+    "AccColor": "#3DD68C",
+    "Func": "Invoke-DISMRepair",
+    "GuiArgs": "-Mode 1",
+    "Group": "repair",
+    "Options": [
+      { "Label": "Health-Check (schnell)",       "Args": "-Mode 1", "WarnText": "" },
+      { "Label": "Erweiterte Prüfung (ScanHealth)", "Args": "-Mode 2", "WarnText": "Der Component Store wird vollständig geprüft. Dies kann 5-15 Minuten dauern." },
+      { "Label": "Online-Reparatur (RestoreHealth)", "Args": "-Mode 3", "WarnText": "Der Windows Component Store wird repariert. Dies kann 10-30 Minuten dauern und Systemdateien verändern." }
+    ]
+  },
+  {
+    "Id": "chkdsk",
+    "Title": "CheckDisk",
+    "Desc": "Dateisystem auf Fehler prüfen",
+    "BgColor": "#182A1E",
+    "AccColor": "#3DD68C",
+    "Func": "Invoke-CheckDisk",
+    "GuiArgs": "-DriveLetter C -Mode 1",
+    "Group": "repair",
+    "Options": [
+      { "Label": "Nur prüfen (Read-Only)",               "Args": "-DriveLetter C -Mode 1 -Force", "WarnText": "",                                                                       "DrivePicker": true },
+      { "Label": "Prüfen und reparieren",                "Args": "-DriveLetter C -Mode 2 -Force", "WarnText": "Dateisystem wird repariert. Bei Fehlern können Daten verschoben werden.", "DrivePicker": true },
+      { "Label": "Vollständige Prüfung (dauert lange)", "Args": "-DriveLetter C -Mode 3 -Force", "WarnText": "Vollständige Prüfung mit Oberflächentest. Kann mehrere Stunden dauern.",  "DrivePicker": true }
+    ]
+  },
+  {
+    "Id": "dll",
+    "Title": "DLL-Integrität",
+    "Desc": "Kritische System-DLLs verifizieren",
+    "BgColor": "#182840",
+    "AccColor": "#4DA3FF",
+    "Func": "Test-DLLIntegrity",
+    "GuiArgs": "",
+    "Group": "repair",
+    "Options": []
+  },
+  {
+    "Id": "clean",
+    "Title": "Umfassende Bereinigung",
+    "Desc": "Temp, Cache, Logs, Browser-Daten",
+    "BgColor": "#2A1E0A",
+    "AccColor": "#F5A623",
+    "Func": "Invoke-ComprehensiveCleanup",
+    "GuiArgs": "-Mode 2",
+    "Group": "clean",
+    "Options": [
+      { "Label": "Basis-Bereinigung (Temp-Dateien)",       "Args": "-Mode 1", "WarnText": "Temporäre Dateien und Windows-Temp werden gelöscht." },
+      { "Label": "Erweiterte Bereinigung (+ Caches)",      "Args": "-Mode 2", "WarnText": "Temporäre Dateien, System-Caches und Logs werden gelöscht." },
+      { "Label": "Gaming-Bereinigung (+ Gaming-Caches)",   "Args": "-Mode 3", "WarnText": "Temp, Caches und Gaming-Caches (Shader, Replays) werden gelöscht." },
+      { "Label": "Vollständige Bereinigung (+ Browser)",  "Args": "-Mode 4", "WarnText": "Alle temporären Daten inkl. Browser-Cache und Cookies werden gelöscht. Gespeicherte Logins können verloren gehen!" }
+    ]
+  },
+  {
+    "Id": "perf",
+    "Title": "Performance-Boost",
+    "Desc": "Services und Autostart optimieren",
+    "BgColor": "#2A1E0A",
+    "AccColor": "#F5A623",
+    "Func": "Optimize-SystemPerformance",
+    "GuiArgs": "",
+    "Group": "clean",
+    "WarnText": "Windows-Dienste und Autostart-Einträge werden optimiert. Einige Hintergrunddienste können deaktiviert werden.",
+    "Options": []
+  },
+  {
+    "Id": "bloat",
+    "Title": "Bloatware-Erkennung",
+    "Desc": "Ungenutzte Software identifizieren",
+    "BgColor": "#2A1E0A",
+    "AccColor": "#F5A623",
+    "Func": "Get-SimpleBloatwarePrograms",
+    "GuiArgs": "",
+    "Group": "clean",
+    "Options": []
+  },
+  {
+    "Id": "sysinfo",
+    "Title": "System-Information",
+    "Desc": "CPU, RAM, Disk, Treiber-Analyse",
+    "BgColor": "#22183A",
+    "AccColor": "#A78BFA",
+    "Func": "Get-DetailedSystemInfo",
+    "GuiArgs": "",
+    "Group": "diagnose",
+    "Options": []
+  },
+  {
+    "Id": "net",
+    "Title": "Netzwerk-Test",
+    "Desc": "Internet, DNS, Download-Speed",
+    "BgColor": "#22183A",
+    "AccColor": "#A78BFA",
+    "Func": "Test-EnhancedInternetConnectivity",
+    "GuiArgs": "",
+    "Group": "diagnose",
+    "Options": []
+  },
+  {
+    "Id": "driver",
+    "Title": "Treiber-Diagnose",
+    "Desc": "Veraltete Treiber und ENE.sys finden",
+    "BgColor": "#22183A",
+    "AccColor": "#A78BFA",
+    "Func": "Invoke-FullDriverAnalysis",
+    "GuiArgs": "",
+    "Group": "diagnose",
+    "Options": [
+      { "Label": "Vollständige Analyse (Empfohlen)", "Args": "__func:Invoke-FullDriverAnalysis" },
+      { "Label": "Problematische Treiber scannen",   "Args": "__func:Find-ProblematicDrivers" },
+      { "Label": "ENE.sys Problem-Analyse",           "Args": "__func:Analyze-ENEDriverProblem -Force", "WarnText": "ENE-Treiber werden analysiert und bei Bedarf automatisch repariert." },
+      { "Label": "ENE.sys Zwangs-Entfernung",         "Args": "__func:Remove-ENEDriverForce -Force", "WarnText": "ENE-Treiber werden aggressiv entfernt! Nur verwenden wenn normale Methoden versagen. Ein Backup wird automatisch erstellt." },
+      { "Label": "Treiber Event Log Analyse",         "Args": "__func:Analyze-DriverEventLogs" },
+      { "Label": "Treiber-Verifikation anzeigen",     "Args": "__func:Enable-DriverVerifier -Force" },
+      { "Label": "Detaillierte Treiber-Liste",        "Args": "__func:Get-DetailedDriverList" },
+      { "Label": "Installierte Treiber-Pakete",       "Args": "__func:Get-InstalledDriverPackages" }
+    ]
+  },
+  {
+    "Id": "crash",
+    "Title": "Bluescreen-Analyse",
+    "Desc": "Crash-Logs auswerten und Ursachen finden",
+    "BgColor": "#22183A",
+    "AccColor": "#A78BFA",
+    "Func": "Get-SystemCrashAnalysis",
+    "GuiArgs": "-Force",
+    "Group": "diagnose",
+    "Options": []
+  },
+  {
+    "Id": "ram",
+    "Title": "RAM-Test",
+    "Desc": "Windows Memory Diagnostic starten",
+    "BgColor": "#22183A",
+    "AccColor": "#A78BFA",
+    "Func": "Start-WindowsMemoryDiagnostic",
+    "GuiArgs": "-Force",
+    "Group": "diagnose",
+    "WarnText": "Der Windows-Speichertest erfordert einen Neustart! Alle ungespeicherten Daten gehen verloren.",
+    "Options": []
+  },
+  {
+    "Id": "report",
+    "Title": "System-Report",
+    "Desc": "Vollständigen Bericht exportieren",
+    "BgColor": "#22183A",
+    "AccColor": "#A78BFA",
+    "Func": "New-DetailedSystemReport",
+    "GuiArgs": "",
+    "Group": "diagnose",
+    "Options": []
+  },
+  {
+    "Id": "restore",
+    "Title": "Wiederherstellungspunkte",
+    "Desc": "Erstellen, anzeigen, wiederherstellen",
+    "BgColor": "#122020",
+    "AccColor": "#2DD4BF",
+    "Func": "Invoke-RestorePointManager",
+    "GuiArgs": "-Mode 1 -Force",
+    "Group": "manage",
+    "Options": [
+      { "Label": "Wiederherstellungspunkt erstellen",   "Args": "-Mode 1 -Force", "WarnText": "" },
+      { "Label": "Punkte anzeigen",                     "Args": "-Mode 2", "WarnText": "" },
+      { "Label": "System wiederherstellen",             "Args": "-Mode 3 -Force", "WarnText": "Das System wird auf einen früheren Zustand zurückgesetzt! Neuere Programme und Updates können entfernt werden. Der PC wird neu gestartet." },
+      { "Label": "System Restore aktivieren",           "Args": "-Mode 4", "WarnText": "" }
+    ]
+  },
+  {
+    "Id": "winget",
+    "Title": "Winget-Updates",
+    "Desc": "Software-Updates prüfen und installieren",
+    "BgColor": "#122020",
+    "AccColor": "#2DD4BF",
+    "Func": "Install-WingetUpdates",
+    "GuiArgs": "",
+    "Group": "manage",
+    "Options": [
+      { "Label": "Verfügbare Updates prüfen", "Args": "__func:Get-WingetUpdates", "WarnText": "" },
+      { "Label": "Alle Updates installieren", "Args": "", "WarnText": "Alle verfügbaren Software-Updates werden installiert. Je nach Anzahl der Updates kann dies 5\u201315 Minuten dauern. Einige Programme müssen danach neu gestartet werden." }
+    ]
+  },
+  {
+    "Id": "netreset",
+    "Title": "Netzwerk zurücksetzen",
+    "Desc": "TCP/IP, DNS-Cache, Winsock reset",
+    "BgColor": "#122020",
+    "AccColor": "#2DD4BF",
+    "Func": "Reset-NetworkConfiguration",
+    "GuiArgs": "-Force",
+    "Group": "manage",
+    "WarnText": "Der Netzwerkstack wird zurückgesetzt (TCP/IP, DNS-Cache, Winsock). Alle aktiven Verbindungen werden getrennt.",
+    "Options": []
+  },
+  {
+    "Id": "adblock",
+    "Title": "Safe Adblock",
+    "Desc": "DNS-Werbeblocker via Hosts-Datei",
+    "BgColor": "#2A1010",
+    "AccColor": "#FF5F57",
+    "Func": "Invoke-SafeAdblock",
+    "GuiArgs": "-Mode 2",
+    "Group": "security",
+    "Options": [
+      { "Label": "Adblock aktivieren",       "Args": "-Mode 1", "WarnText": "Die Windows Hosts-Datei wird modifiziert, um Werbung auf DNS-Ebene zu blockieren." },
+      { "Label": "Adblock-Status anzeigen",   "Args": "-Mode 2", "WarnText": "" },
+      { "Label": "Adblock deaktivieren",      "Args": "-Mode 3", "WarnText": "Adblock-Einträge werden aus der Hosts-Datei entfernt." },
+      { "Label": "Host-Datei bearbeiten",     "Args": "-Mode 4", "WarnText": "Die Hosts-Datei wird direkt geöffnet. Fehlerhafte Einträge können Netzwerkprobleme verursachen." }
+    ]
+  }
+]

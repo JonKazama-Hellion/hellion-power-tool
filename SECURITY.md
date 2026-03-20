@@ -99,4 +99,4 @@ Bei sicherheitsbezogenen Fragen:
 - **GitHub**: [Repository Issues](https://github.com/JonKazama-Hellion/hellion-power-tool/issues)
 - **E-Mail**: [kontakt@hellion-media.de](mailto:kontakt@hellion-media.de)
 
-Letzte Aktualisierung: 2026-03-15 — Hellion Power Tool v7.2.0.0 "Heimdall"
+Letzte Aktualisierung: 2026-03-20 — Hellion Power Tool v8.0.0.0 "Jörmungandr"

@@ -75,4 +75,4 @@ Ich freue mich über jede Rückmeldung — ob Bug-Report, Feature-Vorschlag oder
 
 ---
 
-Letzte Aktualisierung: v7.2.0.0 "Heimdall" — 2026-03-15
+Letzte Aktualisierung: v8.0.0.0 "Jörmungandr" — 2026-03-20

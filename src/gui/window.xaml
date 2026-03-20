@@ -1,0 +1,577 @@
+<Window
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Hellion Power Tool v7.2.0.0 Heimdall"
+    Height="680" Width="1060" MinHeight="560" MinWidth="820"
+    WindowStartupLocation="CenterScreen"
+    Background="{DynamicResource BgMain}"
+    Foreground="{DynamicResource TxtPrimary}"
+    FontFamily="Segoe UI"
+    WindowStyle="None"
+    ResizeMode="CanResizeWithGrip"
+    AllowsTransparency="True">
+
+  <Window.Resources>
+
+    <!-- Theme Brushes (Dark Mode Defaults — werden via Set-Theme zur Runtime aktualisiert) -->
+    <SolidColorBrush x:Key="BgMain"       Color="#0F0F0F"/>
+    <SolidColorBrush x:Key="BgHeader"     Color="#111111"/>
+    <SolidColorBrush x:Key="BgSidebar"    Color="#141414"/>
+    <SolidColorBrush x:Key="BgPanel"      Color="#161616"/>
+    <SolidColorBrush x:Key="BgHealth"     Color="#131313"/>
+    <SolidColorBrush x:Key="BgStatus"     Color="#0D0D0D"/>
+    <SolidColorBrush x:Key="BgCard"       Color="#1A1A1A"/>
+    <SolidColorBrush x:Key="BorderMain"   Color="#2A2A2A"/>
+    <SolidColorBrush x:Key="BorderSub"    Color="#252525"/>
+    <SolidColorBrush x:Key="BorderDivide" Color="#222222"/>
+    <SolidColorBrush x:Key="TxtPrimary"   Color="#E0E0E0"/>
+    <SolidColorBrush x:Key="TxtSecondary" Color="#AAAAAA"/>
+    <SolidColorBrush x:Key="TxtDim"       Color="#777777"/>
+    <SolidColorBrush x:Key="TxtFaded"     Color="#777777"/>
+    <SolidColorBrush x:Key="TxtMuted"     Color="#555555"/>
+    <SolidColorBrush x:Key="AccentGreen"   Color="#448f45"/>
+    <SolidColorBrush x:Key="AccentGreenBg" Color="#1A3A1A"/>
+    <SolidColorBrush x:Key="NavActiveBg"   Color="#1A2E1A"/>
+    <SolidColorBrush x:Key="HoverBg"      Color="#1E1E1E"/>
+    <SolidColorBrush x:Key="SecBtnBg"     Color="#222222"/>
+    <SolidColorBrush x:Key="SecBtnBorder" Color="#333333"/>
+    <SolidColorBrush x:Key="ScrollThumb"  Color="#555555"/>
+    <SolidColorBrush x:Key="VersionBadge" Color="#1A3A1A"/>
+
+    <!-- Schlanke Scrollbar -->
+    <Style x:Key="SlimSB" TargetType="ScrollBar">
+      <Setter Property="Width" Value="5"/>
+      <Setter Property="Background" Value="{DynamicResource BgPanel}"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ScrollBar">
+            <Grid Background="{DynamicResource BgCard}">
+              <Track Name="PART_Track" IsDirectionReversed="True">
+                <Track.Thumb>
+                  <Thumb>
+                    <Thumb.Template>
+                      <ControlTemplate TargetType="Thumb">
+                        <Rectangle Fill="{DynamicResource ScrollThumb}" RadiusX="3" RadiusY="3"/>
+                      </ControlTemplate>
+                    </Thumb.Template>
+                  </Thumb>
+                </Track.Thumb>
+              </Track>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- ScrollViewer mit schlanker Bar -->
+    <Style x:Key="DarkSV" TargetType="ScrollViewer">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ScrollViewer">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+              <ScrollContentPresenter Grid.Column="0"/>
+              <ScrollBar Grid.Column="1" Style="{StaticResource SlimSB}"
+                         Orientation="Vertical"
+                         Value="{TemplateBinding VerticalOffset}"
+                         Maximum="{TemplateBinding ScrollableHeight}"
+                         ViewportSize="{TemplateBinding ViewportHeight}"
+                         Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- Nav-Button -->
+    <Style x:Key="NavBtn" TargetType="Button">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource TxtDim}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="16,9"/>
+      <Setter Property="HorizontalContentAlignment" Value="Left"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="bd" Background="{TemplateBinding Background}"
+                    BorderThickness="2,0,0,0" BorderBrush="Transparent"
+                    Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="bd" Property="Background" Value="{DynamicResource HoverBg}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TxtPrimary}"/>
+              </Trigger>
+              <Trigger Property="Tag" Value="active">
+                <Setter TargetName="bd" Property="Background" Value="{DynamicResource NavActiveBg}"/>
+                <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource AccentGreen}"/>
+                <Setter Property="Foreground" Value="{DynamicResource AccentGreen}"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- Primär-Button -->
+    <Style x:Key="PrimaryBtn" TargetType="Button">
+      <Setter Property="Background" Value="{DynamicResource AccentGreenBg}"/>
+      <Setter Property="Foreground" Value="{DynamicResource AccentGreen}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="16,7"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="bd" Background="{TemplateBinding Background}"
+                    CornerRadius="6" Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="bd" Property="Background" Value="#2A5A2A"/>
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="bd" Property="Background" Value="#1A3A1A"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- Sekundär-Button -->
+    <Style x:Key="SecBtn" TargetType="Button">
+      <Setter Property="Background" Value="{DynamicResource SecBtnBg}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TxtSecondary}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SecBtnBorder}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="14,6"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="bd" Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="6" Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="bd" Property="Background" Value="{DynamicResource BorderMain}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TxtPrimary}"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- Titelbar-Button -->
+    <Style x:Key="TitleBtn" TargetType="Button">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource TxtFaded}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Width" Value="36"/>
+      <Setter Property="Height" Value="36"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="4">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="bd" Property="Background" Value="{DynamicResource BorderMain}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TxtPrimary}"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- ProgressBar -->
+    <Style x:Key="HellionProg" TargetType="ProgressBar">
+      <Setter Property="Height" Value="3"/>
+      <Setter Property="Background" Value="{DynamicResource BorderMain}"/>
+      <Setter Property="Foreground" Value="{DynamicResource AccentGreen}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ProgressBar">
+            <Grid>
+              <Rectangle Fill="{TemplateBinding Background}" RadiusX="2" RadiusY="2"/>
+              <Rectangle x:Name="PART_Indicator" HorizontalAlignment="Left"
+                         Fill="{TemplateBinding Foreground}" RadiusX="2" RadiusY="2"/>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+  </Window.Resources>
+
+  <!-- Äußerer Rahmen (WindowStyle=None braucht eigene Border) -->
+  <Border Background="{DynamicResource BgMain}" BorderBrush="{DynamicResource BorderMain}" BorderThickness="1" CornerRadius="8">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="42"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="26"/>
+      </Grid.RowDefinitions>
+
+      <!-- ===== TITELLEISTE ===== -->
+      <Border Grid.Row="0" Background="{DynamicResource BgHeader}"
+              BorderBrush="{DynamicResource BorderMain}" BorderThickness="0,0,0,1"
+              CornerRadius="8,8,0,0"
+              x:Name="TitleBar">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+
+          <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0">
+            <Image x:Name="HeaderLogo" Height="20" Margin="0,0,7,0"
+                   VerticalAlignment="Center" Stretch="Uniform"/>
+            <TextBlock Text="HELLION POWER TOOL" FontSize="12" FontWeight="Bold"
+                       Foreground="{DynamicResource TxtPrimary}" VerticalAlignment="Center"/>
+            <Border Background="{DynamicResource VersionBadge}" CornerRadius="10" Padding="8,2"
+                    Margin="10,0,0,0" VerticalAlignment="Center">
+              <TextBlock Text="v7.2.0.0 Heimdall" FontSize="10" Foreground="{DynamicResource AccentGreen}"/>
+            </Border>
+          </StackPanel>
+
+          <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,4,0">
+            <Button x:Name="BtnMinimize" Content="&#x2014;" Style="{StaticResource TitleBtn}"/>
+            <Button x:Name="BtnMaximize" Content="&#x25A1;" Style="{StaticResource TitleBtn}"/>
+            <Button x:Name="BtnClose"    Content="&#x2715;" Style="{StaticResource TitleBtn}"/>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!-- ===== HAUPT-LAYOUT ===== -->
+      <Grid Grid.Row="1">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="195"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="320" MinWidth="200" MaxWidth="600"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- === SIDEBAR === -->
+        <Border Grid.Column="0" Background="{DynamicResource BgSidebar}"
+                BorderBrush="{DynamicResource BorderSub}" BorderThickness="0,0,1,0">
+          <DockPanel LastChildFill="False">
+
+            <TextBlock DockPanel.Dock="Top" Text="NAVIGATION"
+                       FontSize="9" Foreground="{DynamicResource TxtMuted}" Margin="16,14,0,6"/>
+
+            <Button x:Name="NavDashboard" DockPanel.Dock="Top" Style="{StaticResource NavBtn}" Tag="active">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE80F;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                           Width="24" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Dashboard" VerticalAlignment="Center"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="NavRepair" DockPanel.Dock="Top" Style="{StaticResource NavBtn}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE90F;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                           Width="24" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Reparatur" VerticalAlignment="Center"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="NavClean" DockPanel.Dock="Top" Style="{StaticResource NavBtn}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                           Width="24" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Bereinigung" VerticalAlignment="Center"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="NavDiagnose" DockPanel.Dock="Top" Style="{StaticResource NavBtn}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                           Width="24" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Diagnose" VerticalAlignment="Center"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="NavManage" DockPanel.Dock="Top" Style="{StaticResource NavBtn}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE115;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                           Width="24" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Verwaltung" VerticalAlignment="Center"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="NavSecurity" DockPanel.Dock="Top" Style="{StaticResource NavBtn}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE72E;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                           Width="24" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Sicherheit" VerticalAlignment="Center"/>
+              </StackPanel>
+            </Button>
+
+            <Button x:Name="NavSoftware" DockPanel.Dock="Top" Style="{StaticResource NavBtn}" Margin="0,2,0,0">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                           Width="24" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Software" VerticalAlignment="Center"/>
+              </StackPanel>
+            </Button>
+
+            <Border DockPanel.Dock="Top" Height="1" Background="{DynamicResource BorderDivide}" Margin="14,8"/>
+
+            <Button x:Name="NavSettings" DockPanel.Dock="Top" Style="{StaticResource NavBtn}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                           Width="24" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Einstellungen" VerticalAlignment="Center"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="NavLegal" DockPanel.Dock="Top" Style="{StaticResource NavBtn}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE82D;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                           Width="24" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Rechtliches" VerticalAlignment="Center"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="NavSystem" DockPanel.Dock="Top" Style="{StaticResource NavBtn}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE7F4;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                           Width="24" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="System" VerticalAlignment="Center"/>
+              </StackPanel>
+            </Button>
+
+            <!-- PS-Version unten -->
+            <Border DockPanel.Dock="Bottom" Padding="16,10"
+                    BorderBrush="{DynamicResource BorderDivide}" BorderThickness="0,1,0,0">
+              <StackPanel>
+                <TextBlock Text="PowerShell" FontSize="9" Foreground="{DynamicResource TxtMuted}"/>
+                <TextBlock x:Name="PsVersionText" Text="v?.?"
+                           FontSize="11" Foreground="{DynamicResource TxtFaded}" Margin="0,1,0,4"/>
+                <TextBlock x:Name="OsText" Text="Windows"
+                           FontSize="9" Foreground="{DynamicResource TxtMuted}"
+                           TextTrimming="CharacterEllipsis"/>
+              </StackPanel>
+            </Border>
+
+          </DockPanel>
+        </Border>
+
+        <!-- === CONTENT === -->
+        <Grid Grid.Column="1">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+
+          <!-- Toolbar -->
+          <Border Grid.Row="0" Background="{DynamicResource BgPanel}"
+                  BorderBrush="{DynamicResource BorderSub}" BorderThickness="0,0,0,1" Padding="14,9">
+            <DockPanel>
+              <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <Button x:Name="BtnAutoMode" Style="{StaticResource SecBtn}" Margin="0,0,8,0">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBlock Text="Auto-Modus" VerticalAlignment="Center"/>
+                  </StackPanel>
+                </Button>
+                <Button x:Name="BtnQuickClean" Style="{StaticResource PrimaryBtn}">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBlock Text="Quick-Clean" VerticalAlignment="Center"/>
+                  </StackPanel>
+                </Button>
+              </StackPanel>
+              <TextBlock x:Name="PageTitle" Text="Dashboard"
+                         FontSize="14" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TxtPrimary}" VerticalAlignment="Center"/>
+            </DockPanel>
+          </Border>
+
+          <!-- System-Health-Bar -->
+          <Border x:Name="HealthBarPanel" Grid.Row="1" Background="{DynamicResource BgHealth}"
+                  BorderBrush="{DynamicResource BorderSub}" BorderThickness="0,0,0,1" Padding="14,8">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+
+              <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                <DockPanel Margin="0,0,0,3">
+                  <TextBlock Text="CPU" FontSize="10" Foreground="{DynamicResource TxtSecondary}"/>
+                  <TextBlock x:Name="HealthCPUText" Text="--" FontSize="10"
+                             Foreground="#3DD68C" HorizontalAlignment="Right"/>
+                </DockPanel>
+                <ProgressBar x:Name="HealthCPU" Style="{StaticResource HellionProg}"
+                             Height="4" Value="0" Maximum="100" Foreground="#3DD68C"/>
+              </StackPanel>
+
+              <StackPanel Grid.Column="1" Margin="5,0,5,0">
+                <DockPanel Margin="0,0,0,3">
+                  <TextBlock Text="RAM" FontSize="10" Foreground="{DynamicResource TxtSecondary}"/>
+                  <TextBlock x:Name="HealthRAMText" Text="--" FontSize="10"
+                             Foreground="#3DD68C" HorizontalAlignment="Right"/>
+                </DockPanel>
+                <ProgressBar x:Name="HealthRAM" Style="{StaticResource HellionProg}"
+                             Height="4" Value="0" Maximum="100" Foreground="#3DD68C"/>
+              </StackPanel>
+
+              <StackPanel Grid.Column="2" Margin="10,0,0,0">
+                <DockPanel Margin="0,0,0,3">
+                  <TextBlock Text="DISK C:" FontSize="10" Foreground="{DynamicResource TxtSecondary}"/>
+                  <TextBlock x:Name="HealthDiskText" Text="--" FontSize="10"
+                             Foreground="#3DD68C" HorizontalAlignment="Right"/>
+                </DockPanel>
+                <ProgressBar x:Name="HealthDisk" Style="{StaticResource HellionProg}"
+                             Height="4" Value="0" Maximum="100" Foreground="#3DD68C"/>
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <!-- Karten -->
+          <ScrollViewer Grid.Row="2" Style="{StaticResource DarkSV}"
+                        VerticalScrollBarVisibility="Auto" Padding="14">
+            <StackPanel x:Name="CardPanel" Orientation="Vertical"/>
+          </ScrollViewer>
+        </Grid>
+
+        <!-- === OPTIONS OVERLAY (ueber Content-Area) === -->
+        <Border x:Name="OptionsOverlay" Grid.Column="1" Grid.RowSpan="3"
+                Background="#CC000000" Visibility="Collapsed" Panel.ZIndex="100">
+          <Border Background="{DynamicResource BgPanel}"
+                  BorderBrush="{DynamicResource BorderMain}" BorderThickness="1"
+                  CornerRadius="8" Padding="24" Margin="40"
+                  VerticalAlignment="Center" HorizontalAlignment="Center"
+                  MinWidth="320" MaxWidth="420">
+            <StackPanel>
+              <TextBlock x:Name="OptionsTitle" FontSize="16" FontWeight="Bold"
+                         Foreground="{DynamicResource TxtPrimary}" Margin="0,0,0,4"/>
+              <TextBlock x:Name="OptionsSubtitle" Text="Aktion wählen:" FontSize="12"
+                         Foreground="{DynamicResource TxtSecondary}" Margin="0,0,0,14"/>
+              <TextBlock x:Name="OptionsWarnText" FontSize="11" TextWrapping="Wrap"
+                         Foreground="{DynamicResource TxtSecondary}" Margin="0,0,0,14"
+                         Visibility="Collapsed"/>
+              <StackPanel x:Name="OptionsStack" />
+              <Button x:Name="BtnOptionsCancel" Content="Abbrechen" Margin="0,14,0,0"
+                      Style="{StaticResource SecBtn}" Padding="14,8"
+                      HorizontalAlignment="Stretch"/>
+            </StackPanel>
+          </Border>
+        </Border>
+
+        <!-- === GRID SPLITTER === -->
+        <GridSplitter Grid.Column="2" Width="4"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Stretch"
+                      Background="{DynamicResource BorderDivide}"
+                      Cursor="SizeWE"/>
+
+        <!-- === LOG PANEL === -->
+        <Border Grid.Column="3" Background="{DynamicResource BgHeader}"
+                BorderBrush="{DynamicResource BorderSub}" BorderThickness="1,0,0,0">
+          <DockPanel>
+
+            <!-- Log Header -->
+            <Border DockPanel.Dock="Top" Padding="12,8"
+                    BorderBrush="{DynamicResource BorderDivide}" BorderThickness="0,0,0,1">
+              <DockPanel>
+                <Button x:Name="BtnClearLog" DockPanel.Dock="Right"
+                        Content="Leeren" Style="{StaticResource SecBtn}"
+                        Padding="8,3" FontSize="10"/>
+                <Border Background="{DynamicResource AccentGreenBg}" CornerRadius="10"
+                        Padding="8,3" VerticalAlignment="Center">
+                  <StackPanel Orientation="Horizontal">
+                    <Ellipse x:Name="LiveDot" Width="6" Height="6" Fill="#3DD68C"
+                             Margin="0,0,5,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="LIVE" FontSize="9" FontWeight="Bold"
+                               Foreground="{DynamicResource AccentGreen}" VerticalAlignment="Center"/>
+                  </StackPanel>
+                </Border>
+              </DockPanel>
+            </Border>
+
+            <!-- Aktives Modul -->
+            <Border x:Name="ActiveModulePanel" DockPanel.Dock="Top"
+                    Padding="12,10" Background="{DynamicResource BgPanel}"
+                    BorderBrush="{DynamicResource BorderSub}" BorderThickness="0,0,0,1"
+                    Visibility="Collapsed">
+              <StackPanel>
+                <DockPanel Margin="0,0,0,5">
+                  <Button x:Name="BtnStopModule" DockPanel.Dock="Right"
+                          Content="Stop" Style="{StaticResource SecBtn}"
+                          Padding="8,2" FontSize="10" Margin="6,0,0,0"/>
+                  <TextBlock x:Name="ActiveModulePercent" DockPanel.Dock="Right"
+                             FontSize="11" Foreground="{DynamicResource AccentGreen}" Text="0%"/>
+                  <TextBlock x:Name="ActiveModuleName"
+                             FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AccentGreen}"
+                             TextTrimming="CharacterEllipsis"/>
+                </DockPanel>
+                <ProgressBar x:Name="ActiveProgress"
+                             Style="{StaticResource HellionProg}"
+                             Value="0" Maximum="100"/>
+              </StackPanel>
+            </Border>
+
+            <!-- Log-Inhalt (RichTextBox statt TextBlock) -->
+            <ScrollViewer x:Name="LogScroller" Style="{StaticResource DarkSV}"
+                          VerticalScrollBarVisibility="Auto" Padding="10,8">
+              <RichTextBox x:Name="LogOutput"
+                           Background="Transparent" BorderThickness="0"
+                           IsReadOnly="True"
+                           FontFamily="Cascadia Code, Consolas, Courier New"
+                           FontSize="11" Foreground="{DynamicResource TxtDim}"
+                           Padding="2"/>
+            </ScrollViewer>
+
+          </DockPanel>
+        </Border>
+
+      </Grid>
+
+      <!-- ===== STATUSBAR ===== -->
+      <Border Grid.Row="2" Background="{DynamicResource BgStatus}"
+              BorderBrush="{DynamicResource BorderDivide}" BorderThickness="0,1,0,0"
+              CornerRadius="0,0,8,8">
+        <DockPanel Margin="14,0">
+          <TextBlock x:Name="StatusText" DockPanel.Dock="Right"
+                     Text="Bereit" FontSize="10" Foreground="{DynamicResource TxtFaded}"
+                     VerticalAlignment="Center"/>
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <Border Background="#152A15" CornerRadius="8" Padding="6,2" Margin="0,0,10,0"
+                    VerticalAlignment="Center">
+              <StackPanel Orientation="Horizontal">
+                <Ellipse Width="5" Height="5" Fill="#3DD68C" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Admin" FontSize="9" Foreground="#3DD68C" VerticalAlignment="Center"/>
+              </StackPanel>
+            </Border>
+            <TextBlock x:Name="StatusModules" Text="Module werden geladen..."
+                       FontSize="10" Foreground="{DynamicResource TxtMuted}"/>
+            <TextBlock x:Name="StatusDebugBadge" Text="" FontSize="10" FontWeight="Bold"
+                       Margin="10,0,0,0" Visibility="Collapsed"/>
+          </StackPanel>
+        </DockPanel>
+      </Border>
+
+    </Grid>
+  </Border>
+</Window>

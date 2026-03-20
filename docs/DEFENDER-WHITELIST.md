@@ -88,4 +88,4 @@ Bei Problemen mit Defender:
 
 ---
 
-Hellion Power Tool v7.2.0.0 "Heimdall" — Entwickelt von [Hellion Online Media](https://hellion-media.de)
+Hellion Power Tool v8.0.0.0 "Jörmungandr" — Entwickelt von [Hellion Online Media](https://hellion-media.de)

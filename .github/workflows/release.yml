@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., v7.2.0.0)'
+        description: 'Release version (e.g., v8.0.0.0)'
         required: true
-        default: 'v7.2.0.0'
+        default: 'v8.0.0.0'
 
 permissions:
   contents: write
@@ -155,7 +155,7 @@ jobs:
         $version = "${{ steps.version.outputs.version }}"
         
         # Create release notes content
-        $content = "# Hellion Power Tool $version - `"Heimdall`"`n`n"
+        $content = "# Hellion Power Tool $version - `"Jörmungandr`"`n`n"
         $content += "## WARNING: Windows Defender Warnung`n"
         $content += "Dieses Tool kann False-Positive Warnungen ausloesen (**Trojan:Script/Wacatac.B!ml**).`n"
         $content += "**LOESUNG**: Siehe [DEFENDER-WHITELIST.md](https://github.com/${{ github.repository }}/blob/main/DEFENDER-WHITELIST.md)`n`n"
@@ -172,13 +172,13 @@ jobs:
         $content += "- **``hellion-certificate.cer``** - Zertifikat fuer Signatur-Verifikation`n"
         $content += "- **``checksums.txt``** - SHA256 Hashes zur Verifikation`n`n"
         
-        $content += "## Aenderungen in v7.2.0.0 Heimdall`n"
-        $content += "- **Hellion Online Media Branding** - Einheitliches Branding in allen Launcher-Dateien und Menues`n"
-        $content += "- **Launcher-Restyling** - Neue Farbgebung (Hellion Green), ueberarbeitete Header und Menues`n"
-        $content += "- **Umlaut-Korrektur** - Alle PowerShell-Module auf ae/oe/ue umgestellt (Encoding-Kompatibilitaet)`n"
-        $content += "- **Dokumentation ueberarbeitet** - SECURITY.md, DEFENDER-WHITELIST.md, VERSION-FORMAT.md professionell neugeschrieben`n"
-        $content += "- **Timestamp-basiertes Update-System** - Robuster Versionsvergleich mit 14-stelligem Timestamp`n"
-        $content += "- **Bugfixes aus v7.1.5.x** - Get-WinEvent, TCP/IP Reset, Unicode-Batch-Probleme und mehr`n`n"
+        $content += "## Aenderungen in v8.0.0.0 Jörmungandr`n"
+        $content += "- **WPF GUI** - Vollstaendige Dark Mode Oberflaeche mit Sidebar-Navigation und Live-Log`n"
+        $content += "- **Performance-Optimierung** - Page-Caching, Async CIM-Queries, Brush-Cache, BitmapCache`n"
+        $content += "- **Projekt-Restrukturierung** - Professionelle Verzeichnisstruktur (src/, config/, build/)`n"
+        $content += "- **Prerequisite-Check** - .NET, PowerShell, winget, git werden beim Start geprueft`n"
+        $content += "- **Loading-States** - System- und Software-Seite zeigen Ladezustand an`n"
+        $content += "- **Window-Drag Fix** - Titelleiste bei maximiertem Fenster greifbar`n`n"
         
         $content += "## Sicherheit & Verifikation`n"
         $content += "- **Quellcode** - Vollstaendig auf GitHub verfuegbar`n"
@@ -209,7 +209,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ steps.version.outputs.version }}
-        name: Hellion Power Tool ${{ steps.version.outputs.version }} "Heimdall"
+        name: Hellion Power Tool ${{ steps.version.outputs.version }} "Jörmungandr"
         body_path: release-notes.md
         draft: false
         prerelease: false

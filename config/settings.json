@@ -1,17 +1,17 @@
 {
-  "version": "7.2.0.0",
-  "codename": "Heimdall",
+  "version": "8.0.0.0",
+  "codename": "Jörmungandr",
   "debug_mode": false,
   "auto_update": true,
   "log_level": "INFO",
   "max_backups": 10,
   "startup_check": true,
   "repository_url": "https://github.com/JonKazama-Hellion/hellion-power-tool.git",
-  "script_name": "hellion_tool_main.ps1",
+  "script_name": "hellion_main.ps1",
   "last_update_check": "",
   "launcher": {
-    "version": "7.2.0.0",
-    "codename": "Heimdall",
+    "version": "8.0.0.0",
+    "codename": "Jörmungandr",
     "auto_folder_creation": true,
     "log_cleanup_days": 30,
     "backup_cleanup_count": 10

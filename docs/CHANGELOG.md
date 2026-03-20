@@ -7,6 +7,39 @@ und das Projekt folgt der [Semantischen Versionierung](https://semver.org/lang/d
 
 ---
 
+## [8.0.0.0 "Jörmungandr"] — 2026-03-20
+
+### WPF GUI, Performance-Optimierung & Projekt-Restrukturierung
+
+Major-Version-Bump: Komplette GUI-Entwicklung, Performance-Überarbeitung und professionelle Projektstruktur.
+
+#### GUI (WPF Dark Mode)
+
+- **Vollständige WPF-Oberfläche**: Dark Mode Interface mit Sidebar-Navigation, Modul-Karten und Live-Log-Panel
+- **Page-Caching**: Visibility-Toggle statt Destroy/Rebuild — eliminiert 800-1500ms pro Seitenwechsel
+- **Lazy-Build Pattern**: Seiten werden erst beim ersten Zugriff gebaut
+- **Async CIM-Queries**: System-Seite lädt Daten im Hintergrund mit Loading-State
+- **Software Loading-Banner**: Zeigt Winget-Check-Status beim Laden der Software-Seite
+- **Brush-Cache + Frozen Brushes**: Performance-Optimierung für WPF-Rendering
+- **BitmapCache**: Hardware-beschleunigte Karten-Darstellung
+- **Window-Drag bei maximiertem Fenster**: Titelleiste greifen und ziehen funktioniert
+- **Doppelklick auf Titelleiste**: Maximieren/Wiederherstellen Toggle
+- **Async Health-Bar**: CPU/RAM/Disk-Anzeige ohne UI-Blockierung
+- **Prerequisite-Check**: .NET, PowerShell, winget, git werden beim Start geprüft
+
+#### Projekt-Restrukturierung
+
+- **Neue Verzeichnisstruktur**: `src/`, `config/`, `build/`, `tests/`, `assets/`, `docs/`
+- **GUI als Haupteinstieg**: `START.bat` im Root startet die WPF-GUI
+- **CLI verschoben**: `src/launcher/start-cli.bat` für Power-User
+- **Module verschoben**: `src/modules/` (18 Module, funktional unverändert)
+
+#### Update-System
+
+- **gui-settings.json Erhaltung**: Auto-Updater rettet jetzt auch GUI-Einstellungen
+
+---
+
 ## [7.2.0.0 "Heimdall"] — 2026-03-15
 
 ### Hellion Online Media Branding & Professionalisierung

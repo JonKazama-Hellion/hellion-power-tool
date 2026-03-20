@@ -1,0 +1,25 @@
+{
+  "theme": "dark",
+  "window": {
+    "width": 159,
+    "left": 3042,
+    "height": 27,
+    "top": 10
+  },
+  "safety": {
+    "autoRestorePoint": true
+  },
+  "healthBar": {
+    "enabled": true,
+    "intervalMs": 2000
+  },
+  "language": "de",
+  "privacy": {
+    "checkForUpdates": false
+  },
+  "log": {
+    "autoScroll": true,
+    "maxDisplayLines": 500,
+    "retentionDays": 30
+  }
+}

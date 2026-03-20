@@ -1,0 +1,163 @@
+{
+  "disclaimer": "Dieses Tool nutzt Winget (Windows Package Manager) zur Installation. Die Software wird direkt von den offiziellen Quellen heruntergeladen. Hellion Online Media übernimmt keine Haftung für installierte Drittanbieter-Software.",
+  "warnings": [
+    "Manche Installer öffnen ein eigenes Fenster im Hintergrund, das auf Benutzereingaben wartet. Bitte prüfe die Taskleiste, falls eine Installation länger dauert.",
+    "Antivirus-Software kann sich gegenseitig blockieren — installiere maximal einen Virenscanner gleichzeitig.",
+    "Einige Programme erfordern einen Neustart nach der Installation, damit sie vollständig funktionieren."
+  ],
+  "categories": [
+    {
+      "name": "Browser",
+      "icon": "E774",
+      "color": "#4DA3FF",
+      "packages": [
+        { "id": "Google.Chrome",           "name": "Google Chrome",           "desc": "Der meistgenutzte Webbrowser weltweit. Schnell, sicher und synchronisiert Lesezeichen, Passwörter und Tabs über alle Geräte hinweg.",     "recommended": true },
+        { "id": "Mozilla.Firefox",         "name": "Mozilla Firefox",         "desc": "Datenschutz-freundlicher Open-Source-Browser. Blockiert Tracker automatisch und lässt sich mit tausenden Erweiterungen anpassen." },
+        { "id": "Brave.Brave",             "name": "Brave Browser",           "desc": "Browser mit eingebautem Werbeblocker und Tracking-Schutz. Basiert auf Chromium, funktioniert also wie Chrome — nur ohne Werbung." },
+        { "id": "Vivaldi.Vivaldi",         "name": "Vivaldi",                 "desc": "Hochgradig anpassbarer Browser für Power-User. Tab-Stacking, Seitenleisten, eigene Tastenkürzel und vieles mehr." },
+        { "id": "Opera.Opera",             "name": "Opera",                   "desc": "Browser mit eingebautem VPN, Messenger-Sidebar (WhatsApp, Telegram etc.) und Flow-Funktion zum Teilen zwischen Geräten." },
+        { "id": "Opera.OperaGX",           "name": "Opera GX",               "desc": "Spezieller Gaming-Browser mit CPU- und RAM-Limiter. Zeigt Twitch-Feeds, hat Discord-Integration und ein Gaming-Design." }
+      ]
+    },
+    {
+      "name": "Gaming",
+      "icon": "E7FC",
+      "color": "#FF5F57",
+      "packages": [
+        { "id": "Valve.Steam",                    "name": "Steam",               "desc": "Die größte Spieleplattform der Welt. Kaufe, installiere und verwalte tausende PC-Spiele. Workshop, Cloud-Saves und Community-Features inklusive.",          "recommended": true },
+        { "id": "EpicGames.EpicGamesLauncher",    "name": "Epic Games Launcher", "desc": "Spieleplattform von Epic Games. Bietet jede Woche kostenlose Spiele zum Behalten und exklusive Titel wie Fortnite." },
+        { "id": "GOG.Galaxy",                     "name": "GOG Galaxy",          "desc": "Spieleplattform für DRM-freie Spiele — du besitzt sie wirklich. Klassiker und moderne Titel, auch offline spielbar." },
+        { "id": "ElectronicArts.EADesktop",       "name": "EA App",             "desc": "Der offizielle Launcher für EA-Spiele wie FIFA, Battlefield, Die Sims und Star Wars. Ersetzt den alten Origin-Client." }
+      ]
+    },
+    {
+      "name": "Kommunikation",
+      "icon": "E8BD",
+      "color": "#A78BFA",
+      "packages": [
+        { "id": "Discord.Discord",              "name": "Discord",            "desc": "Sprach- und Text-Chat für Gamer, Communities und Teams. Erstelle Server, teile deinen Bildschirm und nutze Bots für alles Mögliche.",  "recommended": true },
+        { "id": "Microsoft.Teams",              "name": "Microsoft Teams",    "desc": "Microsofts Kommunikations-App für Videoanrufe, Chat und Zusammenarbeit. Wird oft in Unternehmen und Schulen eingesetzt." },
+        { "id": "Zoom.Zoom",                    "name": "Zoom",              "desc": "Video-Konferenz-Tool für Online-Meetings, Webinare und Bildschirmfreigabe. Einfach zu bedienen, auch für Einsteiger." },
+        { "id": "Telegram.TelegramDesktop",     "name": "Telegram Desktop",  "desc": "Schneller, sicherer Messenger mit Cloud-Synchronisierung. Unterstützt Gruppen mit bis zu 200.000 Mitgliedern, Bots und Kanäle." },
+        { "id": "OpenWhisperSystems.Signal",    "name": "Signal",            "desc": "Sicherer Messenger mit Ende-zu-Ende-Verschlüsselung für Nachrichten und Anrufe. Die datenschutzfreundlichste Alternative zu WhatsApp." },
+        { "id": "Mozilla.Thunderbird",          "name": "Thunderbird",       "desc": "Kostenloser E-Mail-Client von Mozilla. Verwalte mehrere E-Mail-Konten, Kalender und Kontakte an einem Ort — ohne Werbung." }
+      ]
+    },
+    {
+      "name": "Media",
+      "icon": "E8D6",
+      "color": "#F5A623",
+      "packages": [
+        { "id": "VideoLAN.VLC",                 "name": "VLC Media Player",  "desc": "Spielt praktisch jedes Video- und Audioformat ab — ohne zusätzliche Codecs. Kostenlos, werbefrei und funktioniert einfach.",                    "recommended": true },
+        { "id": "clsid2.mpc-hc",               "name": "MPC-HC",           "desc": "Leichtgewichtiger Videoplayer, der praktisch jedes Format abspielt. Verbraucht kaum Ressourcen und ist völlig werbefrei." },
+        { "id": "OBSProject.OBSStudio",         "name": "OBS Studio",      "desc": "Kostenlose Software zum Aufnehmen und Streamen von Bildschirminhalten. Wird von Streamern weltweit als Standard-Tool verwendet." },
+        { "id": "HandBrake.HandBrake",           "name": "HandBrake",       "desc": "Wandelt Videos in verschiedene Formate um (z.B. MP4, MKV). Ideal um große Videodateien zu konvertieren oder zu komprimieren." },
+        { "id": "Spotify.Spotify",              "name": "Spotify",           "desc": "Musik-Streaming mit Millionen von Songs, Podcasts und Playlists. Kostenlos mit Werbung oder werbefrei mit Premium-Abo.",  "recommended": true },
+        { "id": "PeterPawlowski.foobar2000",    "name": "foobar2000",       "desc": "Leichtgewichtiger Audioplayer für Musikliebhaber. Unterstützt alle gängigen Formate (FLAC, MP3, AAC) und verbraucht kaum Ressourcen." },
+        { "id": "Winamp.Winamp",                "name": "Winamp",           "desc": "Der Klassiker unter den Musikplayern — jetzt modernisiert. Spielt lokale Musikdateien ab und unterstützt Skins und Plugins." },
+        { "id": "Audacity.Audacity",            "name": "Audacity",         "desc": "Kostenloser Audio-Editor zum Aufnehmen und Bearbeiten von Sound. Perfekt für Podcasts, Musikbearbeitung oder Sprachaufnahmen." }
+      ]
+    },
+    {
+      "name": "Office & PDF",
+      "icon": "E8A1",
+      "color": "#3DD68C",
+      "packages": [
+        { "id": "TheDocumentFoundation.LibreOffice", "name": "LibreOffice",      "desc": "Kostenlose Office-Suite mit Textverarbeitung, Tabellenkalkulation und Präsentationen. Öffnet und speichert auch Microsoft-Office-Dateien (.docx, .xlsx).",             "recommended": true },
+        { "id": "Notepad++.Notepad++",               "name": "Notepad++",        "desc": "Erweiterter Texteditor mit Syntax-Hervorhebung für über 80 Programmiersprachen. Viel leistungsfähiger als der Standard-Windows-Editor." },
+        { "id": "SumatraPDF.SumatraPDF",             "name": "Sumatra PDF",      "desc": "Extrem schneller und leichter PDF-Reader, der sofort startet. Öffnet auch EPUB-, MOBI- und Comic-Formate.",                                                            "recommended": true },
+        { "id": "geeksoftwareGmbH.PDF24Creator",     "name": "PDF24 Creator",    "desc": "Erstellt, bearbeitet und kombiniert PDF-Dateien völlig kostenlos. Kann auch PDFs drucken, komprimieren und zusammenfügen." }
+      ]
+    },
+    {
+      "name": "Imaging",
+      "icon": "E8B9",
+      "color": "#2DD4BF",
+      "packages": [
+        { "id": "ShareX.ShareX",                "name": "ShareX",            "desc": "Mächtiges Screenshot- und Bildschirmaufnahme-Tool. Kann Screenshots automatisch bearbeiten, mit Anmerkungen versehen und hochladen." },
+        { "id": "dotPDN.PaintDotNet",           "name": "Paint.NET",        "desc": "Leistungsfähiges Bildbearbeitungsprogramm, das einfacher als Photoshop ist. Unterstützt Ebenen, Effekte und viele Bildformate." },
+        { "id": "GIMP.GIMP.3",                  "name": "GIMP",             "desc": "Kostenlose Bildbearbeitung als Alternative zu Photoshop. Ebenen, Filter, Pinsel und Plugins für professionelle Fotobearbeitung." },
+        { "id": "Greenshot.Greenshot",           "name": "Greenshot",        "desc": "Macht Screenshots von Bereichen, Fenstern oder dem ganzen Bildschirm. Kann direkt bearbeiten und in die Zwischenablage kopieren." },
+        { "id": "IrfanSkiljan.IrfanView",        "name": "IrfanView",       "desc": "Ultraschneller Bildbetrachter für über 100 Formate. Seit Jahrzehnten ein Windows-Klassiker mit vielen Plugins und Stapelverarbeitung." },
+        { "id": "BlenderFoundation.Blender",    "name": "Blender",           "desc": "Professionelles 3D-Programm für Modellierung, Animation und Videobearbeitung. Komplett kostenlos und wird auch in der Filmindustrie eingesetzt." }
+      ]
+    },
+    {
+      "name": "Coding",
+      "icon": "E943",
+      "color": "#4DA3FF",
+      "packages": [
+        { "id": "Git.Git",                        "name": "Git",                  "desc": "Versionsverwaltung für Entwickler. Verfolge Änderungen an deinem Code, arbeite im Team und nutze GitHub, GitLab oder Bitbucket." },
+        { "id": "Microsoft.VisualStudioCode",     "name": "Visual Studio Code",   "desc": "Microsofts kostenloser Code-Editor. Unterstützt hunderte Programmiersprachen, hat ein Terminal eingebaut und tausende Erweiterungen." },
+        { "id": "Anysphere.Cursor",               "name": "Cursor",              "desc": "Code-Editor mit eingebauter KI-Unterstützung (basiert auf VS Code). Schreibt, erklärt und verbessert Code mithilfe von KI." },
+        { "id": "Microsoft.WindowsTerminal",       "name": "Windows Terminal",    "desc": "Modernes Terminal für Windows mit Tabs, Themes und Split-Ansicht. Fasst CMD, PowerShell und WSL in einem Fenster zusammen." },
+        { "id": "WinSCP.WinSCP",                  "name": "WinSCP",             "desc": "Dateiübertragung per SFTP, SCP und FTP. Einfache Oberfläche zum Hoch- und Herunterladen von Dateien auf Server." },
+        { "id": "PuTTY.PuTTY",                    "name": "PuTTY",              "desc": "SSH- und Telnet-Client für sichere Verbindungen zu Servern und Netzwerkgeräten. Standard-Tool für Systemadministratoren." },
+        { "id": "Docker.DockerDesktop",            "name": "Docker Desktop",     "desc": "Führt Anwendungen in isolierten Containern aus — der Standard für moderne Softwareentwicklung. Ermöglicht reproduzierbare Entwicklungsumgebungen auf jedem PC." }
+      ]
+    },
+    {
+      "name": "Tools",
+      "icon": "E90F",
+      "color": "#F5A623",
+      "packages": [
+        { "id": "7zip.7zip",                      "name": "7-Zip",              "desc": "Kostenloses Archiv-Tool zum Packen und Entpacken von ZIP, 7z, RAR und vielen weiteren Formaten. Sehr hohe Kompressionsrate.",        "recommended": true },
+        { "id": "RARLab.WinRAR",                  "name": "WinRAR",            "desc": "Bekanntes Archiv-Tool mit besonders gutem RAR-Support. Kann ZIP, RAR, 7z und viele andere Formate öffnen und erstellen." },
+        { "id": "voidtools.Everything",            "name": "Everything Search", "desc": "Findet jede Datei auf deinem PC in Millisekunden. Viel schneller als die Windows-Suche — einfach Dateinamen eintippen und sofort finden." },
+        { "id": "AntibodySoftware.WizTree",        "name": "WizTree",          "desc": "Zeigt blitzschnell an, welche Dateien und Ordner den meisten Speicherplatz belegen. Deutlich schneller als TreeSize und die Windows-Anzeige." },
+        { "id": "JAMSoftware.TreeSize.Free",       "name": "TreeSize Free",    "desc": "Zeigt dir, welche Ordner und Dateien den meisten Speicherplatz belegen. Hilft beim Aufräumen, wenn die Festplatte voll wird." },
+        { "id": "Rufus.Rufus",                     "name": "Rufus",            "desc": "Erstellt bootfähige USB-Sticks aus ISO-Dateien (z.B. für Windows-Installation). Schnell, einfach und zuverlässig." },
+        { "id": "Ventoy.Ventoy",                   "name": "Ventoy",           "desc": "Macht einen USB-Stick bootfähig für mehrere ISOs gleichzeitig. Einfach ISO-Dateien draufkopieren — fertig, kein Formatieren nötig." },
+        { "id": "qBittorrent.qBittorrent",         "name": "qBittorrent",      "desc": "Kostenloser Torrent-Client ohne Werbung und ohne versteckte Funktionen. Einfach zu bedienen und verbraucht wenig Ressourcen." }
+      ]
+    },
+    {
+      "name": "Utilities",
+      "icon": "E15E",
+      "color": "#A78BFA",
+      "packages": [
+        { "id": "Microsoft.PowerToys",                  "name": "PowerToys",           "desc": "Sammlung von Produktivitäts-Tools von Microsoft. Enthält Fenster-Management, Farbauswahl, Datei-Umbenennung und mehr." },
+        { "id": "RamenSoftware.Windhawk",               "name": "Windhawk",           "desc": "Erlaubt Anpassungen an Windows-Verhalten und Aussehen über Mini-Mods. Kann z.B. die Taskleiste, das Startmenü oder den Explorer verändern." },
+        { "id": "File-New-Project.EarTrumpet",          "name": "EarTrumpet",         "desc": "Steuert die Lautstärke für jedes Programm einzeln direkt aus der Taskleiste. Viel besser als der eingebaute Windows-Lautstärkemixer." },
+        { "id": "flux.flux",                             "name": "f.lux",              "desc": "Reduziert abends automatisch das blaue Licht vom Bildschirm. Schont die Augen bei nächtlicher Computernutzung und hilft beim Einschlafen." },
+        { "id": "AnyDesk.AnyDesk",                     "name": "AnyDesk",              "desc": "Fernwartungs-Tool für schnellen Zugriff auf andere Computer. Ideal wenn du jemandem aus der Ferne bei PC-Problemen helfen willst." },
+        { "id": "TeamViewer.TeamViewer",                "name": "TeamViewer",           "desc": "Das bekannteste Fernwartungs-Programm weltweit. Steuere andere PCs fern, teile deinen Bildschirm und übertrage Dateien." },
+        { "id": "CodeSector.TeraCopy",                  "name": "TeraCopy",            "desc": "Ersetzt das Windows-Kopieren durch einen schnelleren Kopierer mit Pause-Funktion, Fehlerbehandlung und Integritätsprüfung." },
+        { "id": "Microsoft.Sysinternals.ProcessExplorer","name": "Process Explorer",   "desc": "Erweiterter Task-Manager von Microsoft Sysinternals. Zeigt detailliert, welche Programme was auf deinem PC tun und verbrauchen." },
+        { "id": "REALiX.HWiNFO",                       "name": "HWiNFO",             "desc": "Ausführliches Hardware-Monitoring mit Echtzeit-Sensordaten. Zeigt Temperaturen, Spannungen und Taktraten aller Komponenten an." },
+        { "id": "Guru3D.Afterburner",                   "name": "MSI Afterburner",    "desc": "Grafikkarten-Überwachung und Overclocking-Tool. Zeigt GPU-Temperatur, Taktrate und Lüftergeschwindigkeit in Echtzeit an." },
+        { "id": "CPUID.CPU-Z",                          "name": "CPU-Z",              "desc": "Zeigt detaillierte Infos über deinen Prozessor, Mainboard und RAM. Nützlich um Hardware-Spezifikationen schnell nachzuschlagen." },
+        { "id": "CrystalDewWorld.CrystalDiskInfo",      "name": "CrystalDiskInfo",    "desc": "Prüft den Gesundheitszustand deiner Festplatten und SSDs. Warnt frühzeitig vor drohenden Ausfällen durch S.M.A.R.T.-Daten." }
+      ]
+    },
+    {
+      "name": "Security",
+      "icon": "E72E",
+      "color": "#FF5F57",
+      "packages": [
+        { "id": "Bitwarden.Bitwarden",            "name": "Bitwarden",             "desc": "Speichert alle deine Passwörter sicher an einem Ort und füllt Login-Felder automatisch aus. Funktioniert auf allen Geräten und im Browser.",  "recommended": true },
+        { "id": "KeePassXCTeam.KeePassXC",        "name": "KeePassXC",             "desc": "Offline-Passwortmanager, der deine Passwörter verschlüsselt auf deinem PC speichert. Braucht kein Internet und keinen Account." },
+        { "id": "Malwarebytes.Malwarebytes",        "name": "Malwarebytes Free",     "desc": "Malware-Scanner zum manuellen Prüfen deines PCs auf Viren, Trojaner und Ransomware. Ergänzt den Windows Defender als Zweitscanner." },
+        { "id": "Bitdefender.Bitdefender",          "name": "Bitdefender Free",      "desc": "Kostenloser Echtzeit-Virenscanner mit automatischem Schutz im Hintergrund. Erkennt Bedrohungen bevor sie Schaden anrichten.",  "recommended": true },
+        { "id": "Malwarebytes.AdwCleaner",          "name": "AdwCleaner",           "desc": "Schneller Scanner speziell gegen Adware, Toolbars und unerwünschte Programme (PUPs). Ein Klick genügt zum Scannen und Entfernen." },
+        { "id": "SUPERAntiSpyware.SUPERAntiSpyware","name": "SUPERAntiSpyware",     "desc": "Spyware-Scanner der Tracking-Software, Keylogger und andere Spionage-Programme aufspürt und entfernt." }
+      ]
+    },
+    {
+      "name": "Runtimes",
+      "icon": "E756",
+      "color": "#2DD4BF",
+      "packages": [
+        { "id": "Microsoft.DotNet.DesktopRuntime.8",  "name": ".NET Desktop Runtime 8",  "desc": "Wird von vielen modernen Windows-Programmen benötigt. Ohne diese Runtime starten manche Apps gar nicht erst.",           "recommended": true },
+        { "id": "Microsoft.DotNet.DesktopRuntime.9",  "name": ".NET Desktop Runtime 9",  "desc": "Aktuelle stabile .NET-Runtime. Einige moderne Anwendungen setzen bereits .NET 9 voraus." },
+        { "id": "Microsoft.DotNet.DesktopRuntime.10", "name": ".NET Desktop Runtime 10", "desc": "Die neueste Version der .NET-Runtime (Preview/aktuell). Für Entwickler und Apps die bereits .NET 10 benötigen." },
+        { "id": "Microsoft.VCRedist.2015+.x64",       "name": "VC++ 2015-2022 Redist",  "desc": "Visual C++ Laufzeitbibliotheken die von sehr vielen Spielen und Programmen benötigt werden. Fehlermeldungen wie 'VCRUNTIME140.dll fehlt' löst diese Installation.",     "recommended": true },
+        { "id": "EclipseAdoptium.Temurin.21.JRE",     "name": "Java Runtime (Adoptium)","desc": "Java-Laufzeitumgebung für Programme die in Java geschrieben sind. Wird z.B. für Minecraft Java Edition benötigt." },
+        { "id": "Microsoft.DirectX",                   "name": "DirectX Runtime",       "desc": "Grafik-Bibliothek von Microsoft die von fast allen PC-Spielen benötigt wird. Stellt sicher, dass Spiele korrekt angezeigt werden." },
+        { "id": "Microsoft.PowerShell",                "name": "PowerShell 7",          "desc": "Die moderne Version von PowerShell mit besserer Geschwindigkeit und plattformübergreifender Unterstützung. Ersetzt die alte Windows PowerShell 5.1." },
+        { "id": "OpenJS.NodeJS.LTS",                   "name": "Node.js LTS",          "desc": "JavaScript-Runtime für Entwickler. Wird für viele Web-Entwicklungstools, Build-Systeme und Server-Anwendungen benötigt." },
+        { "id": "Python.Python.3.12",                   "name": "Python 3",            "desc": "Beliebte Programmiersprache für Scripting, Datenanalyse und KI-Projekte. Viele Tools und Automatisierungen setzen Python voraus." }
+      ]
+    }
+  ]
+}
