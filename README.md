@@ -40,6 +40,8 @@ PowerShell 7 wird automatisch erkannt. Fallback auf PowerShell 5.1 falls nicht i
 - **System-Info-Seite** — Hardware-Übersicht (CPU, GPU, RAM, Mainboard, Disks, OS) mit Export
 - **Einstellungen** — Theme, Health-Intervall, Log-Aufbewahrung, Auto-Scroll, Debug-Level
 - **Rechtliches** — Datenschutz, Impressum, Disclaimer, Hellion Online Media Links
+- **Prerequisite-Check** — Prüft beim Start .NET 4.8, PowerShell-Version, winget und git-Verfügbarkeit
+- **Loading-States** — System- und Software-Seite zeigen Ladezustand mit pulsierender Animation
 - **Auto-Update-Checker** — Prüft beim Start asynchron gegen GitHub, Toast bei neuem Update
 - **Toast-Benachrichtigungen** — Windows-native Benachrichtigung bei Modul-Abschluss
 - **Log-Verlauf** — Automatische JSON-Speicherung in `logs/gui/`
@@ -71,10 +73,10 @@ Quick-Select-Buttons: **Empfohlen** (12 DAU-freundliche Basics), **Alle**, **Kei
 
 ## CLI-Modus
 
-Das klassische Terminal-Interface über `START.bat` mit Menü-Navigation.
+Das klassische Terminal-Interface für Power-User über `src\launcher\start-cli.bat`.
 
 ```text
-START.bat doppelklicken
+src\launcher\start-cli.bat doppelklicken
 ```
 
 ### Features
@@ -165,7 +167,7 @@ START.bat doppelklicken
 hellion-power-tool/
 ├── START.bat                       # GUI-Einstieg (PS7-Detection, Admin-Elevation)
 ├── src/
-│   ├── hellion_gui.ps1             # GUI-Quellcode (WPF, ~2500 Zeilen)
+│   ├── hellion_gui.ps1             # GUI-Quellcode (WPF, ~3300 Zeilen)
 │   ├── hellion_main.ps1            # CLI-Quellcode (Menü, Module laden, Debug-Modi)
 │   ├── gui/
 │   │   └── window.xaml             # WPF-Layout (Styles, Brushes, UI-Struktur)
@@ -314,10 +316,10 @@ Die GUI kann als eigenständige `.exe` kompiliert werden:
 
 ```powershell
 # PS2EXE installieren (einmalig)
-gui\build-exe.ps1 -Install
+build\build-exe.ps1 -Install
 
 # EXE erstellen
-gui\build-exe.ps1
+build\build-exe.ps1
 ```
 
 Erzeugt `hellion-gui.exe` mit Icon, ohne Konsolenfenster, mit Admin-Rechte-Anforderung.
