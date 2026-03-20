@@ -7,23 +7,23 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., v8.0.0.0)'
+        description: 'Release version (z.B. v8.0.0.0)'
         required: true
         default: 'v8.0.0.0'
 
 permissions:
   contents: write
-  
+
 jobs:
   create-signed-release:
     name: Create Signed Release
     runs-on: windows-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
-    - name: Get version
+
+    - name: Determine version and codename
       id: version
       shell: powershell
       run: |
@@ -32,14 +32,23 @@ jobs:
         } else {
           $version = "${{ github.event.inputs.version }}"
         }
+
+        # Codename dynamisch aus config/version.txt lesen
+        $codename = "Release"
+        if (Test-Path "config/version.txt") {
+          $lines = Get-Content "config/version.txt" -EA SilentlyContinue
+          if ($lines -and $lines.Count -ge 2) { $codename = $lines[1].Trim() }
+        }
+
         echo "version=$version" >> $env:GITHUB_OUTPUT
-        echo "Version: $version"
-        
+        echo "codename=$codename" >> $env:GITHUB_OUTPUT
+        Write-Host "Version: $version | Codename: $codename"
+
     - name: Create self-signed certificate
       shell: powershell
       run: |
-        Write-Host "[INFO] Creating self-signed certificate..."
-        
+        Write-Host "[INFO] Erstelle Self-Signed Zertifikat..."
+
         $cert = New-SelfSignedCertificate `
           -Subject "CN=Hellion Power Tool" `
           -Type CodeSigning `
@@ -47,59 +56,58 @@ jobs:
           -FriendlyName "Hellion Power Tool Code Signing Certificate" `
           -NotAfter (Get-Date).AddYears(3) `
           -CertStoreLocation "Cert:\CurrentUser\My"
-          
-        # Export certificate for users
+
         Export-Certificate -Cert $cert -FilePath "hellion-certificate.cer"
-        
-        # Store certificate thumbprint for signing
         echo "CERT_THUMBPRINT=$($cert.Thumbprint)" >> $env:GITHUB_ENV
-        
+
     - name: Sign PowerShell files
       shell: powershell
       run: |
-        Write-Host "[INFO] Signing PowerShell files..."
-        
+        Write-Host "[INFO] Signiere PowerShell-Dateien..."
+
         $cert = Get-ChildItem "Cert:\CurrentUser\My\$($env:CERT_THUMBPRINT)"
         $signedCount = 0
-        
+
         Get-ChildItem *.ps1 -Recurse | ForEach-Object {
           try {
             $result = Set-AuthenticodeSignature -FilePath $_.FullName -Certificate $cert
             if ($result.Status -eq "Valid") {
-              Write-Host "[OK] Signed: $($_.Name)"
+              Write-Host "[OK] $($_.Name)"
               $signedCount++
             } else {
-              Write-Warning "[FAIL] Failed to sign: $($_.Name) - Status: $($result.Status)"
+              Write-Warning "[FEHLER] $($_.Name) - Status: $($result.Status)"
             }
           } catch {
-            Write-Warning "[ERROR] Error signing $($_.Name): $($_.Exception.Message)"
+            Write-Warning "[FEHLER] $($_.Name): $($_.Exception.Message)"
           }
         }
-        
-        Write-Host "[RESULT] Successfully signed $signedCount PowerShell files"
-        
+
+        Write-Host "[ERGEBNIS] $signedCount PowerShell-Dateien signiert"
+
     - name: Create release package
       shell: powershell
       run: |
-        Write-Host "[INFO] Creating clean release package..."
-        
+        Write-Host "[INFO] Erstelle Release-Paket..."
+
         $version = "${{ steps.version.outputs.version }}"
         $packageName = "hellion-power-tool-$version.zip"
-        
-        # Define files/folders to exclude from release
+
+        # Dateien und Ordner die nicht ins Release gehoeren
         $excludePatterns = @(
           ".git*",
-          "Debug\*", 
+          ".claude*",
           "temp\*",
           "logs\*",
           "backups\*",
+          "dev\*",
+          "tests\*",
           "*.tmp",
           "*.log",
           ".vs\*",
-          "node_modules\*"
+          "node_modules\*",
+          "CLAUDE.md"
         )
-        
-        Write-Host "Collecting release files..."
+
         $allFiles = Get-ChildItem -Recurse -File
         $releaseFiles = $allFiles | Where-Object {
           $file = $_
@@ -112,104 +120,139 @@ jobs:
           }
           $include
         }
-        
-        Write-Host "Creating temporary release directory..."
-        New-Item -Path "hellion-release" -ItemType Directory -Force
-        
+
+        New-Item -Path "hellion-release" -ItemType Directory -Force | Out-Null
+
         foreach ($file in $releaseFiles) {
           $relativePath = $file.FullName.Substring((Get-Location).Path.Length + 1)
           $destPath = Join-Path "hellion-release" $relativePath
           $destDir = Split-Path $destPath -Parent
           if (-not (Test-Path $destDir)) {
-            New-Item -Path $destDir -ItemType Directory -Force
+            New-Item -Path $destDir -ItemType Directory -Force | Out-Null
           }
           Copy-Item $file.FullName -Destination $destPath -Force
         }
-        
-        Write-Host "Creating signed release package..."
+
         Compress-Archive -Path "hellion-release\*" -DestinationPath $packageName -Force
         Remove-Item "hellion-release" -Recurse -Force
-        
+
         $packageSize = (Get-Item $packageName).Length / 1MB
-        Write-Host "[OK] Created: $packageName ($('{0:N2}' -f $packageSize) MB)"
-        
+        Write-Host "[OK] $packageName ($('{0:N2}' -f $packageSize) MB, $($releaseFiles.Count) Dateien)"
+
     - name: Generate checksums
       shell: powershell
       run: |
-        Write-Host "[INFO] Generating checksums..."
-        
         $version = "${{ steps.version.outputs.version }}"
         $checksums = @()
-        
+
         Get-ChildItem "hellion-power-tool-$version.zip", "*.cer" | ForEach-Object {
           $hash = Get-FileHash $_.Name -Algorithm SHA256
           $checksums += "$($hash.Hash.ToLower())  $($_.Name)"
           Write-Host "SHA256 ($($_.Name)): $($hash.Hash.ToLower())"
         }
-        
+
         $checksums | Out-File "checksums.txt" -Encoding UTF8
-        
+
     - name: Create release notes
       shell: powershell
       run: |
         $version = "${{ steps.version.outputs.version }}"
-        
-        # Create release notes content
-        $content = "# Hellion Power Tool $version - `"Jörmungandr`"`n`n"
-        $content += "## WARNING: Windows Defender Warnung`n"
-        $content += "Dieses Tool kann False-Positive Warnungen ausloesen (**Trojan:Script/Wacatac.B!ml**).`n"
-        $content += "**LOESUNG**: Siehe [DEFENDER-WHITELIST.md](https://github.com/${{ github.repository }}/blob/main/DEFENDER-WHITELIST.md)`n`n"
-        
-        $content += "## Sicherer Download`n"
-        $content += "1. **Vor Download**: Windows Defender temporaer pausieren (1 Stunde)`n"
-        $content += "2. **Download**: Signierte Version bevorzugen (``*-signed.zip``)`n"
-        $content += "3. **Nach Download**: Hellion-Ordner zur Defender-Ausnahme hinzufuegen`n"
-        $content += "4. **Installation**: ``launcher\simple-launcher.bat`` ausfuehren`n`n"
-        
-        $content += "## Download`n`n"
-        $content += "### Release-Datei`n"
-        $content += "- **``hellion-power-tool-$version.zip``** - Vollstaendige signierte Version`n"
-        $content += "- **``hellion-certificate.cer``** - Zertifikat fuer Signatur-Verifikation`n"
-        $content += "- **``checksums.txt``** - SHA256 Hashes zur Verifikation`n`n"
-        
-        $content += "## Aenderungen in v8.0.0.0 Jörmungandr`n"
-        $content += "- **WPF GUI** - Vollstaendige Dark Mode Oberflaeche mit Sidebar-Navigation und Live-Log`n"
-        $content += "- **Performance-Optimierung** - Page-Caching, Async CIM-Queries, Brush-Cache, BitmapCache`n"
-        $content += "- **Projekt-Restrukturierung** - Professionelle Verzeichnisstruktur (src/, config/, build/)`n"
-        $content += "- **Prerequisite-Check** - .NET, PowerShell, winget, git werden beim Start geprueft`n"
-        $content += "- **Loading-States** - System- und Software-Seite zeigen Ladezustand an`n"
-        $content += "- **Window-Drag Fix** - Titelleiste bei maximiertem Fenster greifbar`n`n"
-        
-        $content += "## Sicherheit & Verifikation`n"
-        $content += "- **Quellcode** - Vollstaendig auf GitHub verfuegbar`n"
-        $content += "- **Zertifikat** - Self-signed fuer Open Source Entwicklung`n"
-        $content += "- **Checksums** - SHA256 Hashes in ``checksums.txt```n"
-        $content += "- **Scan-Ergebnisse** - Siehe Security Tab auf GitHub`n`n"
-        
-        $content += "## System-Anforderungen`n"
-        $content += "- Windows 10/11 (jede Edition)`n"
-        $content += "- PowerShell 5.1+ (PowerShell 7 empfohlen)`n"
-        $content += "- Administrator-Rechte fuer System-Wartung`n`n"
-        
-        $content += "## Bekannte Probleme`n"
-        $content += "- Defender False-Positive (**NORMAL** - siehe Whitelist-Anleitung)`n"
-        $content += "- UAC-Prompts bei System-Operationen (**ERWUENSCHT** - Sicherheitsfeature)`n`n"
-        
-        $content += "## Installation & Start`n"
-        $content += "1. ZIP herunterladen und entpacken`n"
-        $content += "2. Hellion-Ordner zur Defender-Ausnahme hinzufuegen`n"
-        $content += "3. ``launcher\simple-launcher.bat`` als Administrator ausfuehren`n"
-        $content += "4. PowerShell 7 Installation empfohlen (automatisch angeboten)`n`n"
-        
-        $content += "**Hinweis**: Bei Download-Problemen siehe [GITHUB-RELEASE-GUIDE.md](GITHUB-RELEASE-GUIDE.md)"
-        
+        $codename = "${{ steps.version.outputs.codename }}"
+
+        $content = @"
+        # Hellion Power Tool $version "$codename"
+
+        > Entwickelt von [Hellion Online Media](https://hellion-media.de) — Open Source, nicht-kommerziell.
+
+        ---
+
+        ## Windows Defender Hinweis
+
+        Dieses Tool kann eine False-Positive-Warnung ausloesen (**Trojan:Script/Wacatac.B!ml**).
+        Das ist **kein Virus** — administrative PowerShell-Operationen triggern heuristische Erkennung.
+
+        **Loesung:** Tool-Ordner als Defender-Ausnahme hinzufuegen.
+        Details: [DEFENDER-WHITELIST.md](https://github.com/${{ github.repository }}/blob/main/docs/DEFENDER-WHITELIST.md)
+
+        ---
+
+        ## Download und Installation
+
+        1. **``hellion-power-tool-$version.zip``** herunterladen und entpacken
+        2. Hellion-Ordner zur Defender-Ausnahme hinzufuegen
+        3. **``START.bat``** doppelklicken (startet die GUI)
+        4. PowerShell 7 wird bei Bedarf automatisch zur Installation angeboten
+
+        | Datei | Beschreibung |
+        |-------|-------------|
+        | ``hellion-power-tool-$version.zip`` | Vollstaendiges Release (signiert) |
+        | ``hellion-certificate.cer`` | Zertifikat zur Signatur-Verifikation |
+        | ``checksums.txt`` | SHA256-Hashes zur Integritaetspruefung |
+
+        ---
+
+        ## Aenderungen
+
+        ### GUI
+        - Vollstaendige WPF-Oberflaeche mit Dark und Light Mode
+        - Sidebar-Navigation, Modul-Karten, Live-Log-Panel
+        - Software-Installer mit 76 Winget-Paketen in 11 Kategorien
+        - System-Info-Seite mit Hardware-Uebersicht und Export
+        - Prerequisite-Check beim Start (.NET, PowerShell, winget, git)
+        - Loading-States fuer System- und Software-Seite
+
+        ### Performance
+        - Page-Caching mit Visibility-Toggle (kein Rebuild pro Seitenwechsel)
+        - Async CIM-Queries in Runspaces (UI bleibt responsiv)
+        - Brush-Cache und Frozen Brushes fuer WPF-Rendering
+        - BitmapCache fuer Hardware-beschleunigte Karten
+
+        ### Projektstruktur
+        - Professionelle Verzeichnisstruktur (``src/``, ``config/``, ``build/``, ``tests/``)
+        - ``START.bat`` im Root als GUI-Einstieg
+        - CLI fuer Power-User unter ``src/launcher/start-cli.bat``
+
+        ### Fixes
+        - Fenster-Drag bei maximiertem Fenster funktioniert
+        - Doppelklick auf Titelleiste zum Maximieren/Wiederherstellen
+        - Auto-Updater sichert jetzt auch GUI-Einstellungen
+        - 15 kritische und 9 Warning-Bugfixes aus Code-Audit
+
+        ---
+
+        ## Systemanforderungen
+
+        | Komponente | Minimum | Empfohlen |
+        |-----------|---------|-----------|
+        | Betriebssystem | Windows 10 | Windows 11 |
+        | PowerShell | 5.1 (vorinstalliert) | 7.x |
+        | .NET Framework | 4.8 (vorinstalliert ab Win10) | — |
+        | Berechtigungen | Administrator | Administrator |
+        | Optional | — | winget, git |
+
+        ---
+
+        ## Sicherheit
+
+        - Quellcode vollstaendig auf GitHub einsehbar
+        - Alle PowerShell-Dateien digital signiert (Self-Signed)
+        - SHA256-Checksums in ``checksums.txt``
+        - Keine Datenexfiltration, kein Telemetrie, keine versteckten Funktionen
+
+        ---
+
+        *Hellion Power Tool — [Hellion Online Media](https://hellion-media.de) — [GitHub](https://github.com/${{ github.repository }})*
+        "@
+
+        # Einrueckung entfernen (PowerShell Here-String Formatierung)
+        $content = ($content -split "`n" | ForEach-Object { $_.TrimStart() }) -join "`n"
         $content | Out-File "release-notes.md" -Encoding UTF8
-        
+
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ steps.version.outputs.version }}
-        name: Hellion Power Tool ${{ steps.version.outputs.version }} "Jörmungandr"
+        name: Hellion Power Tool ${{ steps.version.outputs.version }} "${{ steps.version.outputs.codename }}"
         body_path: release-notes.md
         draft: false
         prerelease: false
@@ -218,13 +261,17 @@ jobs:
           hellion-certificate.cer
           checksums.txt
         token: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Upload security scan
+
+    - name: Release summary
       if: always()
       shell: powershell
       run: |
-        Write-Host "[INFO] Security scan summary..."
-        Write-Host "[OK] All PowerShell files digitally signed"
-        Write-Host "[OK] No hardcoded secrets detected"  
-        Write-Host "[OK] Defender-safe patterns implemented"
-        Write-Host "[OK] Release packages created with checksums"
+        Write-Host ""
+        Write-Host "========================================="
+        Write-Host "  Release Summary"
+        Write-Host "========================================="
+        Write-Host "  Version:  ${{ steps.version.outputs.version }}"
+        Write-Host "  Codename: ${{ steps.version.outputs.codename }}"
+        Write-Host "  Signiert: Ja (Self-Signed)"
+        Write-Host "  Checksums: SHA256"
+        Write-Host "========================================="
