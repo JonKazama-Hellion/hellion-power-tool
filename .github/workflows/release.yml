@@ -36,7 +36,7 @@ jobs:
         # Codename dynamisch aus config/version.txt lesen
         $codename = "Release"
         if (Test-Path "config/version.txt") {
-          $lines = Get-Content "config/version.txt" -EA SilentlyContinue
+          $lines = Get-Content "config/version.txt" -Encoding UTF8 -EA SilentlyContinue
           if ($lines -and $lines.Count -ge 2) { $codename = $lines[1].Trim() }
         }
 
@@ -162,14 +162,14 @@ jobs:
         $content = @"
         # Hellion Power Tool $version "$codename"
 
-        > Entwickelt von [Hellion Online Media](https://hellion-media.de) — Open Source, nicht-kommerziell.
+        > Entwickelt von [Hellion Online Media](https://hellion-media.de) - Open Source, nicht-kommerziell.
 
         ---
 
         ## Windows Defender Hinweis
 
         Dieses Tool kann eine False-Positive-Warnung ausloesen (**Trojan:Script/Wacatac.B!ml**).
-        Das ist **kein Virus** — administrative PowerShell-Operationen triggern heuristische Erkennung.
+        Das ist **kein Virus** - administrative PowerShell-Operationen triggern heuristische Erkennung.
 
         **Loesung:** Tool-Ordner als Defender-Ausnahme hinzufuegen.
         Details: [DEFENDER-WHITELIST.md](https://github.com/${{ github.repository }}/blob/main/docs/DEFENDER-WHITELIST.md)
@@ -226,9 +226,9 @@ jobs:
         |-----------|---------|-----------|
         | Betriebssystem | Windows 10 | Windows 11 |
         | PowerShell | 5.1 (vorinstalliert) | 7.x |
-        | .NET Framework | 4.8 (vorinstalliert ab Win10) | — |
+        | .NET Framework | 4.8 (vorinstalliert ab Win10) | - |
         | Berechtigungen | Administrator | Administrator |
-        | Optional | — | winget, git |
+        | Optional | - | winget, git |
 
         ---
 
@@ -241,7 +241,7 @@ jobs:
 
         ---
 
-        *Hellion Power Tool — [Hellion Online Media](https://hellion-media.de) — [GitHub](https://github.com/${{ github.repository }})*
+        *Hellion Power Tool - [Hellion Online Media](https://hellion-media.de) - [GitHub](https://github.com/${{ github.repository }})*
         "@
 
         # Einrueckung entfernen (PowerShell Here-String Formatierung)
