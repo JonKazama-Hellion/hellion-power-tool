@@ -6,16 +6,91 @@
 ![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-orange)
 ![GUI](https://img.shields.io/badge/GUI-WPF%20Dark%20%26%20Light%20Mode-448f45)
 
-Windows System-Wartungstool mit WPF-Oberfläche, modularer Architektur, intelligentem Launcher-System und automatischen Updates.
-PowerShell-basiert, Defender-optimiert, vollständig Open Source.
+**Dieses Tool ersetzt nichts — es macht sichtbar, was Windows bereits kann.**
+
+Windows bringt leistungsfähige Wartungstools mit: SFC, DISM, CheckDisk, winget und viele weitere.
+Die meisten Nutzer kennen sie nicht, und wer sie kennt, muss jedes Mal Befehle nachschlagen.
+Das Hellion Power Tool gibt diesen Werkzeugen eine Oberfläche — ohne eigene Logik dazwischenzuschalten.
 
 Entwickelt von **[Hellion Online Media](https://hellion-media.de)** — JonKazama-Hellion.
 
-![Dark Mode](https://img.shields.io/badge/Theme-Dark%20%26%20Light-448f45)
+---
+
+## Was dieses Tool NICHT ist
+
+- Kein "PC-Booster" und kein Registry-Cleaner
+- Keine versteckten Optimierungen oder proprietäre Algorithmen
+- Keine Drittanbieter-Software die im Hintergrund mitinstalliert wird
+- Keine Telemetrie, keine Datenerfassung, kein Netzwerkverkehr ausser Update-Check
+
+## Was dieses Tool IST
+
+Ein Open-Source-Frontend für native Windows-Systemwerkzeuge.
+Alle Funktionen basieren ausschliesslich auf Bordmitteln wie SFC, DISM, CheckDisk, winget und CIM/WMI.
+Was im Log-Panel angezeigt wird, ist exakt das, was ausgeführt wird.
 
 ---
 
-## GUI-Modus (NEU)
+## Schnellstart
+
+```text
+1. Repository als ZIP herunterladen oder git clone
+2. START.bat doppelklicken
+3. Die GUI öffnet sich — keine Installation, keine Konfiguration
+```
+
+PowerShell 7 wird automatisch erkannt. Fallback auf PowerShell 5.1 falls nicht vorhanden.
+Admin-Rechte werden per UAC angefordert.
+
+---
+
+## Volle Transparenz
+
+Dieses Tool versteckt nichts.
+
+- Alle ausgeführten Befehle werden im Live-Log in Echtzeit angezeigt
+- Der vollständige Quellcode ist auf GitHub einsehbar
+- Keine verschleierten oder versteckten Skripte
+- Keine Hintergrundprozesse ausser den angeforderten Modulen
+
+### Was passiert im Hintergrund?
+
+Wenn "System reparieren" ausgeführt wird, zeigt das Log-Panel zum Beispiel:
+
+```text
+[INFO]  Starte Systemprüfung...
+[CMD]   sfc /scannow
+[INFO]  SFC-Scan abgeschlossen — keine Integritätsverletzungen gefunden
+[CMD]   dism /online /cleanup-image /restorehealth
+[INFO]  DISM-Reparatur abgeschlossen — Component Store ist fehlerfrei
+[OK]    Systemprüfung beendet
+```
+
+Keine eigene Reparatur-Logik — nur Windows-Bordmittel, sichtbar im Log.
+
+---
+
+## Sicherheit
+
+Vor jeder kritischen Aktion:
+
+- Warnhinweis im UI mit Bestätigungsdialog
+- Automatischer Wiederherstellungspunkt (PS 5.1 und 7.x kompatibel)
+- Live-Logging aller ausgeführten Befehle und Ergebnisse
+
+Zusätzlich:
+
+- **Defender-optimiert** — Code-Patterns minimieren False-Positive-Erkennung durch AV-Scanner
+- **Defender-Metadata** — Eingebettete Sicherheitsdeklarationen für heuristische Analyse
+- **UAC-Elevation** — Admin-Rechte werden transparent per Windows-Dialog angefordert
+- **Kein Netzwerkzugriff** ausser Konnektivitätstests und GitHub-Update-Check
+- **Prerequisite-Check** — Prüft beim Start .NET 4.8, PowerShell-Version, winget und git
+
+Der Nutzer behält jederzeit die Kontrolle.
+
+---
+
+## GUI-Modus
 
 Das Hellion Power Tool verfügt über eine vollwertige **WPF-Oberfläche** mit Dark und Light Mode. Der Endnutzer tippt keinen einzigen Befehl — alles wird per Mausklick gesteuert.
 
@@ -25,8 +100,6 @@ Das Hellion Power Tool verfügt über eine vollwertige **WPF-Oberfläche** mit D
 START.bat doppelklicken
 ```
 
-PowerShell 7 wird automatisch erkannt. Fallback auf PowerShell 5.1 falls nicht installiert. Admin-Rechte werden per UAC angefordert.
-
 ### GUI-Features
 
 - **Dark & Light Mode** — Live-Umschaltung ohne Neustart, Hellion-Grün (#448f45) als Akzentfarbe
@@ -34,13 +107,12 @@ PowerShell 7 wird automatisch erkannt. Fallback auf PowerShell 5.1 falls nicht i
 - **Modul-Vorauswahl** — Module mit mehreren Modi (SFC, Bereinigung, CheckDisk, Adblock, Wiederherstellung) zeigen ein Auswahl-Overlay
 - **Live Log-Panel** — Farbige Echtzeit-Ausgabe aller Modul-Streams (Info, Warning, Error, Progress)
 - **System-Health-Bar** — CPU, RAM und Disk-Auslastung in Echtzeit (konfigurierbares Intervall)
-- **Dashboard** — Tageszeit-abhängiger Gruß, Kategorie-Sektionen mit Icons und Modul-Anzahl
+- **Dashboard** — Tageszeit-abhängiger Gruss, Kategorie-Sektionen mit Icons und Modul-Anzahl
 - **Animationen** — Gestaffeltes Fade-In der Karten, Hover-Zoom mit DropShadow, pulsierender Live-Dot
 - **Software-Installer** — 76 Programme in 11 Kategorien per Checkbox installieren (Ninite-Style via Winget)
 - **System-Info-Seite** — Hardware-Übersicht (CPU, GPU, RAM, Mainboard, Disks, OS) mit Export
 - **Einstellungen** — Theme, Health-Intervall, Log-Aufbewahrung, Auto-Scroll, Debug-Level
 - **Rechtliches** — Datenschutz, Impressum, Disclaimer, Hellion Online Media Links
-- **Prerequisite-Check** — Prüft beim Start .NET 4.8, PowerShell-Version, winget und git-Verfügbarkeit
 - **Loading-States** — System- und Software-Seite zeigen Ladezustand mit pulsierender Animation
 - **Auto-Update-Checker** — Prüft beim Start asynchron gegen GitHub, Toast bei neuem Update
 - **Toast-Benachrichtigungen** — Windows-native Benachrichtigung bei Modul-Abschluss
@@ -79,9 +151,7 @@ Das klassische Terminal-Interface für Power-User über `src\launcher\start-cli.
 src\launcher\start-cli.bat doppelklicken
 ```
 
-### Features
-
-#### System-Reparatur
+### System-Reparatur
 
 - **SFC-Scan** — Windows Systemdateien prüfen und reparieren
 - **DISM-Reparatur** — Windows Component Store wiederherstellen
@@ -89,14 +159,14 @@ src\launcher\start-cli.bat doppelklicken
 - **DLL-Integrität** — Kritische System-DLLs verifizieren
 - **Kombinierter Modus** — SFC, CheckDisk und DISM nacheinander ausführen
 
-#### System-Bereinigung
+### System-Bereinigung
 
 - **Umfassende Bereinigung** — Temp-Dateien, Cache, Logs, Browser-Daten (4 Modi)
 - **Performance-Optimierung** — Services optimieren, Autostart bereinigen
 - **Bloatware-Erkennung** — Vorinstallierte und ungenutzte Programme identifizieren
 - **Schnell-Bereinigung** — Grundreinigung in unter 5 Minuten
 
-#### Diagnose
+### Diagnose
 
 - **System-Info** — Detaillierte Hardware- und Software-Analyse (CPU, RAM, Disk, Treiber)
 - **Netzwerk-Test** — Internet-Konnektivität, DNS-Resolution, Download-Performance
@@ -105,14 +175,14 @@ src\launcher\start-cli.bat doppelklicken
 - **RAM-Test** — Windows Memory Diagnostic mit Ergebnis-Auswertung
 - **System-Report** — Vollständigen Analysebericht als Datei exportieren
 
-#### Verwaltung
+### Verwaltung
 
 - **Wiederherstellungspunkte** — Erstellen, anzeigen, wiederherstellen, System Restore aktivieren
 - **Winget-Integration** — Software-Updates prüfen, installieren, Software suchen
 - **Netzwerk-Reset** — TCP/IP Stack, DNS-Cache, Winsock zurücksetzen
 - **Safe Adblock** — DNS-basierter Werbeblocker via Hosts-Datei
 
-#### Auto-Modi
+### Auto-Modi
 
 - **Auto-Modus** — Vollautomatische Systembereinigung und -optimierung
 - **Quick-Clean** — Schnelle Bereinigung ohne Rückfragen
@@ -127,16 +197,6 @@ src\launcher\start-cli.bat doppelklicken
 - **PowerShell 7 Installation** — Ein-Klick-Installation via winget
 - **Git Installation** — Ein-Klick-Installation via winget
 - **Desktop-Verknüpfung** — Shortcut mit Custom-Icon erstellen
-
----
-
-## Sicherheit
-
-- **Defender-optimiert** — Code-Patterns minimieren False-Positive-Erkennung
-- **Defender-Metadata** — Eingebettete Sicherheitsdeklarationen für AV-Scanner
-- **UAC-Elevation** — Automatische Admin-Rechte-Anforderung mit Parameter-Weiterleitung
-- **Wiederherstellungspunkt vor kritischen Aktionen** — PS5 und PS7 kompatibel
-- **Keine Datenexfiltration** — Netzwerkzugriff nur für Konnektivitätstests und Updates
 
 ---
 
@@ -263,7 +323,36 @@ cd hellion-power-tool
 START.bat
 ```
 
-Admin-Rechte werden automatisch angefordert (UAC). PowerShell 7 wird bei Bedarf zur Installation angeboten.
+Keine Installation notwendig. Admin-Rechte werden automatisch per UAC angefordert. PowerShell 7 wird bei Bedarf zur Installation angeboten.
+
+### Voraussetzungen
+
+| Komponente | Minimum | Status |
+| ---------- | ------- | ------ |
+| Windows | 10 / 11 / Server | Erforderlich |
+| .NET Framework | 4.8 | Erforderlich (vorinstalliert ab Windows 10 1903) |
+| PowerShell | 5.1 | Erforderlich (vorinstalliert) |
+| winget | Beliebig | Optional — Software-Installer benötigt winget |
+| git | Beliebig | Optional — Auto-Update benötigt git |
+
+Der Prerequisite-Check beim Start prüft alle Abhängigkeiten und zeigt den Status im Log-Panel.
+
+---
+
+## Update-System
+
+Das Tool prüft via Git Clone gegen das GitHub-Repository auf neue Versionen. Der Vergleich basiert auf `config/version.txt` (Version + Timestamp).
+
+**GUI:** Automatischer Check beim Start (asynchron, blockiert nicht). Manuell via Settings > "Auf Updates prüfen".
+
+**CLI:** start-cli.bat > Option U
+
+Bei verfügbarem Update:
+
+1. Backup der aktuellen Installation in `backups/`
+2. Download der neuen Version
+3. User-Einstellungen werden übernommen (settings.json, gui-settings.json)
+4. Separater Installer-Prozess ersetzt die Dateien
 
 ---
 
@@ -293,23 +382,6 @@ pwsh -ExecutionPolicy Bypass -File src\hellion_main.ps1 -DevMode
 
 ---
 
-## Update-System
-
-Das Tool prüft via Git Clone gegen das GitHub-Repository auf neue Versionen. Der Vergleich basiert auf `config/version.txt` (Version + Timestamp).
-
-**GUI:** Automatischer Check beim Start (asynchron, blockiert nicht). Manuell via Settings > "Auf Updates prüfen".
-
-**CLI:** start-cli.bat > Option U
-
-Bei verfügbarem Update:
-
-1. Backup der aktuellen Installation in `backups/`
-2. Download der neuen Version
-3. User-Einstellungen werden übernommen
-4. Separater Installer-Prozess ersetzt die Dateien
-
----
-
 ## EXE-Kompilierung (optional)
 
 Die GUI kann als eigenständige `.exe` kompiliert werden:
@@ -326,15 +398,33 @@ Erzeugt `hellion-gui.exe` mit Icon, ohne Konsolenfenster, mit Admin-Rechte-Anfor
 
 ---
 
-## Windows Defender
+## Windows Defender Hinweis
 
-Windows Defender kann dieses Tool als `Trojan:Script/Wacatac.B!ml` markieren. Das ist ein **False Positive**.
+In seltenen Fällen kann Windows Defender dieses Tool fälschlicherweise als Bedrohung erkennen (False Positive).
 
-Ursache: Administrative PowerShell-Operationen, Registry-Analyse, UAC-Elevation und Netzwerk-Tests lösen heuristische Erkennung aus.
+Ursache: Administrative PowerShell-Operationen und Systemzugriffe lösen heuristische Prüfungen aus. Das betrifft praktisch jedes PowerShell-Tool mit Admin-Rechten.
 
-Lösung: Tool-Ordner als Defender-Ausnahme hinzufügen. Details in [DEFENDER-WHITELIST.md](docs/DEFENDER-WHITELIST.md).
+Der vollständige Quellcode ist offen einsehbar. Es werden keine Daten gesammelt oder übertragen.
 
-Der vollständige Quellcode ist einsehbar. Keine Malware, keine Datenexfiltration, keine versteckten Funktionen.
+Lösung und Details: [DEFENDER-WHITELIST.md](docs/DEFENDER-WHITELIST.md)
+
+---
+
+## Über dieses Projekt
+
+Dieses Tool ist aus der Praxis entstanden — nicht als Produkt einer Firma, sondern als Eigenentwicklung. Ich baue dieses Tool, weil ich selbst keine Blackbox-Software auf meinem System haben will.
+
+Ich bin Autodidakt und habe mir PowerShell, WPF und Batch-Scripting im Laufe der Entwicklung selbst beigebracht. Das Projekt läuft seit über 7 Monaten und wird aktiv weiterentwickelt.
+
+Der Fokus liegt auf drei Dingen: **Transparenz, Sicherheit und Kontrolle**. Was das Tool tut, soll sichtbar und nachvollziehbar sein — für jeden, der es benutzt oder den Code liest.
+
+### Einsatz von AI
+
+AI wurde als Hilfsmittel während der Entwicklung eingesetzt — für Debugging, Verständnisfragen und technische Recherche. Architektur, Features und alle Entscheidungen sind Eigenleistung. AI ist ein Werkzeug, kein Ersatz für Entwicklung. Details dazu in [CONTRIBUTORS.md](docs/CONTRIBUTORS.md).
+
+### Community
+
+Dieses Projekt wurde nicht allein entwickelt. Tester haben aktiv beigetragen durch Bug-Reports, Feature-Ideen und Feedback zur Benutzerfreundlichkeit. Alle Mitwirkenden sind in [CONTRIBUTORS.md](docs/CONTRIBUTORS.md) aufgeführt.
 
 ---
 
